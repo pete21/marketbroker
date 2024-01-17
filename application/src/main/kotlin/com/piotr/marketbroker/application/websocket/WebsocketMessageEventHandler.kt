@@ -1,0 +1,123 @@
+package com.piotr.marketbroker.application.websocket
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect
+import com.fasterxml.jackson.annotation.PropertyAccessor
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.piotr.marketbroker.application.event.AccountDetailsEvent
+import com.piotr.marketbroker.application.event.SubscriptionEvent
+import com.piotr.marketbroker.application.event.TickData
+import com.piotr.marketbroker.application.event.TickEvent
+import com.piotr.marketbroker.application.event.WebsocketMessageEvent
+import com.piotr.marketbroker.application.websocket.message.AccountDetailsDto
+import com.piotr.marketbroker.application.websocket.message.AccountSummaryDto
+import com.piotr.marketbroker.application.websocket.message.QuotesDto
+import com.piotr.marketbroker.application.websocket.message.SubscribeResponseDto
+import com.piotr.marketbroker.infrastructure.websocket.WebsocketSessionHandler
+import mu.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
+import org.springframework.context.event.EventListener
+import org.springframework.stereotype.Service
+import java.time.Instant
+import java.time.temporal.ChronoUnit
+import java.util.stream.Collectors
+
+private val log = KotlinLogging.logger {}
+
+@Service
+class WebsocketMessageEventHandler(
+    val websocketSessionHandler: WebsocketSessionHandler,
+    val applicationEventPublisher: ApplicationEventPublisher
+) {
+
+    private val stringBuilder = StringBuilder(2000)
+    private val mapper: ObjectMapper = ObjectMapper().setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+
+    private val RECEIVED_BY_CLIENT = ",\"ReceivedByClient\":\""
+    private val SENT_BY_CLIENT = "\",\"SentByClient\":\""
+    private val HEARTBEAT = "\",\"action\":\"heartbeat\"}"
+
+
+    @EventListener
+    private fun handleMessage(event: WebsocketMessageEvent) {
+        val msg = event.message
+        when (msg.t) {
+            "heartbeat" -> {
+                val timestamp = Instant.now().truncatedTo(ChronoUnit.MILLIS)
+                stringBuilder.setLength(0)
+                stringBuilder.append(msg.d)
+                stringBuilder.setLength(stringBuilder.length - 1)
+                stringBuilder.append(RECEIVED_BY_CLIENT)
+                stringBuilder.append(timestamp)
+                stringBuilder.append(SENT_BY_CLIENT)
+                stringBuilder.append(timestamp)
+                stringBuilder.append(HEARTBEAT)
+                websocketSessionHandler.sendMsg(stringBuilder.toString())
+            }
+
+            "connectResponse" -> //                    stringBuilder.setLength(0);
+//                    stringBuilder.append(m.getD());
+                log.info(msg.t + ": " + msg.d)
+
+            "authenticationResponse" -> log.info(msg.t + ": " + msg.d)
+
+            "subscribeResponse", "unsubscribeResponse" -> try {
+                val m: SubscribeResponseDto = mapper.readValue(msg.d, SubscribeResponseDto::class.java)
+                applicationEventPublisher.publishEvent(SubscriptionEvent(m.quoteId, m.action, m.result))
+
+                log.info(msg.t + ": " + m.quoteId)
+            } catch (e: Exception) {
+                // TODO Auto-generated catch block
+                log.error(msg.t + ": " + msg.d)
+            }
+
+            "p" -> try {
+                val m: QuotesDto = mapper.readValue(msg.d, QuotesDto::class.java)
+
+                val tickList: List<TickData> = m.sp.stream().map { s ->
+                    val values = s.split(",")
+                    TickData(
+                        values[0].toInt(),
+                        values[1].toFloat(),
+                        values[2].toFloat(),
+                        values[10].toFloat(),
+                        values[11].toLong(),
+                        values[8]
+                    )
+                }.collect(Collectors.toList())
+                applicationEventPublisher.publishEvent(TickEvent(tickList))
+            } catch (e: Exception) {
+                // TODO Auto-generated catch block
+                log.error(msg.t + ": " + msg.d)
+            }
+
+            "accountSummary" -> try {
+                val m: AccountSummaryDto = mapper.readValue(msg.d, AccountSummaryDto::class.java)
+                log.info(msg.t + ": " + m.toString())
+            } catch (e: Exception) {
+                // TODO Auto-generated catch block
+                log.error(msg.t + ": " + msg.d)
+            }
+
+            "accountDetails" -> try {
+                val m: AccountDetailsDto = mapper.readValue(msg.d, AccountDetailsDto::class.java)
+
+                applicationEventPublisher.publishEvent(
+                    AccountDetailsEvent(
+                        m.positions.records,
+                        m.openingOrders.records
+                    )
+                )
+                log.info(String.format("Positions: %d %s", m.positions.totalRecords, m.positions.records))
+                log.info(String.format("OpeningOrders: %d %s", m.openingOrders.totalRecords, m.openingOrders.records))
+            } catch (e: Exception) {
+                // TODO Auto-generated catch block
+                log.error(msg.t + ": " + msg.d)
+            }
+
+            "optionsResponse" ->{log.info(msg.t + ": " + msg.d)}
+            else -> {log.info(msg.t + ": " + msg.d)}
+        }
+    }
+
+
+}

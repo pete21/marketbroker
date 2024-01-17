@@ -1,0 +1,23 @@
+complexity:
+  LongParameterList:
+    constructorThreshold: 10
+    functionThreshold: 10
+    ignoreDefaultParameters: true
+  TooManyFunctions:
+    thresholdInObjects: 15
+    thresholdInClasses: 20
+  ComplexMethod:
+    threshold: 20
+style:
+  MagicNumber:
+    ignoreAnnotation: true
+  ThrowsCount:
+    max: 3
+naming:
+  VariableNaming:
+    variablePattern: '[a-z_][A-Za-z0-9]*'
+  EnumNaming:
+    enumEntryPattern: "[_a-zA-Z0-9]*"
+  ClassNaming:
+    excludes:
+      - '**/migrations/**'

@@ -1,0 +1,669 @@
+openapi: 3.1.0
+x-stoplight:
+  id: b4p067l7fp57c
+info:
+  title: Marketbroker
+  version: '1.0'
+  summary: Marketbroker API
+  description: Marketbroker API
+  contact:
+    name: piotr.nazarewicz@gmail.com
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  '/users/{userId}':
+    parameters:
+      - schema:
+          type: integer
+        name: userId
+        in: path
+        required: true
+        description: Id of an existing user.
+    get:
+      summary: Get User Info by User ID
+      tags:
+        - users
+      responses:
+        '200':
+          description: User Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                Get User Alice Smith:
+                  value:
+                    id: 142
+                    firstName: Alice
+                    lastName: Smith
+                    email: alice.smith@gmail.com
+                    dateOfBirth: '1997-10-31'
+                    emailVerified: true
+                    signUpDate: '2019-08-24'
+        '404':
+          description: User Not Found
+      operationId: get-users-userId
+      description: Retrieve the information of the user with the matching user ID.
+      x-internal: true
+    patch:
+      summary: Update User Information
+      operationId: patch-users-userId
+      responses:
+        '200':
+          description: User Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                Updated User Rebecca Baker:
+                  value:
+                    id: 13
+                    firstName: Rebecca
+                    lastName: Baker
+                    email: rebecca@gmail.com
+                    dateOfBirth: '1985-10-02'
+                    emailVerified: false
+                    createDate: '2019-08-24'
+        '404':
+          description: User Not Found
+        '409':
+          description: Email Already Taken
+      description: Update the information of an existing user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                  description: 'If a new email is given, the user''s email verified property will be set to false.'
+                dateOfBirth:
+                  type: string
+            examples:
+              Update First Name:
+                value:
+                  firstName: Rebecca
+              Update Email:
+                value:
+                  email: rebecca@gmail.com
+              Update Last Name & Date of Birth:
+                value:
+                  lastName: Baker
+                  dateOfBirth: '1985-10-02'
+        description: Patch user properties to update.
+      tags:
+        - users
+  /accounts:
+    get:
+      summary: Get Accounts
+      tags:
+        - accounts
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountResponseDTO'
+                  x-stoplight:
+                    id: bzlpdp2ybd107
+      operationId: get-accounts
+      description: Get Accounts
+      x-internal: true
+  /positions:
+    get:
+      summary: Get Positions
+      tags:
+        - positions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PositionResponseDTO'
+                  x-stoplight:
+                    id: vqvvo4ecgdhfm
+      operationId: get-positions
+      description: Get Positions
+      x-internal: true
+  /orders:
+    get:
+      summary: Get Orders
+      tags:
+        - orders
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderResponseDTO'
+                  x-stoplight:
+                    id: f4h6do5ibov6q
+      operationId: get-orders
+      x-internal: true
+      description: Get Orders
+  /demo:
+    post:
+      summary: Demo session controller
+      operationId: post-demo
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDTO'
+      description: Demo session
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionDTO'
+      x-internal: true
+      tags:
+        - demo
+  /instrument/groups:
+    get:
+      summary: Get Instrument groups
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  x-stoplight:
+                    id: 1tq7v0wozcr7w
+                  type: string
+      operationId: get-instrument-groups
+      x-internal: true
+      tags:
+        - instruments
+      description: Get Instrument groups
+    post:
+      summary: Generate Instrument groups
+      operationId: post-instrument-groups
+      responses:
+        '200':
+          description: OK
+      x-internal: true
+      tags:
+        - instruments
+      description: Generate Instrument groups
+  /instrument/quotes:
+    get:
+      summary: Get Instrument quotes
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  x-stoplight:
+                    id: sgztjggx8u11a
+                  type: string
+      operationId: get-instrument-quotes
+      x-internal: true
+      tags:
+        - instruments
+      description: Get Instrument quotes
+    post:
+      summary: Generate Instrument quotes
+      operationId: post-instrument-quotes
+      responses:
+        '200':
+          description: OK
+      x-internal: true
+      tags:
+        - instruments
+      description: Generate Instrument quotes
+  /publish-json:
+    get:
+      summary: Publish json data to kafka topic
+      tags:
+        - kafka
+      responses:
+        '200':
+          description: OK
+      operationId: get-publish-json
+      x-internal: true
+      description: Publish json data to kafka topic
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JsonDataDTO'
+  /live:
+    post:
+      summary: Live Session controller
+      operationId: post-live
+      responses:
+        '200':
+          description: OK
+      description: Live Session controller
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionDTO'
+      tags:
+        - live
+      x-internal: true
+  /instrument/subscriptions:
+    get:
+      summary: Get Instrument subscriptions
+      tags:
+        - instruments
+      responses:
+        '200':
+          description: OK
+      operationId: get-instrument-subscriptions
+      description: Get Instrument subscriptions
+      x-internal: true
+    post:
+      summary: Create Instrument subscription
+      operationId: post-instrument-subscriptions
+      responses:
+        '200':
+          description: OK
+      description: Create Instrument subscription
+      tags:
+        - instruments
+      x-internal: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionsRequestDTO'
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified
+    PositionResponseDTO:
+      title: PositionResponseDTO
+      x-stoplight:
+        id: 90te27cnppl5m
+      type: object
+      properties:
+        positionId:
+          type: integer
+          x-stoplight:
+            id: duz751vedxleh
+        marketId:
+          type: integer
+          x-stoplight:
+            id: 1xi8q1nu4yzwv
+        quoteId:
+          type: integer
+          x-stoplight:
+            id: io42fbgqm1gm4
+        type:
+          type: string
+          x-stoplight:
+            id: 5w8ktwobvkgck
+        direction:
+          type: string
+          x-stoplight:
+            id: gck465x2c2372
+        creationTimeUTC:
+          type: string
+          x-stoplight:
+            id: 3804flo33u6gy
+          format: date-time
+        stake:
+          type: integer
+          x-stoplight:
+            id: uajf8i4stqglp
+        openingPriceDecimal:
+          type: number
+          x-stoplight:
+            id: 35gk7wnlfwhvq
+          format: float
+        currentPriceDecimal:
+          type: number
+          x-stoplight:
+            id: 1rt417bpf4kcc
+          format: float
+        openPL:
+          type: integer
+          x-stoplight:
+            id: cv1o45cnl1l8r
+        stopOrderPrice:
+          type: string
+          x-stoplight:
+            id: 3ixm5fzevmam2
+        limitOrderPrice:
+          type: string
+          x-stoplight:
+            id: 5e2jsyo2g6qyb
+        imr:
+          type: number
+          x-stoplight:
+            id: 36lue7jfnx5x2
+          format: float
+        prcGenDecimalPlaces:
+          type: integer
+          x-stoplight:
+            id: wckau7q5u9dql
+        betPer:
+          type: number
+          x-stoplight:
+            id: awv2v4fnlf9le
+          format: float
+        tradable:
+          type: boolean
+          x-stoplight:
+            id: 6cp0ny70szz4t
+        isRollingMarket:
+          type: boolean
+          x-stoplight:
+            id: vaapcsgd4t2pq
+        isTriggered:
+          type: boolean
+          x-stoplight:
+            id: la505k7ihzrih
+        currencyCode:
+          type: string
+          x-stoplight:
+            id: wmbu26z0gfmee
+        isTotal:
+          type: boolean
+          x-stoplight:
+            id: pwps2ljlbg9rk
+      required:
+        - positionId
+      description: ''
+    AccountResponseDTO:
+      title: AccountResponseDTO
+      x-stoplight:
+        id: nqpswbq6o8lhu
+      type: object
+      properties:
+        accountId:
+          type: integer
+          x-stoplight:
+            id: 32raztym0atz0
+        platform:
+          type: string
+          x-stoplight:
+            id: ypfsjkbudmhju
+        account:
+          type: string
+          x-stoplight:
+            id: k2cyutevwn4sl
+        backend:
+          type: string
+          x-stoplight:
+            id: 6gdu1cgq1pmgg
+        accountType:
+          type: string
+          x-stoplight:
+            id: mbchldhhlw8om
+        currency:
+          type: string
+          x-stoplight:
+            id: c2frp4q2vpkl9
+        currencySymbol:
+          type: string
+          x-stoplight:
+            id: na9cxqj04u16c
+        balance:
+          type: string
+          x-stoplight:
+            id: nv8q57cyxd9av
+        equity:
+          type: string
+          x-stoplight:
+            id: vfbatky3yfvpj
+        ct_login_id:
+          type: string
+          x-stoplight:
+            id: 2aicfuyx6o4ix
+        ct_login_password:
+          type: string
+          x-stoplight:
+            id: 3zzqvllfgem2o
+    OrderResponseDTO:
+      title: OrderResponseDTO
+      x-stoplight:
+        id: 264wk3v0m4998
+      type: object
+      properties:
+        orderId:
+          type: integer
+          x-stoplight:
+            id: 6sy1pa9ipmcfp
+        currency:
+          type: string
+          x-stoplight:
+            id: o0wx8ifuujgig
+        currentPrice:
+          type: number
+          x-stoplight:
+            id: jbpphadw9s4ng
+          format: float
+        direction:
+          type: string
+          x-stoplight:
+            id: f14ixvigep4ll
+        expiryDate:
+          type: string
+          x-stoplight:
+            id: uq181iamxrpf3
+          format: date-time
+        goodTill:
+          type: string
+          x-stoplight:
+            id: 01etyoqss9s2d
+          format: date-time
+        iDOLimitOrderPrice:
+          type: string
+          x-stoplight:
+            id: ikre9bqv7vx07
+        iDOStopOrderPrice:
+          type: string
+          x-stoplight:
+            id: tcmnkwrnjp8m4
+        iDOGuaranteed:
+          type: boolean
+          x-stoplight:
+            id: ibdcpu8gkojl2
+        isTriggered:
+          type: boolean
+          x-stoplight:
+            id: 6x02qwo03puyd
+        limitOrderPrice:
+          type: string
+          x-stoplight:
+            id: jay9bnw443tm2
+        margin:
+          type: number
+          x-stoplight:
+            id: oeqbhgabdb27s
+          format: float
+        marketID:
+          type: integer
+          x-stoplight:
+            id: 8exzqz22k8plj
+        marketTradable:
+          type: boolean
+          x-stoplight:
+            id: i4rbf6icjfwnc
+        period:
+          type: string
+          x-stoplight:
+            id: jsiebwuq2dd08
+        creationTimeUTC:
+          type: string
+          x-stoplight:
+            id: 3q2w1hvx5wqab
+          format: date-time
+        quoteId:
+          type: integer
+          x-stoplight:
+            id: t7quys0f5v4yi
+        quoteMode:
+          type: string
+          x-stoplight:
+            id: 4jiuypz9r2rgu
+        stake:
+          type: integer
+          x-stoplight:
+            id: pnk5q1y262kc8
+        status:
+          type: integer
+          x-stoplight:
+            id: 4q62ajpnuxy6j
+        stopOrderPrice:
+          type: string
+          x-stoplight:
+            id: 81gopsq31c839
+        type:
+          type: string
+          x-stoplight:
+            id: k3kywkkdp11jw
+        trailingPoint:
+          type: integer
+          x-stoplight:
+            id: amni746y23942
+        isGuarantee:
+          type: boolean
+          x-stoplight:
+            id: sf1pu2cwyi2up
+        isForceOpen:
+          type: boolean
+          x-stoplight:
+            id: ctjo7815v7s7i
+        orderPriceModeEnum:
+          type: string
+          x-stoplight:
+            id: gvqqo2quqo9jb
+        currencySymbol:
+          type: string
+          x-stoplight:
+            id: o1dqkdv40y64a
+    SessionDTO:
+      title: SessionDTO
+      x-stoplight:
+        id: tbco6hp9y10rg
+      type: object
+      properties:
+        state:
+          type: string
+          x-stoplight:
+            id: upg043dwb8ik0
+        login:
+          type: string
+          x-stoplight:
+            id: 1zc3aynuf0tax
+        password:
+          type: string
+          x-stoplight:
+            id: zh3q40z7jhrsy
+    ResponseDTO:
+      title: ResponseDTO
+      x-stoplight:
+        id: bg784c54j5us1
+      type: object
+      properties:
+        status:
+          type: integer
+          x-stoplight:
+            id: hspsfoedk1dsj
+        message:
+          type: string
+          x-stoplight:
+            id: uzy3j0rk9puvu
+    JsonDataDTO:
+      title: JsonDataDTO
+      x-stoplight:
+        id: lekbvdz7ya7yk
+      type: object
+      properties:
+        type:
+          type: string
+          x-stoplight:
+            id: 25mihyyosa8ch
+        data:
+          type: string
+          x-stoplight:
+            id: bwrs57aa2lnqn
+    SubscriptionsRequestDTO:
+      title: SubscriptionsRequestDTO
+      x-stoplight:
+        id: 3ajbdx4bkvs5n
+      type: object
+      properties:
+        quoteId:
+          type: integer
+          x-stoplight:
+            id: jrdndqvdno3rp
+        status:
+          type: boolean
+          x-stoplight:
+            id: 3c5hdip1kdlq7
+x-internal: true
+tags:
+  - name: accounts
+  - name: demo
+  - name: instruments
+  - name: kafka
+  - name: live
+  - name: orders
+  - name: positions
+  - name: users

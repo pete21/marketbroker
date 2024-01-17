@@ -1,0 +1,18 @@
+com:
+  piotr:
+    marketbroker:
+      security:
+        enabled: false
+
+ai.symmetrical:
+  kafka:
+    producer:
+      enabled: false
+    consumer:
+      enabled: false
+    env: "openapi"
+
+
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration

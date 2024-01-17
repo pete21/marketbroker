@@ -1,0 +1,30 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            token-uri: "http://localhost:${wiremock.server.port}/auth/realms/mobile/protocol/openid-connect/token"
+      resourceserver:
+        jwt:
+          issuer-uri: "http://localhost:${wiremock.server.port:}/auth"
+
+ai.symmetrical:
+  kafka:
+    env: test
+    default-partitions-number: 1
+    default-replicas-number: 1
+    default-dlt-replicas-number: 1
+
+com.piotr:
+  testcontainers:
+    kafka:
+      enabled: true
+  marketbroker:
+    security:
+      enabled: false
+
+wiremock:
+  reset-mappings-after-each-test: true
