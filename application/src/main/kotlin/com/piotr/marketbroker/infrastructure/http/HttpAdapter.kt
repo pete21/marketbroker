@@ -16,8 +16,11 @@ private val log = KotlinLogging.logger {}
 @Component
 class HttpAdapter {
 
+    init {
+        System.setProperty("jdk.httpclient.allowRestrictedHeaders", "Host")
+    }
     var defaultHeaders: RequestHeaders? = null
-    var baseUrl: String? = null
+    var baseUrl: String = ""
 //    private val httpClientContext: HttpClientContext = HttpClientContext
 
 
@@ -29,67 +32,59 @@ class HttpAdapter {
         .build()
 
     fun postRequest(url: String, body: String, headers: RequestHeaders?): HttpAdapterResponse {
-
-        val requestBuilder = HttpRequest.newBuilder(URI(url))
-        if (headers!=null)
-        RequestHeaders(defaultHeaders!!, headers).toListPair().forEach { it ->
-            run {
-                val (first, second) = it
-                requestBuilder.headers(first, second)
-            }
-        } else
-        {
-            requestBuilder.headers(defaultHeaders!!.toString())
-        }
-        val request = requestBuilder
+        log.info("postRequest: $url")
+        val request = builder(baseUrl+url, headers)
             .POST(BodyPublishers.ofString(body))
             .build()
-        val response = client.send(request, BodyHandlers.ofString())
-        val responseBody = response.body()
-        val responseStatusCode = response.statusCode()
-        println("httpPostRequest : $responseBody")
-        println("httpGetRequest status code: $responseStatusCode")
-        return HttpAdapterResponse(responseStatusCode, responseBody)
+        val response = executeRequest(request)
+        return HttpAdapterResponse(response.statusCode(), response.body())
     }
 
-    fun getRequest(url: String, headers: RequestHeaders) : HttpAdapterResponse {
-        val requestBuilder = HttpRequest.newBuilder(URI(url))
-        RequestHeaders(defaultHeaders!!, headers).toListPair().forEach { it ->
-            run {
-                val (first, second) = it
-                requestBuilder.headers(first, second)
-            }
-        }
-        val request = requestBuilder
+    fun getRequest(url: String, headers: RequestHeaders?) : HttpAdapterResponse {
+        log.info("getRequest: $url")
+        val request = builder(url, headers)
             .GET()
             .build()
-
-        val response = client.send(request, BodyHandlers.ofString())
-
-        val responseBody = response.body()
-        val responseStatusCode = response.statusCode()
-
-        println("httpGetRequest: $responseBody")
-        println("httpGetRequest status code: $responseStatusCode")
-        return HttpAdapterResponse(responseStatusCode, responseBody)
+        val response = executeRequest(request)
+        return HttpAdapterResponse(response.statusCode(), response.body())
     }
 
-    fun getRequestWithRedirect(url: String, headers: RequestHeaders) : HttpResponse<String> {
+    fun getRequestWithRedirect(url: String, headers: RequestHeaders?) : HttpResponse<String> {
         log.info("getRequestWithRedirect: $url")
-        val requestBuilder = HttpRequest.newBuilder(URI(url))
-        RequestHeaders(defaultHeaders!!, headers).toListPair().forEach { it ->
-            run {
-                val (first, second) = it
-                requestBuilder.headers(first, second)
-            }
-        }
-        val request = requestBuilder
+        val request = builder(url, headers)
             .GET()
             .build()
-
-        val response = client.send(request, BodyHandlers.ofString())
+        val response = executeRequest(request)
         return response
+    }
 
+    private fun builder(url: String, headers: RequestHeaders?): HttpRequest.Builder {
+        val requestBuilder = HttpRequest.newBuilder(URI(url))
+        if (headers != null) {
+            RequestHeaders(defaultHeaders!!, headers).toListPair().forEach {
+                run {
+                    val (first, second) = it
+                    log.info("Header: $first : $second")
+                    requestBuilder.headers(first, second)
+                }
+            }
+        } else {
+            defaultHeaders!!.toListPair().forEach {
+                run {
+                    val (first, second) = it
+                    log.info("Header: $first : $second")
+                    requestBuilder.headers(first, second)
+                }
+            }
+        }
+        return requestBuilder
+    }
+
+    private fun executeRequest(request: HttpRequest?): HttpResponse<String> {
+        val response = client.send(request, BodyHandlers.ofString())
+        log.info("response body : ${response.body()}")
+        log.info("response status code: ${response.statusCode()}")
+        return response
     }
 
 }

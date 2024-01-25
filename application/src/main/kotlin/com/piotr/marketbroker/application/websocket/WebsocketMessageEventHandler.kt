@@ -2,7 +2,8 @@ package com.piotr.marketbroker.application.websocket
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.piotr.marketbroker.application.event.AccountDetailsEvent
 import com.piotr.marketbroker.application.event.SubscriptionEvent
 import com.piotr.marketbroker.application.event.TickData
@@ -19,7 +20,6 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.stream.Collectors
 
 private val log = KotlinLogging.logger {}
 
@@ -30,7 +30,8 @@ class WebsocketMessageEventHandler(
 ) {
 
     private val stringBuilder = StringBuilder(2000)
-    private val mapper: ObjectMapper = ObjectMapper().setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+    private val mapper = jacksonObjectMapper()
+        .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
 
     private val RECEIVED_BY_CLIENT = ",\"ReceivedByClient\":\""
     private val SENT_BY_CLIENT = "\",\"SentByClient\":\""
@@ -61,7 +62,7 @@ class WebsocketMessageEventHandler(
             "authenticationResponse" -> log.info(msg.t + ": " + msg.d)
 
             "subscribeResponse", "unsubscribeResponse" -> try {
-                val m: SubscribeResponseDto = mapper.readValue(msg.d, SubscribeResponseDto::class.java)
+                val m: SubscribeResponseDto = mapper.readValue(msg.d)
                 applicationEventPublisher.publishEvent(SubscriptionEvent(m.quoteId, m.action, m.result))
 
                 log.info(msg.t + ": " + m.quoteId)
@@ -71,9 +72,9 @@ class WebsocketMessageEventHandler(
             }
 
             "p" -> try {
-                val m: QuotesDto = mapper.readValue(msg.d, QuotesDto::class.java)
+                val m: QuotesDto = mapper.readValue(msg.d)
 
-                val tickList: List<TickData> = m.sp.stream().map { s ->
+                val tickList: List<TickData> = m.sp.map { s ->
                     val values = s.split(",")
                     TickData(
                         values[0].toInt(),
@@ -83,7 +84,7 @@ class WebsocketMessageEventHandler(
                         values[11].toLong(),
                         values[8]
                     )
-                }.collect(Collectors.toList())
+                }
                 applicationEventPublisher.publishEvent(TickEvent(tickList))
             } catch (e: Exception) {
                 // TODO Auto-generated catch block
@@ -91,7 +92,7 @@ class WebsocketMessageEventHandler(
             }
 
             "accountSummary" -> try {
-                val m: AccountSummaryDto = mapper.readValue(msg.d, AccountSummaryDto::class.java)
+                val m: AccountSummaryDto = mapper.readValue(msg.d)
                 log.info(msg.t + ": " + m.toString())
             } catch (e: Exception) {
                 // TODO Auto-generated catch block
@@ -99,7 +100,7 @@ class WebsocketMessageEventHandler(
             }
 
             "accountDetails" -> try {
-                val m: AccountDetailsDto = mapper.readValue(msg.d, AccountDetailsDto::class.java)
+                val m: AccountDetailsDto = mapper.readValue(msg.d)
 
                 applicationEventPublisher.publishEvent(
                     AccountDetailsEvent(
@@ -118,6 +119,5 @@ class WebsocketMessageEventHandler(
             else -> {log.info(msg.t + ": " + msg.d)}
         }
     }
-
 
 }

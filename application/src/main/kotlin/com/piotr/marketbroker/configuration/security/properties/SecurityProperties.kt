@@ -6,7 +6,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class SecurityProperties(
     val ignoredUrls: List<String> = listOf(),
     val enabled: Boolean = true,
-    val validateEmployerId: Boolean = false,
     val openidConnectConfigurationUrl: String? = null,
     val openidConnectUrl: String? = null,
     val logoutUrl: String? = null

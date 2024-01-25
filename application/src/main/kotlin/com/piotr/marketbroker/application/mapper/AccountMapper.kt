@@ -7,15 +7,15 @@ object AccountMapper {
 
     fun mapToAccountResponseDto(account: Account) = AccountResponseDTO (
         accountId = account.accountId,
-        platform = account.platform,
-        account = account.account,
-        backend = account.backend,
-        accountType = account.accountType,
-        currency = account.currency,
-        currencySymbol = account.currencySymbol,
-        balance = account.balance,
-        equity = account.equity,
-        ctLoginId = account.ct_login_id,
-        ctLoginPassword = account.ct_login_password
+        platform = account.platform ?: "",
+        account = account.account ?: "",
+        backend = account.backend ?: "",
+        accountType = account.accountType ?: "",
+        currency = account.currency ?: "",
+        currencySymbol = account.currencySymbol ?: "",
+        balance = account.balance ?: "",
+        equity = account.equity ?: "",
+        ctLoginId = account.ct_login_id ?: "",
+        ctLoginPassword = account.ct_login_password ?: ""
     )
 }

@@ -12,7 +12,7 @@ import org.springframework.security.web.SecurityFilterChain
     prefix = "com.piotr.marketbroker.security",
     name = ["enabled"],
     havingValue = "false",
-    matchIfMissing = true
+    matchIfMissing = false
 )
 @Configuration
 @EnableWebSecurity

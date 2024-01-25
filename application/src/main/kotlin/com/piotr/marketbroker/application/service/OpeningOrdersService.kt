@@ -13,7 +13,7 @@ class OpeningOrdersService(
 
         val openingOrders = springDataOpeningOrderRepository.findAll()
 
-        return openingOrders.stream().map { OpeningOrderMapper.mapToOrderResponseDto(it) }.toList()
+        return openingOrders.map { OpeningOrderMapper.mapToOrderResponseDto(it) }
 
     }
 

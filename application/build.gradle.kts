@@ -27,6 +27,7 @@ tasks.bootRun {
 dependencies {
     implementation(project(":open-api"))
     implementation(libs.ai.symmetrical.sym.kafka)
+    implementation(libs.ai.symmetrical.sym.kafka.annotations)
     implementation(libs.ai.symmetrical.sym.cors)
     implementation(libs.ai.symmetrical.sym.request.response.logging)
 
@@ -85,6 +86,10 @@ dependencies {
     implementation("com.h2database:h2:2.2.224")
     // https://mvnrepository.com/artifact/org.springframework/spring-websocket
     implementation("org.springframework:spring-websocket:6.1.2")
+
+//Observability
+    // https://mvnrepository.com/artifact/com.github.loki4j/loki-logback-appender
+    implementation("com.github.loki4j:loki-logback-appender:1.4.2")
 
 
 }

@@ -1,24 +1,25 @@
 package com.piotr.marketbroker.configuration.td365
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.context.annotation.PropertySource
 
 @ConfigurationProperties(prefix = "td365")
-@PropertySource("classpath:td365config.properties")
-data class TD365ConfigurationProperties(
-    val demolink: String,
-    val demobaseurl: String,
-    val prodlink: String,
-    val prodbaseurl: String,
-    val demoHeaders: Map<String, String>,
-    val prodHeaders: Map<String, String>,
-    val demoReferer: String,
-    val prodReferer: String,
-    val demowebsocketserver: String,
-    val prodwebsocketserver: String,
-    val authlink: String,
-    val accountlink: String,
-    val sessionupdateinterval: Int,
-    val username: String,
-    val password: String
-)
+class TD365ConfigurationProperties {
+    lateinit var demolink: String
+    lateinit var demobaseurl: String
+    lateinit var prodlink: String
+    lateinit var prodbaseurl: String
+    lateinit var demoHeaders: Map<String, String>
+    lateinit var prodHeaders: Map<String, String>
+    lateinit var demoReferer: String
+    lateinit var prodReferer: String
+    lateinit var demowebsocketserver: String
+    lateinit var prodwebsocketserver: String
+    lateinit var authlink: String
+    lateinit var accountlink: String
+     var sessionupdateinterval: Int = 120000
+    lateinit var username: String
+    lateinit var password: String
+    override fun toString(): String {
+        return "TD365ConfigurationProperties(demolink='$demolink', demobaseurl='$demobaseurl', prodlink='$prodlink', prodbaseurl='$prodbaseurl', demoHeaders=$demoHeaders, prodHeaders=$prodHeaders, demoReferer='$demoReferer', prodReferer='$prodReferer', demowebsocketserver='$demowebsocketserver', prodwebsocketserver='$prodwebsocketserver', authlink='$authlink', accountlink='$accountlink', sessionupdateinterval=$sessionupdateinterval, username='$username', password='$password')"
+    }
+}

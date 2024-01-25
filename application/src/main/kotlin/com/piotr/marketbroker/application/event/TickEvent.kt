@@ -4,14 +4,14 @@ class TickEvent (val ticks: List<TickData>)
 
 class TickData(q: Int, b: Float, a: Float, m: Float, t: Long, k: String) {
 
-    private val quoteId: Int
-    private val bid: Float
-    private val ask: Float
-    private val mid: Float
-    private val time: Int
-    private val millis: Int
-    private val longtime: Long
-    private val key: String
+    val quoteId: Int
+    val bid: Float
+    val ask: Float
+    val mid: Float
+    val time: Int
+    val millis: Int
+    val longtime: Long
+    val key: String
 
     init {
         var tt: Long = t

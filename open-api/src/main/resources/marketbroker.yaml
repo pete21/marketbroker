@@ -235,7 +235,7 @@ paths:
         - instruments
       description: Generate Instrument quotes
   /publish-json:
-    get:
+    post:
       summary: Publish json data to kafka topic
       tags:
         - kafka
@@ -269,14 +269,22 @@ paths:
   /instrument/subscriptions:
     get:
       summary: Get Instrument subscriptions
-      tags:
-        - instruments
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  x-stoplight:
+                    id: 2wu65hunmesqy
+                  type: string
       operationId: get-instrument-subscriptions
       description: Get Instrument subscriptions
       x-internal: true
+      tags:
+        - subscriptions
     post:
       summary: Create Instrument subscription
       operationId: post-instrument-subscriptions
@@ -284,14 +292,14 @@ paths:
         '200':
           description: OK
       description: Create Instrument subscription
-      tags:
-        - instruments
       x-internal: true
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/SubscriptionsRequestDTO'
+      tags:
+        - subscriptions
 components:
   schemas:
     User:
@@ -427,7 +435,14 @@ components:
             id: pwps2ljlbg9rk
       required:
         - positionId
-      description: ''
+        - marketId
+        - quoteId
+        - type
+        - direction
+        - creationTimeUTC
+        - stake
+        - openingPriceDecimal
+        - currencyCode
     AccountResponseDTO:
       title: AccountResponseDTO
       x-stoplight:
@@ -478,6 +493,18 @@ components:
           type: string
           x-stoplight:
             id: 3zzqvllfgem2o
+      required:
+        - accountId
+        - platform
+        - account
+        - backend
+        - accountType
+        - currency
+        - currencySymbol
+        - balance
+        - equity
+        - ct_login_id
+        - ct_login_password
     OrderResponseDTO:
       title: OrderResponseDTO
       x-stoplight:
@@ -597,6 +624,10 @@ components:
           type: string
           x-stoplight:
             id: o1dqkdv40y64a
+      required:
+        - orderId
+        - currency
+        - direction
     SessionDTO:
       title: SessionDTO
       x-stoplight:
@@ -615,6 +646,10 @@ components:
           type: string
           x-stoplight:
             id: zh3q40z7jhrsy
+      required:
+        - state
+        - login
+        - password
     ResponseDTO:
       title: ResponseDTO
       x-stoplight:
@@ -629,6 +664,9 @@ components:
           type: string
           x-stoplight:
             id: uzy3j0rk9puvu
+      required:
+        - status
+        - message
     JsonDataDTO:
       title: JsonDataDTO
       x-stoplight:
@@ -643,6 +681,9 @@ components:
           type: string
           x-stoplight:
             id: bwrs57aa2lnqn
+      required:
+        - type
+        - data
     SubscriptionsRequestDTO:
       title: SubscriptionsRequestDTO
       x-stoplight:
@@ -657,6 +698,9 @@ components:
           type: boolean
           x-stoplight:
             id: 3c5hdip1kdlq7
+      required:
+        - quoteId
+        - status
 x-internal: true
 tags:
   - name: accounts
@@ -666,4 +710,5 @@ tags:
   - name: live
   - name: orders
   - name: positions
+  - name: subscriptions
   - name: users

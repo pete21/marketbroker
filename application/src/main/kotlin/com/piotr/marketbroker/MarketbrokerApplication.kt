@@ -5,12 +5,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
-import org.springframework.cloud.openfeign.EnableFeignClients
+import org.springframework.context.annotation.PropertySource
+
 
 @SpringBootApplication
+@PropertySource("classpath:td365config.properties")
 @EnableConfigurationProperties(TD365ConfigurationProperties::class)
-@EnableFeignClients
-@Suppress("UtilityClassWithPublicConstructor", "SpreadOperator", "MagicNumber")
 class MarketbrokerApplication {
 
     companion object {

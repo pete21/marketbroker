@@ -3,7 +3,6 @@ import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    alias(libs.plugins.org.graalvm.buildtools.native)
     alias(libs.plugins.org.jetbrains.kotlin.jvm)
 
     alias(libs.plugins.io.spring.dependency.management)
@@ -51,8 +50,8 @@ allprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "io.spring.dependency-management")
     java {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     configure<DependencyManagementExtension> {
@@ -88,7 +87,7 @@ allprojects {
     tasks.withType<KotlinCompile> {
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict", "-Xemit-jvm-type-annotations")
-            jvmTarget = "17"
+            jvmTarget = "21"
         }
     }
 
@@ -116,8 +115,8 @@ copy {
     fileMode = "777".toInt(8)
 }
 
-sonarqube {
-    properties {
-        property("sonar.projectKey", "marketbroker")
-    }
-}
+//sonarqube {
+//    properties {
+//        property("sonar.projectKey", "marketbroker")
+//    }
+//}

@@ -2,20 +2,24 @@ package com.piotr.marketbroker.application.controller
 
 import com.piotr.marketbroker.application.model.ResponseDTO
 import com.piotr.marketbroker.application.model.SessionDTO
-import com.piotr.marketbroker.application.service.TD365ApiService
+import com.piotr.marketbroker.application.service.TD365SessionService
+import com.piotr.marketbroker.configuration.security.properties.SecurityRole
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import mu.KotlinLogging
-import org.springframework.stereotype.Component
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.web.bind.annotation.RestController
 
 private val log = KotlinLogging.logger {}
 
-@Component
+@RestController
 class DemoController(
-    private val td365ApiService: TD365ApiService
+    private val td365SessionService: TD365SessionService
 ): DemoApi {
+
+    @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.POST],
         value = ["/demo"],
@@ -27,7 +31,7 @@ class DemoController(
 
         when (sessionDTO!!.state) {
             "START" -> {
-                if (td365ApiService.demoSessionStart()) {
+                if (td365SessionService.demoSessionStart()) {
                         log.info("Session started")
                         return ResponseEntity<ResponseDTO>(ResponseDTO(0,"Session started"), HttpStatus.OK)
                     }
@@ -36,7 +40,7 @@ class DemoController(
             }
 
             "STOP" -> {
-                td365ApiService.demoSessionStop()
+                td365SessionService.demoSessionStop()
                 log.info("Session stopped")
                 return ResponseEntity<ResponseDTO>(ResponseDTO(0, "Session stopped"), HttpStatus.OK)
             }
@@ -44,4 +48,15 @@ class DemoController(
         return ResponseEntity<ResponseDTO>(ResponseDTO(1, "Invalid command"), HttpStatus.BAD_REQUEST)
 
     }
+
+    @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
+    @RequestMapping(
+        method = [RequestMethod.GET],
+        value = ["/config"],
+        produces = ["application/json"]
+    )
+    fun getConfig() : String {
+        return td365SessionService.getTD365ConfigurationProperties()
+    }
+
 }

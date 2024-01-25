@@ -30,7 +30,7 @@ class WebsocketService(
             Thread.sleep(400)
             login(login, token)
             Thread.sleep(1000)
-            account_summary()
+            accountSummary()
             Thread.sleep(100)
             sessionState = true
         } catch (e: InterruptedException) {
@@ -46,17 +46,19 @@ class WebsocketService(
         websocketSessionHandler.disconnect()
     }
 
-    fun subscribe(quoteId: Int) {
-        val msg = String.format(SUBSCRIBE, quoteId)
-        websocketSessionHandler.sendMsg(msg)
-        log.info("Subscribe: $msg")
+    fun subscribe(quoteId: Int, status: Boolean): Boolean {
+        if (status) {
+            val msg = String.format(SUBSCRIBE, quoteId)
+            websocketSessionHandler.sendMsg(msg)
+            log.info("Subscribe: $msg")
+        } else {
+            val msg = String.format(UNSUBSCRIBE, quoteId)
+            websocketSessionHandler.sendMsg(msg)
+            log.info("Unsubscribe: $msg")
+        }
+        return true
     }
 
-    fun unsubscribe(quoteId: Int) {
-        val msg = String.format(UNSUBSCRIBE, quoteId)
-        websocketSessionHandler.sendMsg(msg)
-        log.info("Unsubscribe: $msg")
-    }
 
     private fun login(login: String?, token: String?) {
         val msg = String.format(LOGIN, login, token)
@@ -64,20 +66,20 @@ class WebsocketService(
         log.info("Login: $msg")
     }
 
-    private fun account_summary() {
+    private fun accountSummary() {
         websocketSessionHandler.sendMsg(ACCOUNT_SUMMARY)
         log.info("Account summary: " + ACCOUNT_SUMMARY)
     }
 
     @EventListener
-    private fun handleDisconnect(event: WebsocketDisconnectedEvent) {
+    private fun WebsocketDisconnectedEvent.handleDisconnect() {
         log.info("handleDisconnect triggered")
         if (sessionState) {
             connect(login!!, token!!, websocketServer!!)
         }
     }
 
-    companion object {
+    private companion object {
         private const val SUBSCRIBE = "{\"quoteId\":%d,\"priceGrouping\":\"Sampled\",\"action\":\"subscribe\"}"
 
         private const val UNSUBSCRIBE = "{\"quoteId\":%d,\"priceGrouping\":\"Sampled\",\"action\":\"unsubscribe\"}"

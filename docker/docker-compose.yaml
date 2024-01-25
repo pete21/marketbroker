@@ -1,7 +1,7 @@
 version: "3"
 services:
   kafka0:
-    image: 'bitnami/kafka:3.6.1'
+    image: bitnami/kafka:3.6.1
     container_name: kafka0
     hostname: kafka0
     ports:
@@ -11,21 +11,22 @@ services:
       - KAFKA_ENABLE_KRAFT=yes
       - KAFKA_CFG_PROCESS_ROLES=broker,controller
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
       #      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
       #      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://host.docker.internal:9092
       #      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka0:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka0:9092,EXTERNAL://kafka0:9094
 
       #      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
       #      - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
       #      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka0:9092,EXTERNAL://localhost:9093
       #      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
-
+      - KAFKA_CFG_NODE_ID=1
       - KAFKA_BROKER_ID=1
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@127.0.0.1:9093
       - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_NUM_PARTITIONS=1
   #      - KAFKA_KRAFT_CLUSTER_ID=kafka_id1
   #      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
 
@@ -35,10 +36,91 @@ services:
     hostname: kafka-ui
     ports:
       - "8081:8081"
-    #    restart: always
+#    restart: always
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka0:9092
       - SERVER_PORT=8081
     depends_on:
       - kafka0
+
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:10.2.3
+    # See: https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#override-configuration-with-environment-variables
+    environment:
+#      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+      - GF_ANALYTICS_CHECK_FOR_UPDATES=false
+      - GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES=false
+    ports:
+      - "3000:3000"
+    # See: https://grafana.com/docs/grafana/latest/setup-grafana/configure-docker/
+    volumes:
+      - ./grafana/data:/var/lib/grafana
+#      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/logs:/var/log/grafana
+
+
+  prometheus:
+    image: prom/prometheus:v2.49.1
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    #    expose:
+    #      - 9090
+    ports:
+      - "9090:9090"
+
+
+  loki:
+    container_name: loki
+    image: grafana/loki:main-a199662
+    command: -config.file=/etc/loki/loki-config.yml
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki-config.yml:/etc/loki/loki-config.yml
+
+  tempo:
+    container_name: tempo
+    image: grafana/tempo:2.3.1
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./tempo.yml:/etc/tempo.yaml
+      - ./tempo-data:/tmp/tempo
+    ports:
+      - "14268:14268"  # jaeger ingest
+      - "3200:3200"   # tempo
+      - "9095:9095" # tempo grpc
+      - "4317:4317"  # otlp grpc
+      - "4318:4318"  # otlp http
+      - "9411:9411"   # zipkin
+
+#  node-exporter:
+#    volumes:
+#      - /proc:/host/proc:ro
+#      - /sys:/host/sys:ro
+#      - /:/rootfs:ro
+#    command:
+#      - '--path.procfs=/host/proc'
+#      - '--path.rootfs=/rootfs'
+#      - '--path.sysfs=/host/sys'
+#      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+#    container_name: node-exporter
+#    image: prom/node-exporter:latest
+#    networks:
+#      loki: null
+#    ports:
+#      - "9100:9100"
+

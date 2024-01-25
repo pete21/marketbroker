@@ -1,7 +1,6 @@
 package com.piotr.marketbroker
 
 import com.piotr.marketbroker.configuration.TestMarketbrokerApplicationConfiguration
-import com.piotr.marketbroker.initializers.KafkaTestContainerInitializer
 import io.kotest.core.spec.style.ExpectSpec
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
@@ -11,7 +10,8 @@ import org.springframework.test.context.ContextConfiguration
 
 @SpringBootTest
 @ActiveProfiles("integration-test")
-@ContextConfiguration(initializers = [KafkaTestContainerInitializer::class])
+//@ContextConfiguration(initializers = [KafkaTestContainerInitializer::class])
+@ContextConfiguration
 @Import(TestMarketbrokerApplicationConfiguration::class)
 @AutoConfigureWireMock(port = 0)
 class BaseTest(body: ExpectSpec.() -> Unit = {}) : ExpectSpec(body) {

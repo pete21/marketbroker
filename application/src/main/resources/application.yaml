@@ -4,6 +4,7 @@ management:
       enabled: true
       probes:
         enabled: true
+      show-details: always
     info:
       enabled: true
     prometheus:
@@ -13,7 +14,7 @@ management:
     web:
       base-path: /
       exposure:
-        include: health,info,prometheus
+        include: health,info,prometheus,beans,configprops,loggers,env
   server:
     port: 8090
   tracing:
@@ -21,9 +22,22 @@ management:
       probability: 1.0
     propagation:
       type: b3
+
   zipkin:
     tracing:
-      endpoint: http://tempo.tempo.svc.cluster.local:9411
+      endpoint: http://tempo:9411
+
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true # (1)
+
+  observations:
+    key-values:
+      application: marketbroker
+
 
 server:
   http2.enabled: true
@@ -36,7 +50,7 @@ spring:
   jackson:
     default-property-inclusion: non_null
   kafka:
-    bootstrap-servers: 127.0.0.1:9092
+    bootstrap-servers: localhost:9092
     consumer:
       group-id: marketbroker
       max-poll-records: 1
@@ -63,37 +77,44 @@ spring:
     url: jdbc:h2:mem:testdb           #jdbc:h2:file:/data/demo
     driverClassName: org.h2.Driver
     username: sa
-    password: sa
+    password:
 
   jpa:
     database: h2
     database-platform: org.hibernate.dialect.H2Dialect
     defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
 
   h2:
     console:
       enabled: true
-      settings.web-allow-others: true
+      settings:
+        web-allow-others: true
 
 
 #spring.datasource.url=jdbc:h2:file:/data/demo
 
 
-  main:
-    banner-mode: off
+#  main:
+#    banner-mode: off
+#      location: classpath:/banner.txt
 
 logging:
   level:
     ROOT: INFO
     com.piotr.marketbroker: DEBUG
     org.springframework.security: INFO
+    ai.symmetrical.kafka.common.logging: DEBUG
   pattern:
     level: "%5p [%X{traceId:-},%X{spanId:-}]"
+    correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 
 com.piotr.marketbroker:
   security:
     openid-connect-configuration-url: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/.well-known/openid-configuration
-    enabled: true
+    enabled: false
     ignored-urls: [ /openapi.yaml,
                     /health/**, /info/**, /prometheus/**,
                     /v3/**,
@@ -110,6 +131,10 @@ com.piotr:
     headers: "*"
     domain: "*"
     exposed-headers: ""
+  testcontainers:
+    kafka:
+      enabled: false
+
 
 ai.symmetrical:
   kafka:
@@ -121,13 +146,15 @@ ai.symmetrical:
       enabled: false
       listener:
         concurrency: 1
-      scan-package: com.piotr.marketbroker.application
+      scan-package: com.piotr.marketbroker.application.event
       backoff:
         interval: 1000
         max-attempts: 1
     producer:
-      enabled: false
-      scan-package: com.piotr.marketbroker.application
+      enabled: true
+      scan-package: com.piotr.marketbroker.application.event
+
 
 websocket:
   server: "wss://demo-api.finsa.com.au/"
+

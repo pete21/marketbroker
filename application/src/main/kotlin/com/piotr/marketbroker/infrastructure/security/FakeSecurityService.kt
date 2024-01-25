@@ -10,7 +10,7 @@ import java.util.UUID
     prefix = "com.piotr.security",
     name = ["enabled"],
     havingValue = "false",
-    matchIfMissing = true
+    matchIfMissing = false
 )
 class FakeSecurityService : SecurityService {
 

@@ -1,73 +1,73 @@
 package com.piotr.marketbroker.infrastructure.persistence.openingorder
 
 import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import java.time.OffsetDateTime
 
 @Entity
-@Table(name = "OpeningOrder")
-data class OpeningOrder (
+@Table(name = "openingorder")
+class OpeningOrder (
 
-    @Id
-    val id: Int,
+    @Id @GeneratedValue var id: Int? = null,
 
-    val orderID: Int,
+    var orderID: Int,
 
-    val currency: String,
+    var currency: String,
 
-    val currentPrice: Float,
+    var currentPrice: Float,
 
-    val direction: String,
+    var direction: String,
 
-    val expiryDate: OffsetDateTime,
+    var expiryDate: OffsetDateTime,
 
-    val goodTill: OffsetDateTime,
+    var goodTill: OffsetDateTime,
 
-    val iDOLimitOrderPrice: String,
+    var iDOLimitOrderPrice: String,
 
-    val iDOStopOrderPrice: String,
+    var iDOStopOrderPrice: String,
 
-    val iDOGuaranteed: Boolean,
+    var iDOGuaranteed: Boolean,
 
-    val isTriggered: Boolean,
+    var isTriggered: Boolean,
 
-    val limitOrderPrice: Float,
+    var limitOrderPrice: Float,
 
-    val margin: Float,
+    var margin: Float,
 
-    val market: String,
+    var market: String,
 
-    val marketID: Int,
+    var marketID: Int,
 
-    val marketTradable: Boolean,
+    var marketTradable: Boolean,
 
-    val period: String,
+    var period: String,
 
-    val creationTimeUTC: OffsetDateTime,
+    var creationTimeUTC: OffsetDateTime,
 
-    val quoteId: Int,
+    var quoteId: Int,
 
-    val quoteMode: String,
+    var quoteMode: String,
 
-    val stake: Int,
+    var stake: Int,
 
-    val status: Int,
+    var status: Int,
 
-    val stopOrderPrice: Float,
+    var stopOrderPrice: Float,
 
-    val type: String,
+    var type: String,
 
-    val trailingPoint: Int,
+    var trailingPoint: Int,
 
-    val isGuarantee: Boolean,
+    var isGuarantee: Boolean,
 
-    val isForceOpen: Boolean,
+    var isForceOpen: Boolean,
 
-    val orderPriceModeEnum: String,
+    var orderPriceModeEnum: String,
 
-    val currencySymbol: String,
+    var currencySymbol: String,
 
-    val currencyCode: String
+    var currencyCode: String
 
 )

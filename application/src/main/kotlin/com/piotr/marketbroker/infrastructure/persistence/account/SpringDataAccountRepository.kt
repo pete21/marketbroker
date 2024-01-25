@@ -1,5 +1,5 @@
 package com.piotr.marketbroker.infrastructure.persistence.account
 
-import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.repository.CrudRepository
 
-interface SpringDataAccountRepository: JpaRepository<Account, Int>
+interface SpringDataAccountRepository: CrudRepository<Account, Int>

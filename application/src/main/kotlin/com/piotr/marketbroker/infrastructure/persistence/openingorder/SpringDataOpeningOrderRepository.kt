@@ -1,5 +1,5 @@
 package com.piotr.marketbroker.infrastructure.persistence.openingorder
 
-import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.repository.CrudRepository
 
-interface SpringDataOpeningOrderRepository: JpaRepository<OpeningOrder, Int>
+interface SpringDataOpeningOrderRepository: CrudRepository<OpeningOrder, Int>

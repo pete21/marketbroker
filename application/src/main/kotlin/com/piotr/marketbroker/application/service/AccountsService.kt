@@ -13,7 +13,7 @@ class AccountsService(
 
         val accounts = springDataAccountRepository.findAll()
 
-        return accounts.stream().map { AccountMapper.mapToAccountResponseDto(it) }.toList()
+        return accounts.map { AccountMapper.mapToAccountResponseDto(it) }
     }
 
 }

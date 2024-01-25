@@ -3,7 +3,7 @@ package com.piotr.marketbroker.configuration.kafka
 import kotlin.reflect.full.declaredMemberProperties
 
 object KafkaTopics {
-
+    const val TOPIC_TICKSTREAM = "TICKSTREAM_TOPIC"
     const val TOPIC_TEST_TOPIC = "TEST_TOPIC"
     const val TOPIC_ORDERS_TOPIC = "ORDERS_TOPIC"
     const val TOPIC_MARKET_TICKS = "MARKET_TICKS_TOPIC"

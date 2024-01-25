@@ -13,7 +13,7 @@ class PositionsService(
 
         val positions = springDataPositionRepository.findAll()
 
-        return positions.stream().map { PositionMapper.mapToPositionResponseDto(it) }.toList()
+        return positions.map { PositionMapper.mapToPositionResponseDto(it) }
 
     }
 

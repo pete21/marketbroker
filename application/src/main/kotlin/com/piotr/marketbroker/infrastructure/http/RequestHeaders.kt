@@ -3,7 +3,7 @@ package com.piotr.marketbroker.infrastructure.http
 import org.springframework.http.HttpHeaders
 
 
-data class RequestHeaders(val headers: Map<String, String>) {
+data class RequestHeaders(var headers: Map<String, String>) {
     fun toListPair(): List<Pair<String, String>> {
         return headers.toList()
     }
@@ -14,11 +14,11 @@ data class RequestHeaders(val headers: Map<String, String>) {
     constructor(h: RequestHeaders, newHeaders: RequestHeaders)
             : this(h.headers.plus(newHeaders.toListPair()))
 
-/*
-    fun setHeader(k: String, v:String) {
-        headers[k] = v
-    }
 
+    fun setHeader(k: String, v:String) {
+        headers = headers.plus(Pair(k,v))
+    }
+/*
     fun removeHeader(k: String) {
         headers.keys.remove(k)
     }
@@ -30,7 +30,7 @@ data class RequestHeaders(val headers: Map<String, String>) {
                 HttpHeaders.ACCEPT_ENCODING to "gzip, deflate, br",
                 HttpHeaders.USER_AGENT to "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:103.0) Gecko/20100101 Firefox/103.0",
                 HttpHeaders.ACCEPT_LANGUAGE to "en-GB,en;q=0.5",
-                HttpHeaders.CONNECTION to "keep-alive",
+//                HttpHeaders.CONNECTION to "keep-alive",
                 "DNT" to "1",
                 "Sec-Fetch-Dest" to "document",
                 "Sec-Fetch-Mode" to "navigate",
@@ -57,7 +57,7 @@ data class RequestHeaders(val headers: Map<String, String>) {
                 HttpHeaders.ACCEPT_ENCODING to "gzip, deflate, br",
                 HttpHeaders.USER_AGENT to "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:103.0) Gecko/20100101 Firefox/103.0",
                 HttpHeaders.ACCEPT_LANGUAGE to "en-GB,en;q=0.5",
-                HttpHeaders.CONNECTION to "keep-alive",
+//                HttpHeaders.CONNECTION to "keep-alive",
 
                 "DNT" to "1",
                 "Sec-Fetch-Dest" to "empty",
