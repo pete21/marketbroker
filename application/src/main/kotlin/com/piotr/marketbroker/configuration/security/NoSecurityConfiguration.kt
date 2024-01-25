@@ -27,6 +27,7 @@ class NoSecurityConfiguration {
             .authorizeHttpRequests {
                 it.anyRequest().permitAll()
             }
+        http.headers { headers -> headers.frameOptions { frameOption -> frameOption.sameOrigin() } }
 
         return http.build()
     }

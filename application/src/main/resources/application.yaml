@@ -10,7 +10,7 @@ management:
     prometheus:
       enabled: true
   endpoints:
-    enabled-by-default: false
+    enabled-by-default: true
     web:
       base-path: /
       exposure:
@@ -46,7 +46,8 @@ spring:
   application:
     name: marketbroker
   profiles:
-    active: request-response-logging
+    active: default
+#    active: request-response-logging
   jackson:
     default-property-inclusion: non_null
   kafka:
@@ -74,14 +75,17 @@ spring:
             token-uri: "https://sso.keycloak-01.dev.v2.symmetrical.ai/auth/realms/mobile/protocol/openid-connect/token"
 
   datasource:
-    url: jdbc:h2:mem:testdb           #jdbc:h2:file:/data/demo
+#    url: jdbc:h2:mem:test           #jdbc:h2:file:/data/demo
     driverClassName: org.h2.Driver
     username: sa
     password:
+    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE;DATABASE_TO_UPPER=false;
+
 
   jpa:
+    generate-ddl: true
     database: h2
-    database-platform: org.hibernate.dialect.H2Dialect
+#    database-platform: org.hibernate.dialect.H2Dialect
     defer-datasource-initialization: true
     hibernate:
       ddl-auto: update
@@ -92,10 +96,6 @@ spring:
       enabled: true
       settings:
         web-allow-others: true
-
-
-#spring.datasource.url=jdbc:h2:file:/data/demo
-
 
 #  main:
 #    banner-mode: off
@@ -123,14 +123,15 @@ com.piotr.marketbroker:
                     /swagger-resources/**, /swagger-ui/**,
                     /webjars/**,
                     /favicon.ico,
+                    /h2-console/**,
                     /*/*.png, /*/*.gif, /*/*.svg, /*/*.jpg, /*/*.css, /*/*.js ]
 
 com.piotr:
-  cors:
-    enabled: false
-    headers: "*"
-    domain: "*"
-    exposed-headers: ""
+#  cors:
+#    enabled: false
+#    headers: "*"
+#    domain: "*"
+#    exposed-headers: ""
   testcontainers:
     kafka:
       enabled: false

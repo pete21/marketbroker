@@ -28,10 +28,6 @@ dependencies {
     implementation(project(":open-api"))
     implementation(libs.ai.symmetrical.sym.kafka)
     implementation(libs.ai.symmetrical.sym.kafka.annotations)
-    implementation(libs.ai.symmetrical.sym.cors)
-    implementation(libs.ai.symmetrical.sym.request.response.logging)
-
-    implementation(libs.ai.symmetrical.lib.json.log)
 
     implementation(libs.org.springframework.cloud.spring.cloud.starter.openfeign)
     implementation(libs.org.springframework.boot.spring.boot.starter.actuator)
@@ -79,18 +75,17 @@ dependencies {
 
 
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools
-    implementation("org.springframework.boot:spring-boot-devtools:3.2.0")
+    runtimeOnly("org.springframework.boot:spring-boot-devtools:3.2.0")
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.2.0")
     // https://mvnrepository.com/artifact/com.h2database/h2
-    implementation("com.h2database:h2:2.2.224")
+    runtimeOnly("com.h2database:h2:2.2.224")
     // https://mvnrepository.com/artifact/org.springframework/spring-websocket
     implementation("org.springframework:spring-websocket:6.1.2")
 
 //Observability
     // https://mvnrepository.com/artifact/com.github.loki4j/loki-logback-appender
     implementation("com.github.loki4j:loki-logback-appender:1.4.2")
-
 
 }
 
