@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class AccountSummaryDto (
     @JsonProperty("AccountID")
-    val accountID: String,
+    val accountID: String?,
 
     @JsonProperty("PlatformID")
     val platformID: Int,
 
     @JsonProperty("AccountValuation")
-    val accountValuation: Float,
+    val accountValuation: Float?,
 
     @JsonProperty("FundedPercentageString")
     val fundedPercentageString: String,
@@ -22,36 +22,36 @@ data class AccountSummaryDto (
     val tradingAccountType: String,
 
     @JsonProperty("Margin")
-    val margin: Int,
+    val margin: Int?,
 
     @JsonProperty("OpenPnLQuote")
-    val openPnLQuote: Int,
+    val openPnLQuote: Int?,
 
     @JsonProperty("AccountBalance")
-    val accountBalance: Float,
+    val accountBalance: Float?,
 
     @JsonProperty("Credit")
-    val credit: Float,
+    val credit: Float?,
 
     @JsonProperty("WaivedMargin")
-    val waivedMargin: Float,
+    val waivedMargin: Float?,
 
     @JsonProperty("Resources")
-    val resources: Float,
+    val resources: Float?,
 
     @JsonProperty("ChangeIMR")
-    val changeIMR: Float,
+    val changeIMR: Float?,
 
     @JsonProperty("VariationMarginRequired")
-    private val variationMarginRequired: Float,
+    private val variationMarginRequired: Float?,
 
     @JsonProperty("MarginPercent")
-    val marginPercent: Float,
+    val marginPercent: Float?,
 
     @JsonProperty("CalculatedUTCTicks")
-    val calculatedUTCTicks: Long,
+    val calculatedUTCTicks: Long?,
 
     @JsonProperty("HasError")
-    val hasError: Boolean
+    val hasError: Boolean?
 
 )

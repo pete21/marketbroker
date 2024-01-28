@@ -6,7 +6,8 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.piotr.marketbroker.infrastructure.http.HttpAdapter
+import com.piotr.marketbroker.infrastructure.http.ApacheHttpAdapter
+import com.piotr.marketbroker.infrastructure.http.RequestHeaders
 import com.piotr.marketbroker.infrastructure.persistence.marketgroup.MarketGroup
 import com.piotr.marketbroker.infrastructure.persistence.marketgroup.SpringDataMarketGroupRepository
 import com.piotr.marketbroker.infrastructure.persistence.marketquote.MarketQuote
@@ -21,7 +22,7 @@ private const val GROUP_QUOTES_QUERY =
 class InstrumentsService(
     private val springDataMarketGroupRepository: SpringDataMarketGroupRepository,
     private val springDataMarketQuotesRepository: SpringDataMarketQuotesRepository,
-    private val httpAdapter: HttpAdapter
+    private val httpAdapter: ApacheHttpAdapter
 ) {
 
     private val mapper = jacksonObjectMapper()
@@ -39,17 +40,17 @@ class InstrumentsService(
     }
 
     fun postInstrumentGroups() {
-        val response = httpAdapter.postRequest("GetMarketSuperGroup", "", null);
+        val response = httpAdapter.postRequest("GetMarketSuperGroup", "", RequestHeaders.postHeaders);
         saveMarketGroups(response.body.substring(5, response.body.length - 1))
         val groupIDs = springDataMarketGroupRepository.findAll()
             .filter { m -> !m.isWhiteLabelPopularMarket }
             .map { m -> m.id }
-        groupIDs.forEach { g-> httpClientGetMarketGroup(g!!) }
+        groupIDs.forEach { g-> httpClientGetMarketGroup(g) }
     }
 
     private fun httpClientGetMarketGroup(groupId: Int) {
         val query = String.format(GET_MARKET_GROUP, groupId);
-        val response = httpAdapter.postRequest("GetMarketGroup", query, null);
+        val response = httpAdapter.postRequest("GetMarketGroup", query, RequestHeaders.postHeaders);
         saveMarketGroups(response.body.substring(5, response.body.length-1));
     }
 
@@ -66,12 +67,12 @@ class InstrumentsService(
 
     fun postInstrumentQuotes() {
         val marketGroups = springDataMarketGroupRepository.findAll()
-        marketGroups.forEach { m -> if (m.isSuperGroup) httpClientGetMarketQuote(m.id!!) }
+        marketGroups.forEach { m -> if (!m.isSuperGroup) httpClientGetMarketQuote(m.id) }
     }
 
     private fun httpClientGetMarketQuote(groupId: Int) {
         val query = String.format(GROUP_QUOTES_QUERY, groupId)
-        val response = httpAdapter.postRequest("GetMarketQuote", query, null)
+        val response = httpAdapter.postRequest("GetMarketQuote", query, RequestHeaders.postHeaders)
 
         try {
             val quotesList: List<MarketQuote> =

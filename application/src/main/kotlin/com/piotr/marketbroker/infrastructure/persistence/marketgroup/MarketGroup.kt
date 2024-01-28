@@ -1,7 +1,7 @@
 package com.piotr.marketbroker.infrastructure.persistence.marketgroup
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 
@@ -9,16 +9,23 @@ import jakarta.persistence.Table
 @Table(name = "marketgroup")
 class MarketGroup (
 
-    @Id @GeneratedValue var id: Int? = null,
+    @Id
+    @JsonProperty("ID")
+    val id: Int = 0,
 
-    val type: String? = null,
+    @JsonProperty("__type")
+    val type: String = "",
 
-    val name: String? = null,
+    @JsonProperty("Name")
+    val name: String = "",
 
+    @JsonProperty("IsSuperGroup")
     val isSuperGroup: Boolean = false,
 
+    @JsonProperty("IsWhiteLabelPopularMarket")
     val isWhiteLabelPopularMarket: Boolean = false,
 
+    @JsonProperty("HasSubscription")
     val hasSubscription: Boolean = false
 
     /*
@@ -31,4 +38,8 @@ class MarketGroup (
       "HasSubscription": false
     }
  */
-)
+) {
+    override fun toString(): String {
+        return "MarketGroup(id=$id, type='$type', name='$name', isSuperGroup=$isSuperGroup, isWhiteLabelPopularMarket=$isWhiteLabelPopularMarket, hasSubscription=$hasSubscription)"
+    }
+}

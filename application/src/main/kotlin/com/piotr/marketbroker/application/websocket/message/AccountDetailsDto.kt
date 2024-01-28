@@ -11,16 +11,16 @@ data class AccountDetailsDto(
     val tradingAccountType: String,
 
     @JsonProperty("OpeningOrders")
-    val openingOrders: AccountDetailsOpeningOrdersAttribute,
+    val openingOrders: AccountDetailsOpeningOrdersAttribute?,
 
-    @JsonProperty("Currencies")
-    val currencies: Any,
+//    @JsonProperty("Currencies")
+//    val currencies: Any?,
 
     @JsonProperty("Positions")
-    val positions: AccountDetailsPositionsAttribute,
+    val positions: AccountDetailsPositionsAttribute?,
 
-    @JsonProperty("Alerts")
-    val alerts: Any,
+//    @JsonProperty("Alerts")
+//    val alerts: Any?,
 
     @JsonProperty("ClientLanguageId")
     val clientLanguageId: Int,

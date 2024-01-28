@@ -19,7 +19,12 @@ private const val MAIN_PACKAGE = "com.piotr.marketbroker"
 internal class ArchUnitTest {
 
     @ArchTest
-    @ArchIgnore
+    val `controllers are adapters` = ArchRuleDefinition.classes()
+        .that().areAnnotatedWith(RestController::class.java)
+        .should().resideInAPackage("..application.controller..")
+
+
+    @ArchTest
     val `methods in rest controllers should have pre authorize annotation` = ArchRuleDefinition.methods()
         .that()
         .areDeclaredInClassesThat()

@@ -9,19 +9,19 @@ import jakarta.persistence.Table
 @Table(name = "accounts")
 class Account (
 
-    @Id @GeneratedValue var id: Int? = null,
-    var accountId: Int = 0,
-    var platform: String? = null,
+    @Id @GeneratedValue val id: Int = 0,
+    val accountId: Int = 0,
+    val platform: String? = null,
 
-    var account: String? = null,
-    var backend: String? = null,
-    var accountType: String? = null,
-    var currency: String? = null,
-    var currencySymbol: String? = null,
-    var balance: String? = null,
-    var equity: String? = null,
+    val account: String? = null,
+    val backend: String? = null,
+    val accountType: String? = null,
+    val currency: String? = null,
+    val currencySymbol: String? = null,
+    val balance: String? = null,
+    val equity: String? = null,
 
-    var ct_login_id: String? = null,
-    var ct_login_password: String? = null
+    val ct_login_id: String? = null,
+    val ct_login_password: String? = null
 
 )

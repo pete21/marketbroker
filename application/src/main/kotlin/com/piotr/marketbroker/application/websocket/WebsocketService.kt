@@ -73,7 +73,7 @@ class WebsocketService(
 
     @EventListener
     private fun WebsocketDisconnectedEvent.handleDisconnect() {
-        log.info("handleDisconnect triggered")
+        log.info("handle WebsocketDisconnectedEvent")
         if (sessionState) {
             connect(login!!, token!!, websocketServer!!)
         }

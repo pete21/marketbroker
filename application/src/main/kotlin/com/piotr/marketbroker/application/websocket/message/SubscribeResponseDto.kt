@@ -7,7 +7,7 @@ data class SubscribeResponseDto (
     val quoteId: Int,
 
     @JsonProperty("Current")
-    val current: ArrayList<String>,
+    val current: ArrayList<String>?,
 
     @JsonProperty("PriceGrouping")
     val priceGrouping: String,

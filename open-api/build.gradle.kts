@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.org.springframework.boot)
     kotlin("jvm") version libs.versions.org.jetbrains.kotlin
     kotlin("plugin.spring") version libs.versions.org.jetbrains.kotlin
-    id("org.openapi.generator") version "7.1.0"
+    id("org.openapi.generator") version "7.2.0"
 }
 
 

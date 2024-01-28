@@ -1,7 +1,8 @@
 package com.piotr.marketbroker.infrastructure.http
-
+/*
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
+import java.net.CookieHandler
 import java.net.CookieManager
 import java.net.CookiePolicy
 import java.net.URI
@@ -16,23 +17,25 @@ private val log = KotlinLogging.logger {}
 @Component
 class HttpAdapter {
 
+    private val client: HttpClient
     init {
-        System.setProperty("jdk.httpclient.allowRestrictedHeaders", "Host")
+        val cm = CookieManager()
+        cm.setCookiePolicy(CookiePolicy.ACCEPT_ALL)
+        CookieHandler.setDefault(cm)
+        client = HttpClient.newBuilder()
+            .version(HttpClient.Version.HTTP_2)
+            .followRedirects(HttpClient.Redirect.NORMAL)
+//        .cookieHandler(CookieHandler.getDefault())
+//            .cookieHandler(cm)
+//            .cookieHandler(cm)
+            .build()
     }
+
     var defaultHeaders: RequestHeaders? = null
     var baseUrl: String = ""
-//    private val httpClientContext: HttpClientContext = HttpClientContext
-
-
-    private val client: HttpClient  = HttpClient.newBuilder()
-        .version(HttpClient.Version.HTTP_2)
-        .followRedirects(HttpClient.Redirect.NORMAL)
-//        .cookieHandler(CookieHandler.getDefault())
-        .cookieHandler(CookieManager(null, CookiePolicy.ACCEPT_ALL))
-        .build()
 
     fun postRequest(url: String, body: String, headers: RequestHeaders?): HttpAdapterResponse {
-        log.info("postRequest: $url")
+        log.info("postRequest: {}", baseUrl+url)
         val request = builder(baseUrl+url, headers)
             .POST(BodyPublishers.ofString(body))
             .build()
@@ -54,7 +57,7 @@ class HttpAdapter {
         val request = builder(url, headers)
             .GET()
             .build()
-        val response = executeRequest(request)
+        val response = executeRequest(request, false)
         return response
     }
 
@@ -64,7 +67,7 @@ class HttpAdapter {
             RequestHeaders(defaultHeaders!!, headers).toListPair().forEach {
                 run {
                     val (first, second) = it
-                    log.info("Header: $first : $second")
+                    log.info("request header: $first : $second")
                     requestBuilder.headers(first, second)
                 }
             }
@@ -72,7 +75,7 @@ class HttpAdapter {
             defaultHeaders!!.toListPair().forEach {
                 run {
                     val (first, second) = it
-                    log.info("Header: $first : $second")
+                    log.info("request header: $first : $second")
                     requestBuilder.headers(first, second)
                 }
             }
@@ -80,13 +83,17 @@ class HttpAdapter {
         return requestBuilder
     }
 
-    private fun executeRequest(request: HttpRequest?): HttpResponse<String> {
+    private fun executeRequest(request: HttpRequest?, muted: Boolean=false): HttpResponse<String> {
         val response = client.send(request, BodyHandlers.ofString())
-        log.info("response body : ${response.body()}")
-        log.info("response status code: ${response.statusCode()}")
+        if (!muted) {
+            log.info("request cookies: ${request!!.headers().allValues("Cookie")}")
+            log.info("response body : ${response.body()}")
+            log.info("response status code: ${response.statusCode()}")
+        }
         return response
     }
 
 }
 
-data class HttpAdapterResponse (val statusCode: Int, val body: String)
+//data class HttpAdapterResponse (val statusCode: Int, val body: String)
+*/

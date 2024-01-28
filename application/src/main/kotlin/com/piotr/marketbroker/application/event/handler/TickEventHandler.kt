@@ -7,18 +7,20 @@ import com.piotr.marketbroker.application.mapper.TickMapper
 import com.piotr.marketbroker.infrastructure.persistence.keys.KeysRepository
 import com.piotr.marketbroker.infrastructure.persistence.tick.SpringDataTickRepository
 import org.springframework.context.event.EventListener
-import java.util.*
+import org.springframework.scheduling.annotation.Async
+import org.springframework.stereotype.Service
 
+@Service
 class TickEventHandler (
     private val producer: FixedTopicMessageProducer<TickStreamKafkaEvent>,
     private val tickRepository: SpringDataTickRepository,
     private val keysRepository: KeysRepository
 )
 {
+    @Async
     @EventListener
-    fun HandleTickEvent(event: TickEvent) {
-        val tickdata = event.ticks
-        val ticks = TickMapper.toTick(tickdata)
+    fun handleTickEvent(event: TickEvent) {
+        val ticks = TickMapper.toTick(event.ticks)
         producer.produce(TickStreamKafkaEvent.invoke(ticks), null, null)
 
         tickRepository.saveAll(ticks)

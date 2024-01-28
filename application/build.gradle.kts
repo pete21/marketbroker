@@ -87,6 +87,9 @@ dependencies {
     // https://mvnrepository.com/artifact/com.github.loki4j/loki-logback-appender
     implementation("com.github.loki4j:loki-logback-appender:1.4.2")
 
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+    implementation("org.apache.httpcomponents:httpclient:4.5")
+
 }
 
 tasks.processAot.configure {
@@ -109,3 +112,9 @@ openApi {
     }
 }
 
+
+configurations {
+    runtimeOnly {
+        exclude(group = "commons-logging", module = "commons-logging")
+    }
+}

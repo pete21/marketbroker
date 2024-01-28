@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 data class WebsocketDTO(
     val t: String,
     @JsonIgnore
-    var d: String,
+    var d: String?,
     @JsonIgnore
-    val cid: String
+    val cid: String?
 
 )

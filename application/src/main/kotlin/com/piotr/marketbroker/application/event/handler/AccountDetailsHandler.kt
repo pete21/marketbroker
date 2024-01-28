@@ -4,15 +4,19 @@ import com.piotr.marketbroker.application.event.AccountDetailsEvent
 import com.piotr.marketbroker.application.websocket.message.OpeningOrdersRecord
 import com.piotr.marketbroker.application.websocket.message.PositionsRecord
 import org.springframework.context.event.EventListener
+import org.springframework.scheduling.annotation.Async
+import org.springframework.stereotype.Service
 
+@Service
 class AccountDetailsHandler {
-    private lateinit var positions: Map<Int, PositionsRecord>
-    private lateinit var openingOrders: Map<Int, OpeningOrdersRecord>
+    private var positions: Map<Int, PositionsRecord> = mapOf()
+    private var openingOrders: Map<Int, OpeningOrdersRecord> = mapOf()
 
+    @Async
     @EventListener
-    fun HandleAccountDetailsEvent(event: AccountDetailsEvent) {
-        positions = event.positions.associateBy { it.positionId }
-        openingOrders = event.openingOrders.associateBy { it.orderID }
+    fun handleAccountDetailsEvent(event: AccountDetailsEvent) {
+        if (event.positions.isNotEmpty()) positions = event.positions.associateBy { it.positionId }
+        if (event.openingOrders.isNotEmpty()) openingOrders = event.openingOrders.associateBy { it.orderID }
     }
 
     fun GetPositions(): List<PositionsRecord> {

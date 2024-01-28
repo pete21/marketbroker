@@ -12,7 +12,7 @@ import mu.KotlinLogging
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
 
-private val log = KotlinLogging.logger {}
+private val log = KotlinLogging.logger(DemoController::class.toString())
 
 @RestController
 class DemoController(

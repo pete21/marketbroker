@@ -1,13 +1,21 @@
 package com.piotr.marketbroker
 
 import com.piotr.marketbroker.configuration.td365.TD365ConfigurationProperties
+import mu.KotlinLogging
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.PropertySource
+import org.springframework.context.event.EventListener
+import org.springframework.scheduling.annotation.Async
+import org.springframework.scheduling.annotation.EnableAsync
 
 
+private val log = KotlinLogging.logger(MarketbrokerApplication::class.toString())
+
+@EnableAsync
 @SpringBootApplication
 @PropertySource("classpath:td365config.properties")
 @EnableConfigurationProperties(TD365ConfigurationProperties::class)
@@ -20,5 +28,11 @@ class MarketbrokerApplication {
                 applicationStartup = BufferingApplicationStartup(2048)
             }
         }
+    }
+
+    @Async
+    @EventListener
+    fun onReady(event: ApplicationReadyEvent) {
+        log.info("Application is ready {}", event.toString())
     }
 }

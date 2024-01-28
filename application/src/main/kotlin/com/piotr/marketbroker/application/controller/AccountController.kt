@@ -15,7 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
-private val log = KotlinLogging.logger {}
+private val log = KotlinLogging.logger(AccountController::class.toString())
 
 @RestController
 class AccountController(

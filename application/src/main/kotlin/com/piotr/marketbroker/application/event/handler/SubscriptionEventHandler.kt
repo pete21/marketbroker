@@ -6,24 +6,26 @@ import com.piotr.marketbroker.infrastructure.persistence.subscription.SpringData
 import com.piotr.marketbroker.infrastructure.persistence.subscription.Subscription
 import mu.KotlinLogging
 import org.springframework.context.event.EventListener
+import org.springframework.scheduling.annotation.Async
+import org.springframework.stereotype.Service
 
-private val log = KotlinLogging.logger {}
+private val log = KotlinLogging.logger(SubscriptionEventHandler::class.toString())
 
+@Service
 class SubscriptionEventHandler (
     private val subscriptionsRepository: SpringDataSubscriptionsRepository,
     private val keysRepository: KeysRepository
 ) {
+
+    @Async
     @EventListener
-    fun HandleSubscriptionEvent(event: SubscriptionEvent) {
-        if (!event.status) {
-            return
-        }
-        //TODO: check condition
+    fun handleSubscriptionEvent(event: SubscriptionEvent) {
 
         when (event.action) {
             "subscribe" -> {
                 val s = Subscription(event.quoteId, true)
                 subscriptionsRepository.save(s)
+                log.info("Subscriptions updated")
             }
 
             "unsubscribe" -> {
@@ -31,10 +33,11 @@ class SubscriptionEventHandler (
                 try {
                     val s = subscriptionsRepository.findById(event.quoteId).orElseThrow()
                     if (!s.status) {
-                        log.warn("Unsubscribe warning: Instrument {} not subscribed to.", event.quoteId)
+                        log.warn("Instrument {} not subscribed to.", event.quoteId)
                     } else {
                         s.status=false
                         subscriptionsRepository.save(s)
+                        log.info("Subscriptions updated")
                     }
                 } catch (e: Exception) {
                     log.error("Unsubscribe error: {}", e)
@@ -42,6 +45,5 @@ class SubscriptionEventHandler (
             }
         }
     }
-
 
 }

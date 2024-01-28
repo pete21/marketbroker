@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 
-private val log = KotlinLogging.logger {}
+private val log = KotlinLogging.logger(InstrumentsController::class.toString())
 
 @RestController
 class InstrumentsController(
@@ -42,9 +42,7 @@ class InstrumentsController(
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.POST],
-        value = ["/instruments/groups"],
-        produces = ["application/json"],
-        consumes = ["application/json"]
+        value = ["/instruments/groups"]
     )
     override fun postInstrumentGroups(): ResponseEntity<Unit> {
         instrumentsService.postInstrumentGroups()
@@ -54,9 +52,7 @@ class InstrumentsController(
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.POST],
-        value = ["/instruments/quotes"],
-        produces = ["application/json"],
-        consumes = ["application/json"]
+        value = ["/instruments/quotes"]
     )
     override fun postInstrumentQuotes(): ResponseEntity<Unit> {
         instrumentsService.postInstrumentQuotes()

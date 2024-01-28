@@ -19,7 +19,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient
 import org.springframework.web.socket.handler.TextWebSocketHandler
 import java.io.IOException
 
-private val log = KotlinLogging.logger {}
+private val log = KotlinLogging.logger(WebsocketSessionHandler::class.toString())
 
 @Service
 class WebsocketSessionHandler(val applicationEventPublisher: ApplicationEventPublisher) : TextWebSocketHandler() {
@@ -54,35 +54,19 @@ class WebsocketSessionHandler(val applicationEventPublisher: ApplicationEventPub
         return false
     }
 
-    @Throws(IOException::class)
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         try {
             val msg = message.payload
+            log.info("handleTextMessage: $msg")
             val m: WebsocketDTO = mapper.readValue(msg)
             m.d=msg.substring(msg.indexOf("{", 1), msg.length - 46)
-            log.info(m.d)
-
-            /*
-            JsonNode jsonNode = mapper.readTree(msg);
-            JsonParser jsonParser = jsonNode.traverse();
-            while (!jsonParser.isClosed()) {
-                JsonToken token = jsonParser.nextToken();
-                if (token == JsonToken.FIELD_NAME) {
-                    log.info(jsonParser.getCurrentName());
-
-                } else if (token == JsonToken.VALUE_STRING) {
-                    log.info(jsonParser.getValueAsString());
-
-                }
-            }
-*/
             applicationEventPublisher.publishEvent(WebsocketMessageEvent(m))
         } catch (e: JsonProcessingException) {
             // TODO Auto-generated catch block
-            log.error(message.toString())
+            log.error(message.payload)
         } catch (e: JsonMappingException) {
             // TODO Auto-generated catch block
-            log.error(message.toString())
+            log.error(message.payload)
         }
     }
 

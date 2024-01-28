@@ -14,7 +14,7 @@ management:
     web:
       base-path: /
       exposure:
-        include: health,info,prometheus,beans,configprops,loggers,env
+        include: health,info,prometheus,httptrace
   server:
     port: 8090
   tracing:
@@ -22,17 +22,16 @@ management:
       probability: 1.0
     propagation:
       type: b3
-
-  zipkin:
-    tracing:
-      endpoint: http://tempo:9411
-
   metrics:
     distribution:
       percentiles-histogram:
         http:
           server:
-            requests: true # (1)
+            requests: true
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411
+
 
   observations:
     key-values:
