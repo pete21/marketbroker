@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository
 @Repository
 class KeysRepository {
 
-    private val keysMap: MutableMap<Int, Tick?> = HashMap<Int, Tick?>()
+    private val keysMap: MutableMap<Int, Tick?> = HashMap()
 
     //    public static Tick emptyTick = new Tick(0, 0, 0, 0, 0, "");
     fun put(quoteId: Int, tick: Tick?) {

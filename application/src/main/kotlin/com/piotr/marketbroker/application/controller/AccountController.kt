@@ -1,10 +1,8 @@
 package com.piotr.marketbroker.application.controller
 
 import com.piotr.marketbroker.application.model.AccountResponseDTO
-import com.piotr.marketbroker.application.model.OrderResponseDTO
 import com.piotr.marketbroker.application.model.PositionResponseDTO
 import com.piotr.marketbroker.application.service.AccountsService
-import com.piotr.marketbroker.application.service.OpeningOrdersService
 import com.piotr.marketbroker.application.service.PositionsService
 import com.piotr.marketbroker.configuration.security.properties.SecurityRole
 import mu.KotlinLogging
@@ -20,9 +18,8 @@ private val log = KotlinLogging.logger(AccountController::class.toString())
 @RestController
 class AccountController(
     private val accountsService: AccountsService,
-    private val positionsService: PositionsService,
-    private val openingOrdersService: OpeningOrdersService
-): AccountsApi, PositionsApi, OrdersApi {
+    private val positionsService: PositionsService
+): AccountsApi, PositionsApi {
 
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @GetMapping(value = ["/accounts"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -32,16 +29,9 @@ class AccountController(
     }
 
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
-    @GetMapping(value = ["/orders"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    override fun getOrders(): ResponseEntity<List<OrderResponseDTO>> {
-        log.info("getOrders request")
-        return ResponseEntity(openingOrdersService.getOrders(), HttpStatus.OK)
-    }
-
-    @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @GetMapping(value = ["/positions"], produces = [MediaType.APPLICATION_JSON_VALUE])
     override fun getPositions(): ResponseEntity<List<PositionResponseDTO>> {
         log.info("getPositions request")
-        return ResponseEntity(positionsService.getPositions(), HttpStatus.OK)
+        return ResponseEntity(positionsService.getPosition(), HttpStatus.OK)
     }
 }

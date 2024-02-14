@@ -99,6 +99,7 @@ paths:
         description: Patch user properties to update.
       tags:
         - users
+      x-internal: true
   /accounts:
     get:
       summary: Get Accounts
@@ -139,7 +140,7 @@ paths:
       x-internal: true
   /orders:
     get:
-      summary: Get Orders
+      summary: List Orders
       tags:
         - orders
       responses:
@@ -153,13 +154,28 @@ paths:
                   $ref: '#/components/schemas/OrderResponseDTO'
                   x-stoplight:
                     id: f4h6do5ibov6q
-      operationId: get-orders
+      operationId: list-orders
       x-internal: true
-      description: Get Orders
+      description: List Orders
+    post:
+      summary: Create order
+      operationId: create-order
+      responses:
+        '200':
+          description: OK
+      description: Create order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRequestDTO'
+      tags:
+        - orders
+      x-internal: true
   /demo:
     post:
       summary: Demo session controller
-      operationId: post-demo
+      operationId: demo-session
       responses:
         '200':
           description: OK
@@ -242,7 +258,7 @@ paths:
       responses:
         '200':
           description: OK
-      operationId: get-publish-json
+      operationId: publish-json
       x-internal: true
       description: Publish json data to kafka topic
       requestBody:
@@ -253,10 +269,14 @@ paths:
   /live:
     post:
       summary: Live Session controller
-      operationId: post-live
+      operationId: live-session
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDTO'
       description: Live Session controller
       requestBody:
         content:
@@ -280,18 +300,18 @@ paths:
                   x-stoplight:
                     id: 2wu65hunmesqy
                   type: string
-      operationId: get-instrument-subscriptions
-      description: Get Instrument subscriptions
+      operationId: get-subscriptions
+      description: Get subscriptions
       x-internal: true
       tags:
         - subscriptions
     post:
       summary: Create Instrument subscription
-      operationId: post-instrument-subscriptions
+      operationId: create-subscription
       responses:
         '200':
           description: OK
-      description: Create Instrument subscription
+      description: Create subscription
       x-internal: true
       requestBody:
         content:
@@ -300,6 +320,34 @@ paths:
               $ref: '#/components/schemas/SubscriptionsRequestDTO'
       tags:
         - subscriptions
+  '/orders/{id}':
+    parameters:
+      - schema:
+          type: integer
+        name: id
+        in: path
+        required: true
+        description: orderId
+    get:
+      summary: Get Order details
+      tags:
+        - orders
+      responses:
+        '200':
+          description: OK
+      operationId: get-order-by-id
+      description: Get order details
+      x-internal: true
+    delete:
+      summary: Delete open order
+      operationId: delete-order-by-id
+      responses:
+        '200':
+          description: OK
+      description: Delete open order
+      tags:
+        - orders
+      x-internal: true
 components:
   schemas:
     User:
@@ -672,6 +720,7 @@ components:
       x-stoplight:
         id: lekbvdz7ya7yk
       type: object
+      x-class-extra-annotation: "@KafkaTopic(KafkaTopics.TOPIC_JSON_DATA)"
       properties:
         type:
           type: string
@@ -701,6 +750,68 @@ components:
       required:
         - quoteId
         - status
+    OrderRequestDTO:
+      title: OrderRequestDTO
+      x-stoplight:
+        id: tsihimn1sl738
+      type: object
+      properties:
+        marketId:
+          type: integer
+          x-stoplight:
+            id: agp47zn4u8nwj
+        quoteId:
+          type: integer
+          x-stoplight:
+            id: y8wsvn3ogzlfc
+        price:
+          type: number
+          x-stoplight:
+            id: ik5pb7oeobh6v
+          format: float
+        stake:
+          type: integer
+          x-stoplight:
+            id: iiqv8iv8i77o8
+        direction:
+          type: integer
+          x-stoplight:
+            id: a1ad8w16crvqc
+        orderMode:
+          type: integer
+          x-stoplight:
+            id: qz9fcck4jh2pl
+          description: '0 - market order, 1 - limit order, 2 - stop order     4 - close position'
+        limitOrderPrice:
+          type: number
+          x-stoplight:
+            id: u8yogant4xujk
+          format: float
+        stopOrderPrice:
+          type: number
+          x-stoplight:
+            id: 7r2k5j0udbfab
+          format: float
+        trailingPoint:
+          type: integer
+          x-stoplight:
+            id: hapa83it4r9rj
+        positionId:
+          type: integer
+          x-stoplight:
+            id: hxlrvg3342jz3
+          description: for InsertCloseOrder (orderMode==4)
+      required:
+        - marketId
+        - quoteId
+        - price
+        - stake
+        - direction
+        - orderMode
+        - limitOrderPrice
+        - stopOrderPrice
+        - trailingPoint
+        - positionId
 x-internal: true
 tags:
   - name: accounts

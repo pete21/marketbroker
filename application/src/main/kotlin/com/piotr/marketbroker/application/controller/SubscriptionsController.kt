@@ -21,7 +21,7 @@ private val subscriptionsService: SubscriptionsService
         value = ["/instruments/subscriptions"],
         produces = ["application/json"]
     )
-    override fun getInstrumentSubscriptions(): ResponseEntity<List<String>> {
+    override fun getSubscriptions(): ResponseEntity<List<String>> {
         return ResponseEntity<List<String>>(subscriptionsService.getSubscriptions(), HttpStatus.OK)
 
     }
@@ -33,7 +33,7 @@ private val subscriptionsService: SubscriptionsService
         produces = ["application/json"],
         consumes = ["application/json"]
     )
-    override fun postInstrumentSubscriptions(subscriptionsRequestDTO: SubscriptionsRequestDTO?): ResponseEntity<Unit> {
+    override fun createSubscription(subscriptionsRequestDTO: SubscriptionsRequestDTO?): ResponseEntity<Unit> {
         val result = subscriptionsService.postSubscriptions(
             subscriptionsRequestDTO!!.quoteId, subscriptionsRequestDTO!!.status)
         return if (result) {

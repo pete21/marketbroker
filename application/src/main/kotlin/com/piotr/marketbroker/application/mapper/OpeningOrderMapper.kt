@@ -1,39 +1,39 @@
 package com.piotr.marketbroker.application.mapper
 
 import com.piotr.marketbroker.application.model.OrderResponseDTO
-import com.piotr.marketbroker.infrastructure.persistence.openingorder.OpeningOrder
+import com.piotr.marketbroker.infrastructure.persistence.accountdetailsopeningorder.AccountDetailsOpeningOrder
 
 object OpeningOrderMapper {
 
-    fun mapToOrderResponseDto(openingOrder: OpeningOrder) = OrderResponseDTO (
+    fun mapToOrderResponseDto(accountDetailsOpeningOrder: AccountDetailsOpeningOrder) = OrderResponseDTO (
 
-            orderId = openingOrder.orderID,
-            currency = openingOrder.currency,
-            currentPrice = openingOrder.currentPrice,
-            direction = openingOrder.direction,
-            expiryDate = openingOrder.expiryDate,
-            goodTill = openingOrder.goodTill,
-            iDOLimitOrderPrice = openingOrder.iDOLimitOrderPrice,
-            iDOStopOrderPrice = openingOrder.iDOStopOrderPrice,
-            iDOGuaranteed = openingOrder.iDOGuaranteed,
-            isTriggered = openingOrder.isTriggered,
-            limitOrderPrice = openingOrder.limitOrderPrice.toString(),
-            margin = openingOrder.margin,
-            marketID = openingOrder.marketID,
-            marketTradable = openingOrder.marketTradable,
-            period = openingOrder.period,
-            creationTimeUTC= openingOrder.creationTimeUTC,
-            quoteId = openingOrder.quoteId,
-            quoteMode = openingOrder.quoteMode,
-            stake = openingOrder.stake,
-            status = openingOrder.status,
-            stopOrderPrice = openingOrder.stopOrderPrice.toString(),
-            type = openingOrder.type,
-            trailingPoint = openingOrder.trailingPoint,
-            isGuarantee = openingOrder.isGuarantee,
-            isForceOpen = openingOrder.isForceOpen,
-            orderPriceModeEnum = openingOrder.orderPriceModeEnum,
-            currencySymbol = openingOrder.currencySymbol
+            orderId = accountDetailsOpeningOrder.orderID,
+            currency = accountDetailsOpeningOrder.currency,
+            currentPrice = accountDetailsOpeningOrder.currentPrice,
+            direction = accountDetailsOpeningOrder.direction,
+            expiryDate = accountDetailsOpeningOrder.expiryDate,
+            goodTill = accountDetailsOpeningOrder.goodTill,
+            iDOLimitOrderPrice = accountDetailsOpeningOrder.iDOLimitOrderPrice,
+            iDOStopOrderPrice = accountDetailsOpeningOrder.iDOStopOrderPrice,
+            iDOGuaranteed = accountDetailsOpeningOrder.iDOGuaranteed,
+            isTriggered = accountDetailsOpeningOrder.isTriggered,
+            limitOrderPrice = accountDetailsOpeningOrder.limitOrderPrice.toString(),
+            margin = accountDetailsOpeningOrder.margin,
+            marketID = accountDetailsOpeningOrder.marketID,
+            marketTradable = accountDetailsOpeningOrder.marketTradable,
+            period = accountDetailsOpeningOrder.period,
+            creationTimeUTC= accountDetailsOpeningOrder.creationTimeUTC,
+            quoteId = accountDetailsOpeningOrder.quoteId,
+            quoteMode = accountDetailsOpeningOrder.quoteMode,
+            stake = accountDetailsOpeningOrder.stake,
+            status = accountDetailsOpeningOrder.status,
+            stopOrderPrice = accountDetailsOpeningOrder.stopOrderPrice.toString(),
+            type = accountDetailsOpeningOrder.type,
+            trailingPoint = accountDetailsOpeningOrder.trailingPoint,
+            isGuarantee = accountDetailsOpeningOrder.isGuarantee,
+            isForceOpen = accountDetailsOpeningOrder.isForceOpen,
+            orderPriceModeEnum = accountDetailsOpeningOrder.orderPriceModeEnum,
+            currencySymbol = accountDetailsOpeningOrder.currencySymbol
 
     )
     

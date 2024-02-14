@@ -9,7 +9,7 @@ import jakarta.persistence.Table
 class Subscription (
 
     @Id
-    val quoteId: Int = 0,
+    val quoteId: Int=0,
 
     //    @GeneratedValue(strategy = GenerationType.IDENTITY)
     //    private Integer id;
@@ -17,5 +17,5 @@ class Subscription (
     //    @OneToOne(cascade = CascadeType.DETACH)
     //    @JoinColumn(name = "quoteID", referencedColumnName = "quoteID")
     //    private MarketQuote marketQuote;
-    var status: Boolean = false
+    var status: Boolean=false
 )

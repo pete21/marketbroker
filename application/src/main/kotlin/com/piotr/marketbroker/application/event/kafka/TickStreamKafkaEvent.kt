@@ -1,4 +1,4 @@
-package com.piotr.marketbroker.application.event
+package com.piotr.marketbroker.application.event.kafka
 
 import ai.symmetrical.kafka.common.KafkaMessage
 import ai.symmetrical.kafka.common.SendToTopic

@@ -3,6 +3,12 @@ package com.piotr.marketbroker.infrastructure.http
 import org.apache.http.HttpHeaders
 
 
+private const val CROSS_SITE = "cross-site"
+
+private const val DOCUMENT = "document"
+
+private const val NAVIGATE = "navigate"
+
 data class RequestHeaders(var headers: Map<String, String>) {
     fun toListPair(): List<Pair<String, String>> {
         return headers.toList()
@@ -27,12 +33,12 @@ data class RequestHeaders(var headers: Map<String, String>) {
     companion object {
         val redirectHeaders: RequestHeaders = RequestHeaders(
             mapOf(
-
+                HttpHeaders.AUTHORIZATION to "",
                 HttpHeaders.CONNECTION to "keep-alive",
 //                "DNT" to "1",
-                "Sec-Fetch-Dest" to "document",
-                "Sec-Fetch-Mode" to "navigate",
-                "Sec-Fetch-Site" to "none",
+                "Sec-Fetch-Dest" to DOCUMENT,
+                "Sec-Fetch-Mode" to NAVIGATE,
+                "Sec-Fetch-Site" to CROSS_SITE,                   // "none" for demo?
                 "Sec-Fetch-User" to "?1",
                 "Upgrade-Insecure-Requests" to "1",
                 HttpHeaders.ACCEPT to "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
@@ -42,10 +48,12 @@ data class RequestHeaders(var headers: Map<String, String>) {
         val authHeaders: RequestHeaders = RequestHeaders(
             mapOf(
                 HttpHeaders.HOST to "td365.eu.auth0.com",
+//                HttpHeaders.HOST to "",
                 "Origin" to "https://traders.td365.com",
                 HttpHeaders.REFERER to "https://traders.td365.com/",
-                "Sec-Fetch-Site" to "cross-site",
-                "TE" to "trailers"
+                "Sec-Fetch-Dest" to "empty",
+                "Sec-Fetch-Mode" to "cors",
+                "Sec-Fetch-Site" to CROSS_SITE
             )
         )
 
@@ -64,6 +72,22 @@ data class RequestHeaders(var headers: Map<String, String>) {
                 "X-Requested-With" to "XMLHttpRequest"
             )
         )
+
+        val loginHeaders: RequestHeaders = RequestHeaders(
+            mapOf(
+                HttpHeaders.HOST to "portal-api.tradenation.com",
+//                HttpHeaders.HOST to "",
+                        "Origin" to "https://traders.td365.com",
+                HttpHeaders.REFERER to "https://traders.td365.com/",
+                "Sec-Fetch-Dest" to "empty",
+                "Sec-Fetch-Mode" to "cors",
+                "Sec-Fetch-Site" to CROSS_SITE,
+                "access-control-request-method" to "POST",
+                "access-control-request-headers" to "authorization,content-type"
+//                "TE" to "trailers"
+            )
+        )
+
     }
 
 }

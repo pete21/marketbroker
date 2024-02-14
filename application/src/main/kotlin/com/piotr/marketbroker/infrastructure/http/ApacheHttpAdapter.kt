@@ -43,6 +43,11 @@ class ApacheHttpAdapter {
         return HttpAdapterResponse(response!!.statusLine.statusCode, EntityUtils.toString(response.entity))
     }
 
+    fun optionsRequest(url: String, headers: RequestHeaders?) {
+        log.info("optionsRequest: $url")
+        execute(RequestBuilder.options(url), "", headers)
+    }
+
     fun getRequestRedirects(url: String, headers: RequestHeaders?) : Pair<List<String>, Map<String,String>> {
         log.info("getRequestWithRedirect: $url")
         execute(RequestBuilder.get(url), "", headers)
@@ -55,7 +60,11 @@ class ApacheHttpAdapter {
     private fun execute(requestBuilder: RequestBuilder, body: String, headers: RequestHeaders?): CloseableHttpResponse? {
         if (headers != null) {
             RequestHeaders(defaultHeaders!!, headers).toListPair().forEach {
-                run { requestBuilder.setHeader(it.first, it.second) }
+                run {
+                    if (it.second.isEmpty())
+                        requestBuilder.removeHeaders(it.first)
+                    else requestBuilder.setHeader(it.first, it.second)
+                }
             }
         } else {
             defaultHeaders!!.toListPair().forEach {

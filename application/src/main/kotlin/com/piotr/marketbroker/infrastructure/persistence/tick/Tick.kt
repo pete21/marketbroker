@@ -10,19 +10,19 @@ import jakarta.persistence.Transient
 @Table(name="tick")
 class Tick(
 
-    @Id @GeneratedValue val id: Int = 0,
-    val quoteId: Int = 0,
-    val bid: Float = 0f,
-    val ask: Float = 0f,
-    val mid: Float = 0f,
-    val time: Int = 0,
-    val millis: Int = 0,
+    @Id @GeneratedValue val id: Int=0,
+    val quoteId: Int=0,
+    val bid: Float=0f,
+    val ask: Float=0f,
+    val mid: Float=0f,
+    val time: Int=0,
+    val millis: Int=0,
 
     @Transient
-    val longtime: Long = 0,
+    val longtime: Long=0,
 
     @Transient
-    val key: String = ""
+    val key: String=""
 )
 /*
     init {

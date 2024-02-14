@@ -10,127 +10,127 @@ import jakarta.persistence.Table
 @Table(name = "marketquote")
 class MarketQuote (
 
-    @Id @GeneratedValue val id: Int = 0,
+    @Id @GeneratedValue val id: Int=0,
 
     @JsonProperty("__type")
-    val type: String = "",
+    val type: String="",
 
     @JsonProperty("MarketID")
-    val marketID: Int = 0,
+    val marketID: Int=0,
 
     @JsonProperty("QuoteID")
-    val quoteID: Int = 0,
+    val quoteID: Int=0,
 
     @JsonProperty("AtQuoteAtMarket")
-    val atQuoteAtMarket: Int = 0,
+    val atQuoteAtMarket: Int=0,
 
     @JsonProperty("ExchangeID")
-    val exchangeID: Int = 0,
+    val exchangeID: Int=0,
 
     @JsonProperty("PrcGenFractionalPrice")
-    val prcGenFractionalPrice: Int = 0,
+    val prcGenFractionalPrice: Int=0,
 
     @JsonProperty("PrcGenDecimalPlaces")
-    val prcGenDecimalPlaces: Int = 0,
+    val prcGenDecimalPlaces: Int=0,
 
     @JsonProperty("High")
-    val high: Int = 0,
+    val high: Int=0,
 
     @JsonProperty("Low")
-    val low: Int = 0,
+    val low: Int=0,
 
     @JsonProperty("DailyChange")
-    val dailyChange: Int = 0,
+    val dailyChange: Int=0,
 
     @JsonProperty("Bid")
-    val bid: Int = 0,
+    val bid: Int=0,
 
     @JsonProperty("Ask")
-    val ask: Int = 0,
+    val ask: Int=0,
 
     @JsonProperty("BetPer")
-    val betPer: Int = 0,
+    val betPer: Int=0,
 
     @JsonProperty("IsGSLPercent")
-    val isGSLPercent: Int = 0,
+    val isGSLPercent: Int=0,
 
     @JsonProperty("GSLDis")
-    val gSLDis: Int = 0,
+    val gSLDis: Int=0,
 
     @JsonProperty("MinCloseOrderDisTicks")
-    val minCloseOrderDisTicks: Int = 0,
+    val minCloseOrderDisTicks: Int=0,
 
     @JsonProperty("MinOpenOrderDisTicks")
-    val minOpenOrderDisTicks: Int = 0,
+    val minOpenOrderDisTicks: Int=0,
 
     @JsonProperty("DisplayBetPer")
-    val displayBetPer: Int = 0,
+    val displayBetPer: Int=0,
 
     @JsonProperty("IsInPortfolio")
-    val isInPortfolio:Boolean = false,
+    val isInPortfolio:Boolean=false,
 
     @JsonProperty("Tradable")
-    val tradable:Boolean = false,
+    val tradable:Boolean=false,
 
     @JsonProperty("TradeOnWeb")
-    val tradeOnWeb:Boolean = false,
+    val tradeOnWeb:Boolean=false,
 
     @JsonProperty("CallOnly")
-    val callOnly:Boolean = false,
+    val callOnly:Boolean=false,
 
     @JsonProperty("MarketName")
-    val marketName: String? = null,
+    val marketName: String="",
 
     @JsonProperty("TradeStartTime")
-    val tradeStartTime: String? = null,
+    val tradeStartTime: String="",
 
     @JsonProperty("Currency")
-    val currency: String? = null,
+    val currency: String="",
 
     @JsonProperty("AllowGtdsStops")
-    val allowGtdsStops: Int = 0,
+    val allowGtdsStops: Int=0,
 
     @JsonProperty("ForceOpen")
-    val forceOpen: Boolean = false,
+    val forceOpen: Boolean=false,
 
     @JsonProperty("Margin")
-    val margin: Float = 0f,
+    val margin: Float=0f,
 
     @JsonProperty("MarginType")
-    val marginType: Boolean = false,
+    val marginType: Boolean=false,
 
     @JsonProperty("GSLCharge")
-    val gSLCharge: Int = 0,
+    val gSLCharge: Int=0,
 
     @JsonProperty("IsGSLChargePercent")
-    val isGSLChargePercent: Int = 0,
+    val isGSLChargePercent: Int=0,
 
     @JsonProperty("Spread")
-    val spread: Int = 0,
+    val spread: Int=0,
 
     @JsonProperty("TradeRateType")
-    val tradeRateType: Int = 0,
+    val tradeRateType: Int=0,
 
     @JsonProperty("OpenTradeRate")
-    val openTradeRate: Int = 0,
+    val openTradeRate: Int=0,
 
     @JsonProperty("CloseTradeRate")
-    val closeTradeRate: Int = 0,
+    val closeTradeRate: Int=0,
 
     @JsonProperty("MinOpenTradeRate")
-    val minOpenTradeRate: Int = 0,
+    val minOpenTradeRate: Int=0,
 
     @JsonProperty("MinCloseTradeRate")
-    val minCloseTradeRate: Int = 0,
+    val minCloseTradeRate: Int=0,
 
     @JsonProperty("PriceDecimal")
-    val priceDecimal: Int = 0,
+    val priceDecimal: Int=0,
 
     @JsonProperty("Subscription")
-    val subscription: Boolean = false,
+    val subscription: Boolean=false,
 
     @JsonProperty("SuperGroupID")
-    val superGroupID: Int = 0
+    val superGroupID: Int=0
 
 ) {
     override fun toString(): String {

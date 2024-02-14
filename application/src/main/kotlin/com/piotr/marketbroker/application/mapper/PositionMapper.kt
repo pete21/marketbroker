@@ -1,30 +1,30 @@
 package com.piotr.marketbroker.application.mapper
 
 import com.piotr.marketbroker.application.model.PositionResponseDTO
-import com.piotr.marketbroker.infrastructure.persistence.position.Position
+import com.piotr.marketbroker.infrastructure.persistence.accountdetailsposition.AccountDetailsPosition
 
 object PositionMapper {
 
-    fun mapToPositionResponseDto(position: Position) = PositionResponseDTO (
-            positionId = position.positionID,
-            marketId = position.marketID,
-            quoteId = position.quoteID,
-            type = position.type,
-            direction = position.direction,
-            creationTimeUTC = position.creationTimeUTC,
-            stake = position.stake,
-            openingPriceDecimal = position.openingPrice,
-            currentPriceDecimal = position.currentPrice,
-            openPL = position.openPL,
-            stopOrderPrice = position.stopOrderPrice.toString(),
-            limitOrderPrice = position.limitOrderPrice.toString(),
+    fun mapToPositionResponseDto(accountDetailsPosition: AccountDetailsPosition) = PositionResponseDTO (
+            positionId = accountDetailsPosition.positionID,
+            marketId = accountDetailsPosition.marketID,
+            quoteId = accountDetailsPosition.quoteID,
+            type = accountDetailsPosition.type,
+            direction = accountDetailsPosition.direction,
+            creationTimeUTC = accountDetailsPosition.creationTimeUTC,
+            stake = accountDetailsPosition.stake,
+            openingPriceDecimal = accountDetailsPosition.openingPrice,
+            currentPriceDecimal = accountDetailsPosition.currentPrice,
+            openPL = accountDetailsPosition.openPL,
+            stopOrderPrice = accountDetailsPosition.stopOrderPrice.toString(),
+            limitOrderPrice = accountDetailsPosition.limitOrderPrice.toString(),
             imr = 0F,
-            prcGenDecimalPlaces = position.prcGenDecimalPlaces,
-            betPer = position.betPer,
-            tradable = position.tradable,
-            isRollingMarket = position.isRollingMarket,
-            isTriggered = position.isTriggered,
-            currencyCode = position.currencyCode,
-            isTotal = position.isTotal
+            prcGenDecimalPlaces = accountDetailsPosition.prcGenDecimalPlaces,
+            betPer = accountDetailsPosition.betPer,
+            tradable = accountDetailsPosition.tradable,
+            isRollingMarket = accountDetailsPosition.isRollingMarket,
+            isTriggered = accountDetailsPosition.isTriggered,
+            currencyCode = accountDetailsPosition.currencyCode,
+            isTotal = accountDetailsPosition.isTotal
     )
 }

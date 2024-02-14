@@ -12,11 +12,14 @@ import com.piotr.marketbroker.infrastructure.persistence.marketgroup.MarketGroup
 import com.piotr.marketbroker.infrastructure.persistence.marketgroup.SpringDataMarketGroupRepository
 import com.piotr.marketbroker.infrastructure.persistence.marketquote.MarketQuote
 import com.piotr.marketbroker.infrastructure.persistence.marketquote.SpringDataMarketQuotesRepository
+import mu.KotlinLogging
 import org.springframework.stereotype.Service
 
 private const val GET_MARKET_GROUP = "{\"superGroupId\":%d}"
 private const val GROUP_QUOTES_QUERY =
     "{\"groupID\":%d,\"keyword\":\"\",\"portfolio\":false,\"search\":false,\"popular\":false}"
+
+private val log = KotlinLogging.logger(InstrumentsService::class.toString())
 
 @Service
 class InstrumentsService(

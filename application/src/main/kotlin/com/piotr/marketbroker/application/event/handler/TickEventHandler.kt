@@ -2,7 +2,7 @@ package com.piotr.marketbroker.application.event.handler
 
 import ai.symmetrical.kafka.producer.FixedTopicMessageProducer
 import com.piotr.marketbroker.application.event.TickEvent
-import com.piotr.marketbroker.application.event.TickStreamKafkaEvent
+import com.piotr.marketbroker.application.event.kafka.TickStreamKafkaEvent
 import com.piotr.marketbroker.application.mapper.TickMapper
 import com.piotr.marketbroker.infrastructure.persistence.keys.KeysRepository
 import com.piotr.marketbroker.infrastructure.persistence.tick.SpringDataTickRepository

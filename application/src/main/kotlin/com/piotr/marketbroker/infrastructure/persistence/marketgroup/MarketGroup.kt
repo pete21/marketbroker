@@ -7,26 +7,26 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name = "marketgroup")
-class MarketGroup (
-
+class
+MarketGroup (
     @Id
     @JsonProperty("ID")
-    val id: Int = 0,
+    val id: Int=0,
 
     @JsonProperty("__type")
-    val type: String = "",
+    val type: String="",
 
     @JsonProperty("Name")
-    val name: String = "",
+    val name: String="",
 
     @JsonProperty("IsSuperGroup")
-    val isSuperGroup: Boolean = false,
+    val isSuperGroup: Boolean=false,
 
     @JsonProperty("IsWhiteLabelPopularMarket")
-    val isWhiteLabelPopularMarket: Boolean = false,
+    val isWhiteLabelPopularMarket: Boolean=false,
 
     @JsonProperty("HasSubscription")
-    val hasSubscription: Boolean = false
+    val hasSubscription: Boolean=false
 
     /*
     {

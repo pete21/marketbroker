@@ -3,7 +3,10 @@ package com.piotr.marketbroker.application.service
 import com.piotr.marketbroker.application.websocket.WebsocketService
 import com.piotr.marketbroker.infrastructure.persistence.marketquote.SpringDataMarketQuotesRepository
 import com.piotr.marketbroker.infrastructure.persistence.subscription.SpringDataSubscriptionsRepository
+import mu.KotlinLogging
 import org.springframework.stereotype.Service
+
+private val log = KotlinLogging.logger(SubscriptionsService::class.toString())
 
 @Service
 class SubscriptionsService(
