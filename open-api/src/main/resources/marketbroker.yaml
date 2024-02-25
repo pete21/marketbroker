@@ -1,6 +1,4 @@
 openapi: 3.1.0
-x-stoplight:
-  id: b4p067l7fp57c
 info:
   title: Marketbroker
   version: '1.0'
@@ -11,7 +9,7 @@ info:
 servers:
   - url: 'http://localhost:3000'
 paths:
-  '/users/{userId}':
+  /users/{userId}:
     parameters:
       - schema:
           type: integer
@@ -114,8 +112,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/AccountResponseDTO'
-                  x-stoplight:
-                    id: bzlpdp2ybd107
       operationId: get-accounts
       description: Get Accounts
       x-internal: true
@@ -133,8 +129,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/PositionResponseDTO'
-                  x-stoplight:
-                    id: vqvvo4ecgdhfm
       operationId: get-positions
       description: Get Positions
       x-internal: true
@@ -152,8 +146,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/OrderResponseDTO'
-                  x-stoplight:
-                    id: f4h6do5ibov6q
       operationId: list-orders
       x-internal: true
       description: List Orders
@@ -203,8 +195,6 @@ paths:
               schema:
                 type: array
                 items:
-                  x-stoplight:
-                    id: 1tq7v0wozcr7w
                   type: string
       operationId: get-instrument-groups
       x-internal: true
@@ -232,8 +222,6 @@ paths:
               schema:
                 type: array
                 items:
-                  x-stoplight:
-                    id: sgztjggx8u11a
                   type: string
       operationId: get-instrument-quotes
       x-internal: true
@@ -282,7 +270,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SessionDTO'
+              $ref: '#/components/schemas/LoginDTO'
       tags:
         - live
       x-internal: true
@@ -299,8 +287,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/LiveAccountDTO'
-                  x-stoplight:
-                    id: 9hae6swpc9kpl
       description: Get live accounts
       tags:
         - live
@@ -336,8 +322,6 @@ paths:
               schema:
                 type: array
                 items:
-                  x-stoplight:
-                    id: 2wu65hunmesqy
                   type: string
       operationId: get-subscriptions
       description: Get subscriptions
@@ -392,7 +376,7 @@ components:
     User:
       title: User
       type: object
-      description: ''
+      description: 'User'
       examples:
         - id: 142
           firstName: Alice
@@ -431,95 +415,53 @@ components:
         - emailVerified
     PositionResponseDTO:
       title: PositionResponseDTO
-      x-stoplight:
-        id: 90te27cnppl5m
       type: object
       properties:
         positionId:
           type: integer
-          x-stoplight:
-            id: duz751vedxleh
         marketId:
           type: integer
-          x-stoplight:
-            id: 1xi8q1nu4yzwv
         quoteId:
           type: integer
-          x-stoplight:
-            id: io42fbgqm1gm4
         type:
           type: string
-          x-stoplight:
-            id: 5w8ktwobvkgck
         direction:
           type: string
-          x-stoplight:
-            id: gck465x2c2372
         creationTimeUTC:
           type: string
-          x-stoplight:
-            id: 3804flo33u6gy
           format: date-time
         stake:
           type: integer
-          x-stoplight:
-            id: uajf8i4stqglp
         openingPriceDecimal:
           type: number
-          x-stoplight:
-            id: 35gk7wnlfwhvq
           format: float
         currentPriceDecimal:
           type: number
-          x-stoplight:
-            id: 1rt417bpf4kcc
           format: float
         openPL:
           type: integer
-          x-stoplight:
-            id: cv1o45cnl1l8r
         stopOrderPrice:
           type: string
-          x-stoplight:
-            id: 3ixm5fzevmam2
         limitOrderPrice:
           type: string
-          x-stoplight:
-            id: 5e2jsyo2g6qyb
         imr:
           type: number
-          x-stoplight:
-            id: 36lue7jfnx5x2
           format: float
         prcGenDecimalPlaces:
           type: integer
-          x-stoplight:
-            id: wckau7q5u9dql
         betPer:
           type: number
-          x-stoplight:
-            id: awv2v4fnlf9le
           format: float
         tradable:
           type: boolean
-          x-stoplight:
-            id: 6cp0ny70szz4t
         isRollingMarket:
           type: boolean
-          x-stoplight:
-            id: vaapcsgd4t2pq
         isTriggered:
           type: boolean
-          x-stoplight:
-            id: la505k7ihzrih
         currencyCode:
           type: string
-          x-stoplight:
-            id: wmbu26z0gfmee
         isTotal:
           type: boolean
-          x-stoplight:
-            id: pwps2ljlbg9rk
       required:
         - positionId
         - marketId
@@ -532,54 +474,30 @@ components:
         - currencyCode
     AccountResponseDTO:
       title: AccountResponseDTO
-      x-stoplight:
-        id: nqpswbq6o8lhu
       type: object
       properties:
         accountId:
           type: integer
-          x-stoplight:
-            id: 32raztym0atz0
         platform:
           type: string
-          x-stoplight:
-            id: ypfsjkbudmhju
         account:
           type: string
-          x-stoplight:
-            id: k2cyutevwn4sl
         backend:
           type: string
-          x-stoplight:
-            id: 6gdu1cgq1pmgg
         accountType:
           type: string
-          x-stoplight:
-            id: mbchldhhlw8om
         currency:
           type: string
-          x-stoplight:
-            id: c2frp4q2vpkl9
         currencySymbol:
           type: string
-          x-stoplight:
-            id: na9cxqj04u16c
         balance:
           type: string
-          x-stoplight:
-            id: nv8q57cyxd9av
         equity:
           type: string
-          x-stoplight:
-            id: vfbatky3yfvpj
         ct_login_id:
           type: string
-          x-stoplight:
-            id: 2aicfuyx6o4ix
         ct_login_password:
           type: string
-          x-stoplight:
-            id: 3zzqvllfgem2o
       required:
         - accountId
         - platform
@@ -594,245 +512,143 @@ components:
         - ct_login_password
     OrderResponseDTO:
       title: OrderResponseDTO
-      x-stoplight:
-        id: 264wk3v0m4998
       type: object
       properties:
         orderId:
           type: integer
-          x-stoplight:
-            id: 6sy1pa9ipmcfp
         currency:
           type: string
-          x-stoplight:
-            id: o0wx8ifuujgig
         currentPrice:
           type: number
-          x-stoplight:
-            id: jbpphadw9s4ng
           format: float
         direction:
           type: string
-          x-stoplight:
-            id: f14ixvigep4ll
         expiryDate:
           type: string
-          x-stoplight:
-            id: uq181iamxrpf3
           format: date-time
         goodTill:
           type: string
-          x-stoplight:
-            id: 01etyoqss9s2d
           format: date-time
         iDOLimitOrderPrice:
           type: string
-          x-stoplight:
-            id: ikre9bqv7vx07
         iDOStopOrderPrice:
           type: string
-          x-stoplight:
-            id: tcmnkwrnjp8m4
         iDOGuaranteed:
           type: boolean
-          x-stoplight:
-            id: ibdcpu8gkojl2
         isTriggered:
           type: boolean
-          x-stoplight:
-            id: 6x02qwo03puyd
         limitOrderPrice:
           type: string
-          x-stoplight:
-            id: jay9bnw443tm2
         margin:
           type: number
-          x-stoplight:
-            id: oeqbhgabdb27s
           format: float
         marketID:
           type: integer
-          x-stoplight:
-            id: 8exzqz22k8plj
         marketTradable:
           type: boolean
-          x-stoplight:
-            id: i4rbf6icjfwnc
         period:
           type: string
-          x-stoplight:
-            id: jsiebwuq2dd08
         creationTimeUTC:
           type: string
-          x-stoplight:
-            id: 3q2w1hvx5wqab
           format: date-time
         quoteId:
           type: integer
-          x-stoplight:
-            id: t7quys0f5v4yi
         quoteMode:
           type: string
-          x-stoplight:
-            id: 4jiuypz9r2rgu
         stake:
           type: integer
-          x-stoplight:
-            id: pnk5q1y262kc8
         status:
           type: integer
-          x-stoplight:
-            id: 4q62ajpnuxy6j
         stopOrderPrice:
           type: string
-          x-stoplight:
-            id: 81gopsq31c839
         type:
           type: string
-          x-stoplight:
-            id: k3kywkkdp11jw
         trailingPoint:
           type: integer
-          x-stoplight:
-            id: amni746y23942
         isGuarantee:
           type: boolean
-          x-stoplight:
-            id: sf1pu2cwyi2up
         isForceOpen:
           type: boolean
-          x-stoplight:
-            id: ctjo7815v7s7i
         orderPriceModeEnum:
           type: string
-          x-stoplight:
-            id: gvqqo2quqo9jb
         currencySymbol:
           type: string
-          x-stoplight:
-            id: o1dqkdv40y64a
       required:
         - orderId
         - currency
         - direction
     SessionDTO:
       title: SessionDTO
-      x-stoplight:
-        id: tbco6hp9y10rg
       type: object
       properties:
         state:
           type: string
-          x-stoplight:
-            id: upg043dwb8ik0
         accountId:
           type: integer
-          x-stoplight:
-            id: 1zc3aynuf0tax
       required:
         - state
     ResponseDTO:
       title: ResponseDTO
-      x-stoplight:
-        id: bg784c54j5us1
       type: object
       properties:
         status:
           type: integer
-          x-stoplight:
-            id: hspsfoedk1dsj
         message:
           type: string
-          x-stoplight:
-            id: uzy3j0rk9puvu
       required:
         - status
         - message
     JsonDataDTO:
       title: JsonDataDTO
-      x-stoplight:
-        id: lekbvdz7ya7yk
       type: object
-      x-class-extra-annotation: "@KafkaTopic(KafkaTopics.TOPIC_JSON_DATA)"
+      x-class-extra-annotation: '@KafkaTopic(KafkaTopics.TOPIC_JSON_DATA)'
       properties:
         type:
           type: string
-          x-stoplight:
-            id: 25mihyyosa8ch
         data:
           type: string
-          x-stoplight:
-            id: bwrs57aa2lnqn
       required:
         - type
         - data
     SubscriptionsRequestDTO:
       title: SubscriptionsRequestDTO
-      x-stoplight:
-        id: 3ajbdx4bkvs5n
       type: object
       properties:
         quoteId:
           type: integer
-          x-stoplight:
-            id: jrdndqvdno3rp
         status:
           type: boolean
-          x-stoplight:
-            id: 3c5hdip1kdlq7
       required:
         - quoteId
         - status
     OrderRequestDTO:
       title: OrderRequestDTO
-      x-stoplight:
-        id: tsihimn1sl738
       type: object
       properties:
         marketId:
           type: integer
-          x-stoplight:
-            id: agp47zn4u8nwj
         quoteId:
           type: integer
-          x-stoplight:
-            id: y8wsvn3ogzlfc
         price:
           type: number
-          x-stoplight:
-            id: ik5pb7oeobh6v
           format: float
         stake:
           type: integer
-          x-stoplight:
-            id: iiqv8iv8i77o8
         direction:
           type: integer
-          x-stoplight:
-            id: a1ad8w16crvqc
         orderMode:
           type: integer
-          x-stoplight:
-            id: qz9fcck4jh2pl
           description: '0 - market order, 1 - limit order, 2 - stop order, 4 - close position'
         limitOrderPrice:
           type: number
-          x-stoplight:
-            id: u8yogant4xujk
           format: float
         stopOrderPrice:
           type: number
-          x-stoplight:
-            id: 7r2k5j0udbfab
           format: float
         trailingPoint:
           type: integer
-          x-stoplight:
-            id: hapa83it4r9rj
         positionId:
           type: integer
-          x-stoplight:
-            id: hxlrvg3342jz3
           description: for InsertCloseOrder (orderMode==4)
       required:
         - marketId
@@ -847,26 +663,16 @@ components:
         - positionId
     LoginDTO:
       title: LoginDTO
-      x-stoplight:
-        id: il5a9eaaz3v0v
       type: object
       properties:
         state:
           type: string
-          x-stoplight:
-            id: oeb0mr6lu429z
         login:
           type: string
-          x-stoplight:
-            id: enubdhey3i579
         password:
           type: string
-          x-stoplight:
-            id: 4dwzoalvd16bp
     LiveAccountDTO:
       title: LiveAccountDTO
-      x-stoplight:
-        id: b6jpsy1f2z0sr
       type: object
       description: Live accounts
       properties:
@@ -875,38 +681,22 @@ components:
           format: int32
         platform:
           type: string
-          x-stoplight:
-            id: z2e9bcxesiho4
         account:
           type: string
-          x-stoplight:
-            id: 8ilukir86gavn
         accountType:
           type: string
-          x-stoplight:
-            id: 7curww5nuoj07
         currency:
           type: string
-          x-stoplight:
-            id: j30tjpdwbkc7q
         balance:
           type: number
-          x-stoplight:
-            id: cqsrgngpe73hc
           format: float
         equity:
           type: number
-          x-stoplight:
-            id: e6sah75iisnje
           format: float
         ct_login_id:
           type: string
-          x-stoplight:
-            id: ti0ao5ung6wzh
         ct_login_password:
           type: string
-          x-stoplight:
-            id: 6ved0puu4lpue
       required:
         - id
         - platform

@@ -59,5 +59,4 @@ class InstrumentsController(
         return ResponseEntity.ok().build()
     }
 
-
 }
