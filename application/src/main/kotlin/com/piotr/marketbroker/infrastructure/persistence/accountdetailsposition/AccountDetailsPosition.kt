@@ -27,11 +27,11 @@ class AccountDetailsPosition (
 
     val direction: String="",
 
-    val expiryDateTime: LocalDateTime=LocalDateTime.now()
+    val expiryDateTime: LocalDateTime=LocalDateTime.now(),
 
     val creationDateTime: LocalDateTime=LocalDateTime.now(),
 
-    val creationTimeUTC: LocalDateTime=LocalDateTime.now(),
+    val creationTimeUTC: OffsetDateTime = OffsetDateTime.now(),
 
     val stake: Int=0,
 

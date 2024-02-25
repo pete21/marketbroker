@@ -29,7 +29,7 @@ class LiveController(
 
         when (sessionDTO!!.state) {
             "START" -> {
-                if (td365SessionService.liveSessionStart()) {
+                if (td365SessionService.liveLogin()) {
                         log.info("Session started")
                         return ResponseEntity<ResponseDTO>(ResponseDTO(0, "Session started"), HttpStatus.OK)
                     }

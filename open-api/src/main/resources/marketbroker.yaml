@@ -172,7 +172,7 @@ paths:
       tags:
         - orders
       x-internal: true
-  /demo:
+  /demo/session:
     post:
       summary: Demo session controller
       operationId: demo-session
@@ -192,7 +192,7 @@ paths:
       x-internal: true
       tags:
         - demo
-  /instrument/groups:
+  /instruments/groups:
     get:
       summary: Get Instrument groups
       responses:
@@ -221,7 +221,7 @@ paths:
       tags:
         - instruments
       description: Generate Instrument groups
-  /instrument/quotes:
+  /instruments/quotes:
     get:
       summary: Get Instrument quotes
       responses:
@@ -266,10 +266,10 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/JsonDataDTO'
-  /live:
+  /live/login:
     post:
-      summary: Live Session controller
-      operationId: live-session
+      summary: Live Login controller
+      operationId: live-login
       responses:
         '200':
           description: OK
@@ -277,7 +277,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResponseDTO'
-      description: Live Session controller
+      description: Live login controller
       requestBody:
         content:
           application/json:
@@ -286,7 +286,46 @@ paths:
       tags:
         - live
       x-internal: true
-  /instrument/subscriptions:
+  /live/accounts:
+    get:
+      summary: Get Live accounts
+      operationId: get-live-accounts
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LiveAccountDTO'
+                  x-stoplight:
+                    id: 9hae6swpc9kpl
+      description: Get live accounts
+      tags:
+        - live
+      x-internal: true
+  /live/session:
+    post:
+      summary: Live start session controller
+      operationId: live-session
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDTO'
+      description: Live session controller
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionDTO'
+      tags:
+        - live
+      x-internal: true
+  /instruments/subscriptions:
     get:
       summary: Get Instrument subscriptions
       responses:
@@ -686,18 +725,12 @@ components:
           type: string
           x-stoplight:
             id: upg043dwb8ik0
-        login:
-          type: string
+        accountId:
+          type: integer
           x-stoplight:
             id: 1zc3aynuf0tax
-        password:
-          type: string
-          x-stoplight:
-            id: zh3q40z7jhrsy
       required:
         - state
-        - login
-        - password
     ResponseDTO:
       title: ResponseDTO
       x-stoplight:
@@ -781,7 +814,7 @@ components:
           type: integer
           x-stoplight:
             id: qz9fcck4jh2pl
-          description: '0 - market order, 1 - limit order, 2 - stop order     4 - close position'
+          description: '0 - market order, 1 - limit order, 2 - stop order, 4 - close position'
         limitOrderPrice:
           type: number
           x-stoplight:
@@ -812,6 +845,78 @@ components:
         - stopOrderPrice
         - trailingPoint
         - positionId
+    LoginDTO:
+      title: LoginDTO
+      x-stoplight:
+        id: il5a9eaaz3v0v
+      type: object
+      properties:
+        state:
+          type: string
+          x-stoplight:
+            id: oeb0mr6lu429z
+        login:
+          type: string
+          x-stoplight:
+            id: enubdhey3i579
+        password:
+          type: string
+          x-stoplight:
+            id: 4dwzoalvd16bp
+    LiveAccountDTO:
+      title: LiveAccountDTO
+      x-stoplight:
+        id: b6jpsy1f2z0sr
+      type: object
+      description: Live accounts
+      properties:
+        id:
+          type: integer
+          format: int32
+        platform:
+          type: string
+          x-stoplight:
+            id: z2e9bcxesiho4
+        account:
+          type: string
+          x-stoplight:
+            id: 8ilukir86gavn
+        accountType:
+          type: string
+          x-stoplight:
+            id: 7curww5nuoj07
+        currency:
+          type: string
+          x-stoplight:
+            id: j30tjpdwbkc7q
+        balance:
+          type: number
+          x-stoplight:
+            id: cqsrgngpe73hc
+          format: float
+        equity:
+          type: number
+          x-stoplight:
+            id: e6sah75iisnje
+          format: float
+        ct_login_id:
+          type: string
+          x-stoplight:
+            id: ti0ao5ung6wzh
+        ct_login_password:
+          type: string
+          x-stoplight:
+            id: 6ved0puu4lpue
+      required:
+        - id
+        - platform
+        - account
+        - accountType
+        - currency
+        - balance
+        - equity
+        - ct_login_id
+        - ct_login_password
 x-internal: true
 tags:
   - name: accounts

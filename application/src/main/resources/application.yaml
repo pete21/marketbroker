@@ -14,7 +14,7 @@ management:
     web:
       base-path: /
       exposure:
-        include: health,info,prometheus,httptrace
+        include: health,info,prometheus
   server:
     port: 8090
   tracing:
@@ -88,7 +88,10 @@ spring:
     defer-datasource-initialization: true
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
 
   h2:
     console:

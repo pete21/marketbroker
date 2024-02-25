@@ -94,7 +94,7 @@ class TD365SessionService(
         contextualName = "liveSessionStart",
         lowCardinalityKeyValues = ["type","live"]
     )
-    fun liveSessionStart(): Boolean {
+    fun liveLogin(): Boolean {
         if (sessionState==1) {
             log.warn("Session already connected")
             return false
@@ -102,18 +102,37 @@ class TD365SessionService(
         httpAdapter.baseUrl = td365ConfigurationProperties.prodbaseurl
         httpAdapter.defaultHeaders = RequestHeaders(td365ConfigurationProperties.prodHeaders)
 
+        if (!tokenAuthentication()) {
+            return false
+        }
+        httpAdapter.defaultHeaders!!.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwt!!.access_token)
+
+        return (login() && accounts())
+
+    }
+
+    fun liveSessionStart(accountId: Int) : Boolean {
+
+        httpAdapter.optionsRequest(
+            String.format(td365ConfigurationProperties.prodlink, accountId), RequestHeaders(
+                loginHeaders, mapOf(
+                    ACCESS_CONTROL_REQUEST_METHOD to "GET",
+                    ACCESS_CONTROL_REQUEST_HEADERS to "authorization",
+                    HttpHeaders.AUTHORIZATION to ""
+                )
+            )
+        )
+
         val pair =
-            httpAdapter.getRequestRedirects(td365ConfigurationProperties.prodlink, RequestHeaders.redirectHeaders)
+            httpAdapter.getRequestRedirects(
+                String.format(td365ConfigurationProperties.prodlink, accountId), RequestHeaders.redirectHeaders
+            )
         setValues(pair)
 
         httpAdapter.defaultHeaders!!.setHeader(HttpHeaders.REFERER,
             String.format(td365ConfigurationProperties.prodReferer, ots))
 
-        tokenAuthentication()
-        httpAdapter.defaultHeaders!!.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwt!!.access_token)
-        if (!login() || !accounts() || !launch()) {
-            return false
-        }
+
         if (websocketService.connect(login, token, td365ConfigurationProperties.prodwebsocketserver)) {
             sessionState = 1
             return true
@@ -144,17 +163,19 @@ class TD365SessionService(
         log.info("token: $token")
     }
 
-    fun sessionStop(): Boolean {
-        httpAdapter.postRequest("ClientLogout", "", RequestHeaders.postHeaders)
-        websocketService.disconnect()
-        sessionState = 0
-        return true
+    fun sessionStop() {
+        if (sessionState==1) {
+            httpAdapter.postRequest("ClientLogout", "", RequestHeaders.postHeaders)
+            websocketService.disconnect()
+            sessionState = 0
+        }
     }
 
     private fun tokenAuthentication(): Boolean {
         httpAdapter.optionsRequest(td365ConfigurationProperties.authlink, RequestHeaders(authHeaders, mapOf(
             ACCESS_CONTROL_REQUEST_METHOD to "POST",
-            ACCESS_CONTROL_REQUEST_HEADERS to "content-type"
+            ACCESS_CONTROL_REQUEST_HEADERS to "content-type",
+            HttpHeaders.AUTHORIZATION to ""
         )))
         val query = String.format(USER_AUTH, td365ConfigurationProperties.username, td365ConfigurationProperties.password)
         val httpResponseDto = httpAdapter.postRequest(
@@ -173,7 +194,8 @@ class TD365SessionService(
             td365ConfigurationProperties.accountlink + "login/", RequestHeaders(
                 loginHeaders, mapOf(
                     ACCESS_CONTROL_REQUEST_METHOD to "POST",
-                    ACCESS_CONTROL_REQUEST_HEADERS to "authorization,content-type"
+                    ACCESS_CONTROL_REQUEST_HEADERS to "authorization,content-type",
+                    HttpHeaders.AUTHORIZATION to ""
                 )
             )
         )
@@ -188,7 +210,8 @@ class TD365SessionService(
             td365ConfigurationProperties.accountlink + "accounts/", RequestHeaders(
                 loginHeaders, mapOf(
                     ACCESS_CONTROL_REQUEST_METHOD to "GET",
-                    ACCESS_CONTROL_REQUEST_HEADERS to "authorization"
+                    ACCESS_CONTROL_REQUEST_HEADERS to "authorization",
+                    HttpHeaders.AUTHORIZATION to ""
                 )
             )
         )
@@ -212,7 +235,8 @@ class TD365SessionService(
             td365ConfigurationProperties.accountlink + "launch/", RequestHeaders(
                 loginHeaders, mapOf(
                     ACCESS_CONTROL_REQUEST_METHOD to "GET",
-                    ACCESS_CONTROL_REQUEST_HEADERS to "authorization"
+                    ACCESS_CONTROL_REQUEST_HEADERS to "authorization",
+                    HttpHeaders.AUTHORIZATION to ""
                 )
             )
         )

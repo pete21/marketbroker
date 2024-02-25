@@ -4,7 +4,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 @Entity
 @Table(name = "openingorder")
@@ -20,9 +20,9 @@ class AccountDetailsOpeningOrder (
 
     val direction: String="",
 
-    val expiryDate: LocalDateTime = LocalDateTime.now(),
+    val expiryDate: OffsetDateTime = OffsetDateTime.now(),
 
-    val goodTill: LocalDateTime = LocalDateTime.now(),
+    val goodTill: OffsetDateTime = OffsetDateTime.now(),
 
     val iDOLimitOrderPrice: String="",
 
@@ -44,7 +44,7 @@ class AccountDetailsOpeningOrder (
 
     val period: String="",
 
-    val creationTimeUTC: LocalDateTime = LocalDateTime.now(),
+    val creationTimeUTC: OffsetDateTime = OffsetDateTime.now(),
 
     val quoteId: Int=0,
 

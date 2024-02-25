@@ -16,8 +16,8 @@ class SubscriptionsService(
 ) {
 
     fun getSubscriptions(): List<String> {
-        val subscribed = subscriptionsRepository.findAll().filter { s -> s.status }.map { s -> s.quoteId }
-        return marketQuotesRepository.findAllById(subscribed).map { s -> s.toString() }
+        val quoteIds = subscriptionsRepository.findByStatusTrue().map { s -> s.quoteId }
+        return quoteIds.map { s -> marketQuotesRepository.findByQuoteID(s)?.toString()?:s.toString() }
     }
 
 
