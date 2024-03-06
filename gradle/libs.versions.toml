@@ -25,7 +25,6 @@ io-projectreactor-kotlin-reactor-kotlin-extensions = "io.projectreactor.kotlin:r
 io-projectreactor-reactor-test = "io.projectreactor:reactor-test:3.5.7"
 io-zipkin-reporter2-zipkin-reporter-brave = "io.zipkin.reporter2:zipkin-reporter-brave:3.2.1"
 jakarta-validation-api = "jakarta.validation:jakarta.validation-api:3.0.2"
-org-apache-logging-log4j-log4j-core = "org.apache.logging.log4j:log4j-core:2.20.0"
 commons-beanutils = "commons-beanutils:commons-beanutils:1.9.4"
 org-graalvm-buildtools-junit-platform-native = "org.graalvm.buildtools:junit-platform-native:0.9.28"
 org-jetbrains-annotations = "org.jetbrains:annotations:13.0"

@@ -36,6 +36,11 @@ openApiGenerate {
     inputSpec.set("$projectDir/src/main/resources/marketbroker.yaml")
     outputDir.set("$buildDir/generated")
     configFile.set("$projectDir/src/main/resources/config.json")
+
+    globalProperties.set(mapOf(
+        Pair("apis", "Accounts,Demo,Instruments,Kafka,Live,Orders,Positions,Subscriptions"), //no value or comma-separated api names
+        Pair("models", ""), //no value or comma-separated api names
+    ))
 }
 
 tasks {

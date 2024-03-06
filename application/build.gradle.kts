@@ -88,7 +88,13 @@ dependencies {
     implementation("com.github.loki4j:loki-logback-appender:1.4.2")
 
     // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
-    implementation("org.apache.httpcomponents:httpclient:4.5")
+    //implementation("org.apache.httpcomponents:httpclient:4.5.14")
+
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5
+    implementation("org.apache.httpcomponents.client5:httpclient5:5.3.1")
+
+//    implementation("org.apache.logging.log4j:log4j-api:2.23.0")
+//    implementation("org.apache.logging.log4j:log4j-core:2.23.0")
 
 }
 
@@ -112,9 +118,10 @@ openApi {
     }
 }
 
-
+/*
 configurations {
     runtimeOnly {
         exclude(group = "commons-logging", module = "commons-logging")
     }
 }
+*/

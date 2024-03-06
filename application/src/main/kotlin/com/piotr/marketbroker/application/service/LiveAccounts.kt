@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder
 
 
 @JsonPropertyOrder("count", "next", "previous", "results")
-class RealAccounts (
+class LiveAccounts (
     @JsonProperty("count")
     var count: Int,
 

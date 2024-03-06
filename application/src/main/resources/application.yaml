@@ -109,6 +109,7 @@ logging:
     com.piotr.marketbroker: DEBUG
     org.springframework.security: INFO
     ai.symmetrical.kafka.common.logging: DEBUG
+    org.apache.http: DEBUG
   pattern:
     level: "%5p [%X{traceId:-},%X{spanId:-}]"
     correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
@@ -160,4 +161,31 @@ ai.symmetrical:
 
 websocket:
   server: "wss://demo-api.finsa.com.au/"
+
+
+java:
+  util:
+    logging:
+      ConsoleHandler:
+        formatter: java.util.logging.SimpleFormatter
+        level: ALL
+org:
+  apache:
+    http:
+      impl:
+        conn:
+          level: FINEST
+    commons:
+      logging:
+        Log: org.apache.commons.logging.impl.SimpleLog
+        simplelog:
+          showdatetime: true
+          log:
+            httpclient:
+              wire:
+                header: debug
+            org:
+              apache:
+                commons:
+                  httpclient: debug
 

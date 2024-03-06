@@ -40,14 +40,15 @@ class TD365SessionService(
         .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-    private var sessionState = 0
+    private var sessionState: Int = 0
+    private var liveLogin: Boolean = false
 
     private var login : String = ""
     private var password : String = ""
     private var ots : String = ""
     private var token : String = ""
     private var jwt : Jwt? = null
-    private var accounts: RealAccounts? = null
+    private var liveAccounts: LiveAccounts? = null
 
     fun getTD365ConfigurationProperties(): String {
         log.info(td365ConfigurationProperties.toString())
@@ -91,7 +92,7 @@ class TD365SessionService(
     }
 
     @Observed(name = "TD365SessionService",
-        contextualName = "liveSessionStart",
+        contextualName = "liveLogin",
         lowCardinalityKeyValues = ["type","live"]
     )
     fun liveLogin(): Boolean {
@@ -107,37 +108,58 @@ class TD365SessionService(
         }
         httpAdapter.defaultHeaders!!.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwt!!.access_token)
 
-        return (login() && accounts())
-
+        liveLogin = login() && accounts()
+        return liveLogin
     }
 
+    @Observed(name = "TD365SessionService",
+        contextualName = "liveSessionStart",
+        lowCardinalityKeyValues = ["type","live"]
+    )
     fun liveSessionStart(accountId: Int) : Boolean {
-
-        httpAdapter.optionsRequest(
-            String.format(td365ConfigurationProperties.prodlink, accountId), RequestHeaders(
-                loginHeaders, mapOf(
-                    ACCESS_CONTROL_REQUEST_METHOD to "GET",
-                    ACCESS_CONTROL_REQUEST_HEADERS to "authorization",
-                    HttpHeaders.AUTHORIZATION to ""
-                )
-            )
-        )
+        if (!liveLogin) {
+            log.error("liveSessionStart: login required")
+            return false
+        }
+        val launchUrl = getUrl(accountId)
 
         val pair =
-            httpAdapter.getRequestRedirects(
-                String.format(td365ConfigurationProperties.prodlink, accountId), RequestHeaders.redirectHeaders
-            )
-        setValues(pair)
+            httpAdapter.getRequestRedirects(launchUrl, RequestHeaders.redirectHeaders)
+        val redirectURIs = pair.first
+        val refererUrl = redirectURIs[redirectURIs.count()-1]
+        ots = redirectURIs[redirectURIs.count()-1].split("=")[1]
+        log.info("ots: $ots")
+        token = pair.second[ots].orEmpty()
+        log.info("token: $token")
 
-        httpAdapter.defaultHeaders!!.setHeader(HttpHeaders.REFERER,
-            String.format(td365ConfigurationProperties.prodReferer, ots))
+        httpAdapter.defaultHeaders!!.setHeader(HttpHeaders.REFERER, refererUrl)
 
-
-        if (websocketService.connect(login, token, td365ConfigurationProperties.prodwebsocketserver)) {
+        if (websocketService.connect(liveAccounts!!.results.first {it.id==accountId}.ctLoginId, token, td365ConfigurationProperties.prodwebsocketserver)) {
             sessionState = 1
             return true
         }
         return false
+    }
+
+    private fun getUrl(accountId: Int): String {
+        val accountLink = String.format(td365ConfigurationProperties.prodlink, accountId)
+        val optionsResponseDto = httpAdapter.optionsRequest(accountLink, RequestHeaders(
+                loginHeaders, mapOf(
+                    ACCESS_CONTROL_REQUEST_METHOD to "GET",
+                    ACCESS_CONTROL_REQUEST_HEADERS to "authorization",
+                    HttpHeaders.CONTENT_TYPE to "",
+                    HttpHeaders.AUTHORIZATION to ""
+                )
+            )
+        )
+        val httpResponse = httpAdapter.getRequest(accountLink, loginHeaders)
+        try {
+            val redirectUrl: RedirectUrl = mapper.readValue(httpResponse.body)
+            return redirectUrl.url
+        } catch (e: JsonProcessingException) {
+            log.error("RedirectUrl mapping failed: ", httpResponse)
+            return ""
+        }
     }
 
     private fun setValues(pair: Pair<List<String>, Map<String, String>>) {
@@ -147,7 +169,7 @@ class TD365SessionService(
         log.info("prevURIs: $redirectURIs")
         log.info("cookies: $cookies")
 
-        ots = redirectURIs[2].split("=")[1]
+        ots = redirectURIs[redirectURIs.count()-1].split("=")[1]
         log.info("ots: $ots")
 
         var queryString = redirectURIs[0].split("?")[1]
@@ -163,6 +185,10 @@ class TD365SessionService(
         log.info("token: $token")
     }
 
+    @Observed(name = "TD365SessionService",
+        contextualName = "sessionStop",
+        lowCardinalityKeyValues = ["type","all"]
+    )
     fun sessionStop() {
         if (sessionState==1) {
             httpAdapter.postRequest("ClientLogout", "", RequestHeaders.postHeaders)
@@ -171,15 +197,26 @@ class TD365SessionService(
         }
     }
 
+    fun liveLogout() {
+        if (sessionState==0 && liveLogin) {
+            httpAdapter.postRequest("ClientLogout", "", RequestHeaders.postHeaders)
+            liveLogin = false
+            jwt = null
+        } else {
+            log.error("liveLogout: you must stop your session first")
+        }
+    }
+
     private fun tokenAuthentication(): Boolean {
-        httpAdapter.optionsRequest(td365ConfigurationProperties.authlink, RequestHeaders(authHeaders, mapOf(
-            ACCESS_CONTROL_REQUEST_METHOD to "POST",
-            ACCESS_CONTROL_REQUEST_HEADERS to "content-type",
-            HttpHeaders.AUTHORIZATION to ""
-        )))
+        val optionsResponseDto = httpAdapter.optionsRequest(td365ConfigurationProperties.authlink,
+                RequestHeaders(authHeaders, mapOf(
+                    ACCESS_CONTROL_REQUEST_METHOD to "POST",
+                    ACCESS_CONTROL_REQUEST_HEADERS to "content-type",
+                    HttpHeaders.CONTENT_TYPE to ""
+                )))
         val query = String.format(USER_AUTH, td365ConfigurationProperties.username, td365ConfigurationProperties.password)
         val httpResponseDto = httpAdapter.postRequest(
-            td365ConfigurationProperties.authlink, query, authHeaders)
+                td365ConfigurationProperties.authlink, query, authHeaders)
         try {
             jwt = mapper.readValue(httpResponseDto.body)
         } catch (e: JsonProcessingException) {
@@ -195,6 +232,7 @@ class TD365SessionService(
                 loginHeaders, mapOf(
                     ACCESS_CONTROL_REQUEST_METHOD to "POST",
                     ACCESS_CONTROL_REQUEST_HEADERS to "authorization,content-type",
+                    HttpHeaders.CONTENT_TYPE to "",
                     HttpHeaders.AUTHORIZATION to ""
                 )
             )
@@ -211,6 +249,7 @@ class TD365SessionService(
                 loginHeaders, mapOf(
                     ACCESS_CONTROL_REQUEST_METHOD to "GET",
                     ACCESS_CONTROL_REQUEST_HEADERS to "authorization",
+                    HttpHeaders.CONTENT_TYPE to "",
                     HttpHeaders.AUTHORIZATION to ""
                 )
             )
@@ -222,12 +261,16 @@ class TD365SessionService(
             return false
         }
         try {
-            accounts = mapper.readValue(httpResponse.body)
+            liveAccounts = mapper.readValue(httpResponse.body)
         } catch (e: JsonProcessingException) {
             log.error("Accounts mapping failed: ", httpResponse)
             return false
         }
         return true
+    }
+
+    fun getAccounts(): LiveAccounts? {
+        return liveAccounts
     }
 
     private fun launch(): Boolean {
@@ -269,4 +312,9 @@ internal class Jwt (
 
     @JsonProperty("token_type")
     private val token_type: String
+)
+
+internal class RedirectUrl (
+    @JsonProperty("url")
+    val url: String
 )

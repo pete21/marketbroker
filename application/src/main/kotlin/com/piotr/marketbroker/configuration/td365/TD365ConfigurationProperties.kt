@@ -19,7 +19,8 @@ class TD365ConfigurationProperties {
      var sessionupdateinterval: Int = 120000
     lateinit var username: String
     lateinit var password: String
+    lateinit var userAgent: String
     override fun toString(): String {
-        return "TD365ConfigurationProperties(demolink='$demolink', demobaseurl='$demobaseurl', prodlink='$prodlink', prodbaseurl='$prodbaseurl', demoHeaders=$demoHeaders, prodHeaders=$prodHeaders, demoReferer='$demoReferer', prodReferer='$prodReferer', demowebsocketserver='$demowebsocketserver', prodwebsocketserver='$prodwebsocketserver', authlink='$authlink', accountlink='$accountlink', sessionupdateinterval=$sessionupdateinterval, username='$username', password='$password')"
+        return "TD365ConfigurationProperties(demolink='$demolink', demobaseurl='$demobaseurl', prodlink='$prodlink', prodbaseurl='$prodbaseurl', demoHeaders=$demoHeaders, prodHeaders=$prodHeaders, demoReferer='$demoReferer', prodReferer='$prodReferer', demowebsocketserver='$demowebsocketserver', prodwebsocketserver='$prodwebsocketserver', authlink='$authlink', accountlink='$accountlink', sessionupdateinterval=$sessionupdateinterval, username='$username', password='$password', useragent='$userAgent')"
     }
 }

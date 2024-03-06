@@ -42,7 +42,7 @@ paths:
           description: User Not Found
       operationId: get-users-userId
       description: Retrieve the information of the user with the matching user ID.
-      x-internal: true
+
     patch:
       summary: Update User Information
       operationId: patch-users-userId
@@ -97,7 +97,7 @@ paths:
         description: Patch user properties to update.
       tags:
         - users
-      x-internal: true
+
   /accounts:
     get:
       summary: Get Accounts
@@ -114,7 +114,7 @@ paths:
                   $ref: '#/components/schemas/AccountResponseDTO'
       operationId: get-accounts
       description: Get Accounts
-      x-internal: true
+
   /positions:
     get:
       summary: Get Positions
@@ -131,7 +131,7 @@ paths:
                   $ref: '#/components/schemas/PositionResponseDTO'
       operationId: get-positions
       description: Get Positions
-      x-internal: true
+
   /orders:
     get:
       summary: List Orders
@@ -147,7 +147,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/OrderResponseDTO'
       operationId: list-orders
-      x-internal: true
+
       description: List Orders
     post:
       summary: Create order
@@ -163,7 +163,7 @@ paths:
               $ref: '#/components/schemas/OrderRequestDTO'
       tags:
         - orders
-      x-internal: true
+
   /demo/session:
     post:
       summary: Demo session controller
@@ -181,7 +181,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SessionDTO'
-      x-internal: true
+
       tags:
         - demo
   /instruments/groups:
@@ -197,7 +197,7 @@ paths:
                 items:
                   type: string
       operationId: get-instrument-groups
-      x-internal: true
+
       tags:
         - instruments
       description: Get Instrument groups
@@ -207,7 +207,7 @@ paths:
       responses:
         '200':
           description: OK
-      x-internal: true
+
       tags:
         - instruments
       description: Generate Instrument groups
@@ -224,7 +224,7 @@ paths:
                 items:
                   type: string
       operationId: get-instrument-quotes
-      x-internal: true
+
       tags:
         - instruments
       description: Get Instrument quotes
@@ -234,7 +234,7 @@ paths:
       responses:
         '200':
           description: OK
-      x-internal: true
+
       tags:
         - instruments
       description: Generate Instrument quotes
@@ -247,7 +247,7 @@ paths:
         '200':
           description: OK
       operationId: publish-json
-      x-internal: true
+
       description: Publish json data to kafka topic
       requestBody:
         content:
@@ -273,7 +273,7 @@ paths:
               $ref: '#/components/schemas/LoginDTO'
       tags:
         - live
-      x-internal: true
+
   /live/accounts:
     get:
       summary: Get Live accounts
@@ -290,7 +290,7 @@ paths:
       description: Get live accounts
       tags:
         - live
-      x-internal: true
+
   /live/session:
     post:
       summary: Live start session controller
@@ -310,7 +310,7 @@ paths:
               $ref: '#/components/schemas/SessionDTO'
       tags:
         - live
-      x-internal: true
+
   /instruments/subscriptions:
     get:
       summary: Get Instrument subscriptions
@@ -325,7 +325,7 @@ paths:
                   type: string
       operationId: get-subscriptions
       description: Get subscriptions
-      x-internal: true
+
       tags:
         - subscriptions
     post:
@@ -335,7 +335,7 @@ paths:
         '200':
           description: OK
       description: Create subscription
-      x-internal: true
+
       requestBody:
         content:
           application/json:
@@ -360,7 +360,7 @@ paths:
           description: OK
       operationId: get-order-by-id
       description: Get order details
-      x-internal: true
+
     delete:
       summary: Delete open order
       operationId: delete-order-by-id
@@ -370,7 +370,7 @@ paths:
       description: Delete open order
       tags:
         - orders
-      x-internal: true
+
 components:
   schemas:
     User:

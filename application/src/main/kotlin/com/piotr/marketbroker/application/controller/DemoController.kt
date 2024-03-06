@@ -22,7 +22,7 @@ class DemoController(
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.POST],
-        value = ["/demo"],
+        value = ["/demo/session"],
         produces = ["application/json"],
         consumes = ["application/json"]
     )
