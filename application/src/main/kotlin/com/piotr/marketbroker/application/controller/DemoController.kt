@@ -26,10 +26,10 @@ class DemoController(
         produces = ["application/json"],
         consumes = ["application/json"]
     )
-    override fun demoSession(sessionDTO: SessionDTO?): ResponseEntity<ResponseDTO> {
+    override fun demoSession(sessionDTO: SessionDTO): ResponseEntity<ResponseDTO> {
         log.info("Demo-session request: $sessionDTO")
 
-        when (sessionDTO!!.state) {
+        when (sessionDTO.state) {
             "START" -> {
                 if (td365SessionService.demoSessionStart()) {
                         log.info("Session started")

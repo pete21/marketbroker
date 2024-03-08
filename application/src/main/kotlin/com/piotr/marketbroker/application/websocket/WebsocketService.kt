@@ -46,7 +46,7 @@ class WebsocketService(
         websocketSessionHandler.disconnect()
     }
 
-    fun subscribe(quoteId: Int, status: Boolean): Boolean {
+    fun subscribe(quoteId: Int, status: Boolean) {
         if (status) {
             val msg = String.format(SUBSCRIBE, quoteId)
             websocketSessionHandler.sendMsg(msg)
@@ -56,11 +56,10 @@ class WebsocketService(
             websocketSessionHandler.sendMsg(msg)
             log.info("Unsubscribe: $msg")
         }
-        return true
     }
 
 
-    private fun login(login: String?, token: String?) {
+    private fun login(login: String, token: String) {
         val msg = String.format(LOGIN, login, token)
         websocketSessionHandler.sendMsg(msg)
         log.info("Login: $msg")

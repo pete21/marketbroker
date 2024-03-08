@@ -69,6 +69,7 @@ paths:
           description: Email Already Taken
       description: Update the information of an existing user.
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -98,28 +99,26 @@ paths:
       tags:
         - users
 
-  /accounts:
+  /account/summary:
     get:
-      summary: Get Accounts
+      summary: Get Account summary
       tags:
-        - accounts
+        - account
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AccountResponseDTO'
-      operationId: get-accounts
-      description: Get Accounts
+                $ref: '#/components/schemas/AccountSummaryResponseDTO'
+      operationId: get-account-summary
+      description: Get Account summary
 
-  /positions:
+  /account/positions:
     get:
       summary: Get Positions
       tags:
-        - positions
+        - account
       responses:
         '200':
           description: OK
@@ -131,6 +130,22 @@ paths:
                   $ref: '#/components/schemas/PositionResponseDTO'
       operationId: get-positions
       description: Get Positions
+  /account/opening-orders:
+    get:
+      summary: Get Opening orders
+      tags:
+        - account
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OpeningOrderResponseDTO'
+      operationId: get-opening-orders
+      description: Get Opening orders
 
   /orders:
     get:
@@ -157,6 +172,7 @@ paths:
           description: OK
       description: Create order
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -177,6 +193,7 @@ paths:
                 $ref: '#/components/schemas/ResponseDTO'
       description: Demo session
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -250,10 +267,28 @@ paths:
 
       description: Publish json data to kafka topic
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/JsonDataDTO'
+  /publish-text:
+    post:
+      summary: Publish text data to kafka topic
+      tags:
+        - kafka
+      responses:
+        '200':
+          description: OK
+      operationId: publish-text
+
+      description: Publish text data to kafka topic
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TextDataDTO'
   /live/login:
     post:
       summary: Live Login controller
@@ -267,6 +302,7 @@ paths:
                 $ref: '#/components/schemas/ResponseDTO'
       description: Live login controller
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -304,6 +340,7 @@ paths:
                 $ref: '#/components/schemas/ResponseDTO'
       description: Live session controller
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -325,7 +362,6 @@ paths:
                   type: string
       operationId: get-subscriptions
       description: Get subscriptions
-
       tags:
         - subscriptions
     post:
@@ -337,6 +373,7 @@ paths:
       description: Create subscription
 
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -419,10 +456,13 @@ components:
       properties:
         positionId:
           type: integer
+          format: int32
         marketId:
           type: integer
+          format: int32
         quoteId:
           type: integer
+          format: int32
         type:
           type: string
         direction:
@@ -432,6 +472,7 @@ components:
           format: date-time
         stake:
           type: integer
+          format: int32
         openingPriceDecimal:
           type: number
           format: float
@@ -441,9 +482,11 @@ components:
         openPL:
           type: integer
         stopOrderPrice:
-          type: string
+          type: number
+          format: float
         limitOrderPrice:
-          type: string
+          type: number
+          format: float
         imr:
           type: number
           format: float
@@ -472,99 +515,68 @@ components:
         - stake
         - openingPriceDecimal
         - currencyCode
-    AccountResponseDTO:
-      title: AccountResponseDTO
+
+    OpeningOrderResponseDTO:
+      title: OpeningOrderResponseDTO
       type: object
       properties:
-        accountId:
-          type: integer
-        platform:
-          type: string
-        account:
-          type: string
-        backend:
-          type: string
-        accountType:
-          type: string
-        currency:
-          type: string
-        currencySymbol:
-          type: string
-        balance:
-          type: string
-        equity:
-          type: string
-        ct_login_id:
-          type: string
-        ct_login_password:
-          type: string
-      required:
-        - accountId
-        - platform
-        - account
-        - backend
-        - accountType
-        - currency
-        - currencySymbol
-        - balance
-        - equity
-        - ct_login_id
-        - ct_login_password
-    OrderResponseDTO:
-      title: OrderResponseDTO
-      type: object
-      properties:
-        orderId:
-          type: integer
-        currency:
-          type: string
         currentPrice:
           type: number
           format: float
         direction:
-          type: string
+          type: integer
+          format: int32
         expiryDate:
           type: string
-          format: date-time
         goodTill:
           type: string
-          format: date-time
         iDOLimitOrderPrice:
-          type: string
+          type: number
+          format: float
         iDOStopOrderPrice:
-          type: string
-        iDOGuaranteed:
-          type: boolean
+          type: number
+          format: float
         isTriggered:
           type: boolean
         limitOrderPrice:
-          type: string
+          type: number
+          format: float
         margin:
           type: number
           format: float
-        marketID:
+        market:
+          type: string
+        marketId:
           type: integer
+          format: int32
         marketTradable:
           type: boolean
+        orderId:
+          type: integer
+          format: int32
         period:
           type: string
         creationTimeUTC:
           type: string
-          format: date-time
         quoteId:
           type: integer
+          format: int32
         quoteMode:
           type: string
         stake:
           type: integer
+          format: int32
         status:
           type: integer
+          format: int32
         stopOrderPrice:
-          type: string
+          type: number
+          format: float
         type:
           type: string
         trailingPoint:
           type: integer
+          format: int32
         isGuarantee:
           type: boolean
         isForceOpen:
@@ -574,9 +586,145 @@ components:
         currencySymbol:
           type: string
       required:
-        - orderId
-        - currency
+        - currentPrice
         - direction
+        - expiryDate
+        - goodTill
+        - iDOLimitOrderPrice
+        - iDOStopOrderPrice
+        - isTriggered
+        - limitOrderPrice
+        - margin
+        - market
+        - marketId
+        - marketTradable
+        - orderId
+        - period
+        - creationTimeUTC
+        - quoteId
+        - quoteMode
+        - stake
+        - status
+        - stopOrderPrice
+        - type
+        - trailingPoint
+        - isGuarantee
+        - isForceOpen
+        - orderPriceModeEnum
+        - currencySymbol
+
+    AccountSummaryResponseDTO:
+      title: AccountSummaryResponseDTO
+      type: object
+      properties:
+        accountId:
+          type: integer
+          format: int32
+        platformId:
+          type: integer
+          format: int32
+        accountValuation:
+          type: number
+          format: float
+        fundedPercentage:
+          type: string
+        margin:
+          type: integer
+          format: int32
+        openPnLQuote:
+          type: integer
+          format: int32
+        accountBalance:
+          type: number
+          format: float
+        credit:
+          type: number
+          format: float
+        waivedMargin:
+          type: number
+          format: float
+        resources:
+          type: number
+          format: float
+        changeIMR:
+          type: number
+          format: float
+        variationMarginRequired:
+          type: number
+          format: float
+        marginPercent:
+          type: number
+          format: float
+        calculatedUTCTicks:
+          type: integer
+          format: int64
+        hasError:
+          type: boolean
+      required:
+        - accountId
+        - platformId
+        - accountValuation
+        - fundedPercentage
+        - margin
+        - openPnLQuote
+        - accountBalance
+        - credit
+        - waivedMargin
+        - resources
+        - changeIMR
+        - variationMarginRequired
+        - marginPercent
+        - calculatedUTCTicks
+        - hasError
+    OrderResponseDTO:
+      title: OrderResponseDTO
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        marketId:
+          type: integer
+          format: int32
+        quoteId:
+          type: integer
+          format: int32
+        price:
+          type: number
+          format: float
+        stake:
+          type: integer
+          format: int32
+        direction:
+          type: integer
+          format: int32
+        limitOrderPrice:
+          type: number
+          format: float
+        stopOrderPrice:
+          type: number
+          format: float
+        trailingPoint:
+          type: integer
+          format: float
+        createdAt:
+          type: string
+          format: date-time
+        positionId:
+          type: integer
+          format: int32
+      required:
+        - id
+        - marketId
+        - quoteId
+        - price
+        - stake
+        - direction
+        - limitOrderPrice
+        - stopOrderPrice
+        - trailingPoint
+        - createdAt
+        - positionId
     SessionDTO:
       title: SessionDTO
       type: object
@@ -585,6 +733,7 @@ components:
           type: string
         accountId:
           type: integer
+          format: int32
       required:
         - state
     ResponseDTO:
@@ -593,6 +742,7 @@ components:
       properties:
         status:
           type: integer
+          format: int32
         message:
           type: string
       required:
@@ -610,12 +760,22 @@ components:
       required:
         - type
         - data
+    TextDataDTO:
+      title: TextDataDTO
+      type: object
+      x-class-extra-annotation: '@KafkaTopic(KafkaTopics.TOPIC_TEXT_DATA)'
+      properties:
+        message:
+          type: string
+      required:
+        - message
     SubscriptionsRequestDTO:
       title: SubscriptionsRequestDTO
       type: object
       properties:
         quoteId:
           type: integer
+          format: int32
         status:
           type: boolean
       required:
@@ -627,17 +787,22 @@ components:
       properties:
         marketId:
           type: integer
+          format: int32
         quoteId:
           type: integer
+          format: int32
         price:
           type: number
           format: float
         stake:
           type: integer
+          format: int32
         direction:
           type: integer
+          format: int32
         orderMode:
           type: integer
+          format: int32
           description: '0 - market order, 1 - limit order, 2 - stop order, 4 - close position'
         limitOrderPrice:
           type: number
@@ -709,12 +874,11 @@ components:
         - ct_login_password
 x-internal: true
 tags:
-  - name: accounts
+  - name: account
   - name: demo
   - name: instruments
   - name: kafka
   - name: live
   - name: orders
-  - name: positions
   - name: subscriptions
   - name: users

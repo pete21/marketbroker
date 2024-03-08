@@ -1,6 +1,10 @@
 package com.piotr.marketbroker.application.event.handler
 
 import com.piotr.marketbroker.application.event.AccountDetailsEvent
+import com.piotr.marketbroker.application.mapper.AccountDetailsMapper.mapToPositionResponseDto
+import com.piotr.marketbroker.application.mapper.AccountDetailsMapper.mapToOpeningOrderResponseDto
+import com.piotr.marketbroker.application.model.OpeningOrderResponseDTO
+import com.piotr.marketbroker.application.model.PositionResponseDTO
 import com.piotr.marketbroker.application.websocket.message.OpeningOrdersRecord
 import com.piotr.marketbroker.application.websocket.message.PositionsRecord
 import org.springframework.context.event.EventListener
@@ -16,22 +20,26 @@ class AccountDetailsHandler {
     @EventListener
     fun handleAccountDetailsEvent(event: AccountDetailsEvent) {
         if (event.positions.isNotEmpty()) positions = event.positions.associateBy { it.positionId }
-        if (event.openingOrders.isNotEmpty()) openingOrders = event.openingOrders.associateBy { it.orderID }
+        if (event.openingOrders.isNotEmpty()) openingOrders = event.openingOrders.associateBy { it.orderId }
     }
 
-    fun GetPositions(): List<PositionsRecord> {
-        return positions.values.toList()
+    fun getPositions(): List<PositionResponseDTO> {
+        return positions.values.map { mapToPositionResponseDto(it) }
     }
 
-    fun GetPositionByPositionId(positionID: Int): PositionsRecord? {
-        return positions[positionID]
+    fun positionExists(positionId: Int): Boolean {
+        return positions.contains(positionId)
     }
 
-    fun GetOrders(): List<OpeningOrdersRecord> {
-        return openingOrders.values.toList()
+    fun getPositionByPositionId(positionId: Int): PositionsRecord? {
+        return positions[positionId]
     }
 
-    fun GetOpeningOrderByOrderId(orderID: Int): OpeningOrdersRecord? {
+    fun getOpeningOrders(): List<OpeningOrderResponseDTO> {
+        return openingOrders.values.map { mapToOpeningOrderResponseDto(it) }
+    }
+
+    fun getOpeningOrderByOrderId(orderID: Int): OpeningOrdersRecord? {
         return openingOrders[orderID]
     }
 }

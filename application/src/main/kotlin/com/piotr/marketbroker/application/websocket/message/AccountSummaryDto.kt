@@ -4,16 +4,16 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class AccountSummaryDto (
     @JsonProperty("AccountID")
-    val accountID: String?,
+    val accountId: String?,
 
     @JsonProperty("PlatformID")
-    val platformID: Int,
+    val platformId: Int,
 
     @JsonProperty("AccountValuation")
     val accountValuation: Float?,
 
     @JsonProperty("FundedPercentageString")
-    val fundedPercentageString: String,
+    val fundedPercentage: String,
 
     @JsonProperty("ClientId")
     val clientId: Int,

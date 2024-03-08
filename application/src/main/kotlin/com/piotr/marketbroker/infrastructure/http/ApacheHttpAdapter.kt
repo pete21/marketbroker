@@ -34,6 +34,8 @@ class ApacheHttpAdapter {
         .setDefaultHeaders(mutableListOf(BasicHeader(
             HttpHeaders.USER_AGENT,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")))
         .build()
+//    private val responseHandler: HttpClientResponseHandler<String> = BasicHttpClientResponseHandler()
+//    private val responseHandler: HttpClientResponseHandler<Content> = ContentResponseHandler()
     // Create local HttpClientContext
     private var httpClientContext: HttpClientContext = HttpClientContext.create()
 
@@ -98,7 +100,7 @@ class ApacheHttpAdapter {
         if (body.isNotEmpty()) {
             httpRequest.entity = StringEntity(body, ContentType.APPLICATION_JSON)
         }
-//        log.info("request headers: ${request.allHeaders.joinToString("\n", "\n")}")
+
         return client.execute(httpRequest, httpClientContext)
     }
 

@@ -1,5 +1,5 @@
 package com.piotr.marketbroker.infrastructure.persistence.account
-
+/*
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id
@@ -25,3 +25,5 @@ class Account (
     val ct_login_password: String?=null,
 
 )
+
+*/

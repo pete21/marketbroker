@@ -33,9 +33,9 @@ private val subscriptionsService: SubscriptionsService
         produces = ["application/json"],
         consumes = ["application/json"]
     )
-    override fun createSubscription(subscriptionsRequestDTO: SubscriptionsRequestDTO?): ResponseEntity<Unit> {
+    override fun createSubscription(subscriptionsRequestDTO: SubscriptionsRequestDTO): ResponseEntity<Unit> {
         val result = subscriptionsService.postSubscriptions(
-            subscriptionsRequestDTO!!.quoteId, subscriptionsRequestDTO!!.status)
+            subscriptionsRequestDTO.quoteId, subscriptionsRequestDTO.status)
         return if (result) {
             ResponseEntity.ok().build()
         } else {

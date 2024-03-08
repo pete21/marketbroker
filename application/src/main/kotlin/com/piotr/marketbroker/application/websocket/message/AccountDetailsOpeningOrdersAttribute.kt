@@ -55,20 +55,18 @@ data class OpeningOrdersRecord (
     val margin: Float,
 
     @JsonProperty("Market")
-    @JsonIgnore
     val market: String,
 
     @JsonProperty("MarketID")
-    val marketID: Int,
+    val marketId: Int,
 
     @JsonProperty("MarketTradable")
     val marketTradable: Boolean,
 
     @JsonProperty("OrderID")
-    val orderID: Int,
+    val orderId: Int,
 
     @JsonProperty("Period")
-    @JsonIgnore
     val period: String,
 
     @JsonProperty("CreationTimeUTC")

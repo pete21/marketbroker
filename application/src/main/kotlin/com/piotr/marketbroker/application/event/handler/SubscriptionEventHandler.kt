@@ -33,14 +33,14 @@ class SubscriptionEventHandler (
                 try {
                     val s = subscriptionsRepository.findById(event.quoteId).orElseThrow()
                     if (!s.status) {
-                        log.warn("Instrument {} not subscribed to.", event.quoteId)
+                        log.warn("Instrument ${event.quoteId} not subscribed to.")
                     } else {
                         s.status=false
                         subscriptionsRepository.save(s)
                         log.info("Subscriptions updated")
                     }
                 } catch (e: Exception) {
-                    log.error("Unsubscribe error: {}", e)
+                    log.error("Unsubscribe error: $e")
                 }
             }
         }

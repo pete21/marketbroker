@@ -46,7 +46,7 @@ data class RequestHeaders(var headers: Map<String, String>) {
                 SEC_FETCH_DEST to DOCUMENT,
                 SEC_FETCH_MODE to NAVIGATE,
                 SEC_FETCH_SITE to CROSS_SITE,                   // "none" for demo?
-                SEC_FETCH_USER to "?1",
+//                SEC_FETCH_USER to "?1",
                 "Upgrade-Insecure-Requests" to "1",
                 HttpHeaders.ACCEPT to "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
             )

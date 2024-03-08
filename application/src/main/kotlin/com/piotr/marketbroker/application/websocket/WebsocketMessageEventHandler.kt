@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.piotr.marketbroker.application.event.AccountDetailsEvent
+import com.piotr.marketbroker.application.event.AccountSummaryEvent
 import com.piotr.marketbroker.application.event.SubscriptionEvent
 import com.piotr.marketbroker.application.event.TickData
 import com.piotr.marketbroker.application.event.TickEvent
@@ -98,6 +99,7 @@ class WebsocketMessageEventHandler(
             "accountSummary" -> try {
                 val m: AccountSummaryDto = mapper.readValue(msg.d!!)
                 log.info("${msg.t} : $m")
+                applicationEventPublisher.publishEvent(AccountSummaryEvent(m))
             } catch (e: Exception) {
                 // TODO Auto-generated catch block
                 log.error(msg.t + ": " + msg.d)
@@ -112,10 +114,8 @@ class WebsocketMessageEventHandler(
                             AccountDetailsEvent(m.positions.records, m.openingOrders.records)
                         )
                     }
-                    log.info(String.format("Positions: %d %s", m.positions.totalRecords, m.positions.records))
-                    log.info(
-                        String.format("OpeningOrders: %d %s", m.openingOrders.totalRecords, m.openingOrders.records)
-                    )
+                    log.info("Positions: ${m.positions.totalRecords} ${m.positions.records}")
+                    log.info("OpeningOrders: ${m.openingOrders.totalRecords} ${m.openingOrders.records}")
                 }
             } catch (e: Exception) {
                 // TODO Auto-generated catch block

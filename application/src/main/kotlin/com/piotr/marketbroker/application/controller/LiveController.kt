@@ -27,9 +27,9 @@ class LiveController(
         produces = ["application/json"],
         consumes = ["application/json"]
     )
-    override fun liveLogin(loginDTO: LoginDTO?): ResponseEntity<ResponseDTO> {
+    override fun liveLogin(loginDTO: LoginDTO): ResponseEntity<ResponseDTO> {
         log.info("liveLogin request: $loginDTO")
-        when (loginDTO!!.state) {
+        when (loginDTO.state) {
             "START" -> {
                 if (td365SessionService.liveLogin()) {
                     log.info("liveLogin OK")
@@ -66,10 +66,10 @@ class LiveController(
         produces = ["application/json"],
         consumes = ["application/json"]
     )
-    override fun liveSession(sessionDTO: SessionDTO?): ResponseEntity<ResponseDTO> {
+    override fun liveSession(sessionDTO: SessionDTO): ResponseEntity<ResponseDTO> {
         log.info("liveSession request: $sessionDTO")
 
-        when (sessionDTO!!.state) {
+        when (sessionDTO.state) {
             "START" -> {
                 if (td365SessionService.liveSessionStart(sessionDTO!!.accountId!!)) {
                         log.info("liveSession started")

@@ -38,7 +38,7 @@ openApiGenerate {
     configFile.set("$projectDir/src/main/resources/config.json")
 
     globalProperties.set(mapOf(
-        Pair("apis", "Accounts,Demo,Instruments,Kafka,Live,Orders,Positions,Subscriptions"), //no value or comma-separated api names
+        Pair("apis", "Account,Demo,Instruments,Kafka,Live,Orders,Positions,Subscriptions"), //no value or comma-separated api names
         Pair("models", ""), //no value or comma-separated api names
     ))
 }

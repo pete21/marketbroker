@@ -1,5 +1,5 @@
 package com.piotr.marketbroker.infrastructure.persistence.accountdetailsposition
-
+/*
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id
@@ -59,3 +59,6 @@ class AccountDetailsPosition (
 
     val isTotal: Boolean=false
 )
+
+
+ */

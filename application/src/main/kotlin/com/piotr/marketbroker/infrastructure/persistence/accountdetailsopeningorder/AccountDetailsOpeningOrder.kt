@@ -1,5 +1,5 @@
 package com.piotr.marketbroker.infrastructure.persistence.accountdetailsopeningorder
-
+/*
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id
@@ -71,3 +71,5 @@ class AccountDetailsOpeningOrder (
     val currencyCode: String=""
 
 )
+
+ */

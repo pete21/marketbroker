@@ -1,9 +1,10 @@
 package com.piotr.marketbroker.application.controller
 
-import com.piotr.marketbroker.application.model.AccountResponseDTO
+import com.piotr.marketbroker.application.event.handler.AccountDetailsHandler
+import com.piotr.marketbroker.application.event.handler.AccountSummaryHandler
+import com.piotr.marketbroker.application.model.AccountSummaryResponseDTO
+import com.piotr.marketbroker.application.model.OpeningOrderResponseDTO
 import com.piotr.marketbroker.application.model.PositionResponseDTO
-import com.piotr.marketbroker.application.service.AccountsService
-import com.piotr.marketbroker.application.service.PositionsService
 import com.piotr.marketbroker.configuration.security.properties.SecurityRole
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
@@ -17,21 +18,29 @@ private val log = KotlinLogging.logger(AccountController::class.toString())
 
 @RestController
 class AccountController(
-    private val accountsService: AccountsService,
-    private val positionsService: PositionsService
-): AccountsApi, PositionsApi {
+    private val accountSummaryHandler: AccountSummaryHandler,
+    private val accountDetailsHandler: AccountDetailsHandler
+): AccountApi {
 
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
-    @GetMapping(value = ["/accounts"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    override fun getAccounts(): ResponseEntity<List<AccountResponseDTO>> {
-        log.info("getAccounts request")
-        return ResponseEntity(accountsService.getAccounts(), HttpStatus.OK)
+    @GetMapping(value = ["/account/summary"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    override fun getAccountSummary(): ResponseEntity<AccountSummaryResponseDTO> {
+        log.info("getAccountSummery request")
+        return ResponseEntity(accountSummaryHandler.getSummary(), HttpStatus.OK)
     }
 
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
-    @GetMapping(value = ["/positions"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping(value = ["/account/opening-orders"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    override fun getOpeningOrders(): ResponseEntity<List<OpeningOrderResponseDTO>> {
+        log.info("getPositions request")
+        return ResponseEntity(accountDetailsHandler.getOpeningOrders(), HttpStatus.OK)
+    }
+
+    @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
+    @GetMapping(value = ["/account/positions"], produces = [MediaType.APPLICATION_JSON_VALUE])
     override fun getPositions(): ResponseEntity<List<PositionResponseDTO>> {
         log.info("getPositions request")
-        return ResponseEntity(positionsService.getPosition(), HttpStatus.OK)
+        return ResponseEntity(accountDetailsHandler.getPositions(), HttpStatus.OK)
     }
+
 }

@@ -1,5 +1,5 @@
 package com.piotr.marketbroker.application.service
-
+/*
 import com.piotr.marketbroker.application.mapper.PositionMapper
 import com.piotr.marketbroker.application.model.PositionResponseDTO
 import com.piotr.marketbroker.infrastructure.persistence.accountdetailsposition.AccountDetailsPosition
@@ -23,3 +23,6 @@ class PositionsService(
     }
 
 }
+
+
+ */

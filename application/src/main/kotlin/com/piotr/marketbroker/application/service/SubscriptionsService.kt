@@ -1,6 +1,7 @@
 package com.piotr.marketbroker.application.service
 
 import com.piotr.marketbroker.application.websocket.WebsocketService
+import com.piotr.marketbroker.common.unwrap
 import com.piotr.marketbroker.infrastructure.persistence.marketquote.SpringDataMarketQuotesRepository
 import com.piotr.marketbroker.infrastructure.persistence.subscription.SpringDataSubscriptionsRepository
 import mu.KotlinLogging
@@ -22,8 +23,15 @@ class SubscriptionsService(
 
 
     fun postSubscriptions(quoteId: Int, status: Boolean): Boolean {
-        log.info("postSubscriptions request: {} {}", quoteId, status)
-        return websocketService.subscribe(quoteId, status)
+        log.info("postSubscriptions request: $quoteId $status")
+        val subscription = subscriptionsRepository.findById(quoteId).unwrap()
+        return if (subscription!=null && subscription.status!=status) {
+            websocketService.subscribe(quoteId, status)
+            true
+        } else {
+            log.info("postSubscriptions request: $quoteId already $status")
+            false
+        }
     }
 
 }

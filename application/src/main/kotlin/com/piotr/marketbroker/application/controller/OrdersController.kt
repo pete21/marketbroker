@@ -2,7 +2,6 @@ package com.piotr.marketbroker.application.controller
 
 import com.piotr.marketbroker.application.model.OrderRequestDTO
 import com.piotr.marketbroker.application.model.OrderResponseDTO
-import com.piotr.marketbroker.application.service.OpeningOrdersService
 import com.piotr.marketbroker.application.service.OrdersService
 import com.piotr.marketbroker.configuration.security.properties.SecurityRole
 import com.piotr.marketbroker.infrastructure.persistence.keys.KeysRepository
@@ -11,18 +10,18 @@ import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
-import java.time.Instant
+import java.time.LocalDateTime
 
 private val log = KotlinLogging.logger(OrdersController::class.toString())
 
 @RestController
 class OrdersController(
     private val keysRepository: KeysRepository,
-    private val ordersService: OrdersService,
-    private val openingOrdersService: OpeningOrdersService
+    private val ordersService: OrdersService
 ): OrdersApi {
 
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
@@ -30,9 +29,9 @@ class OrdersController(
         method = [RequestMethod.DELETE],
         value = ["/orders/{id}"]
     )
-    override fun deleteOrderById(id: Int): ResponseEntity<Unit> {
-        log.info("deleteOrdersId request")
-        val result = ordersService.DeleteOrder(id)
+    override fun deleteOrderById(@PathVariable("id") id: Int): ResponseEntity<Unit> {
+        log.info("deleteOrderId request: $id")
+        val result = ordersService.deleteOrder(id)
         return if (result) {
             ResponseEntity.ok().build()
         } else {
@@ -48,7 +47,7 @@ class OrdersController(
     )
     override fun listOrders(): ResponseEntity<List<OrderResponseDTO>> {
         log.info("listOrders request")
-        return ResponseEntity(openingOrdersService.getOrders(), HttpStatus.OK)
+        return ResponseEntity(ordersService.getOrders(), HttpStatus.OK)
     }
 
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
@@ -56,9 +55,9 @@ class OrdersController(
         method = [RequestMethod.POST],
         value = ["/orders/{id}"]
     )
-    override fun getOrderById(id: Int): ResponseEntity<Unit> {
-        log.info("deleteOrdersId request")
-        val result = ordersService.GetOrder(id)
+    override fun getOrderById(@PathVariable("id") id: Int): ResponseEntity<Unit> {
+        log.info("getOrderById request: $id")
+        val result = ordersService.getOrder(id)
         return if (result) {
             ResponseEntity.ok().build()
         } else {
@@ -72,9 +71,9 @@ class OrdersController(
         value = ["/orders"],
         consumes = ["application/json"]
     )
-    override fun createOrder(orderRequestDTO: OrderRequestDTO?): ResponseEntity<Unit> {
+    override fun createOrder(orderRequestDTO: OrderRequestDTO): ResponseEntity<Unit> {
 
-        val lastTick = keysRepository.get(orderRequestDTO!!.quoteId)
+        val lastTick = keysRepository.get(orderRequestDTO.quoteId)
         if (lastTick == null) {
             log.error("Order failed. No tick data for: " + orderRequestDTO.quoteId)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
@@ -95,13 +94,13 @@ class OrdersController(
                     orderRequestDTO.limitOrderPrice,
                     orderRequestDTO.stopOrderPrice,
                     orderRequestDTO.trailingPoint,
-                    Instant.now().epochSecond,
+                    LocalDateTime.now(),
                     lastTick.key,
                     null,
                     null,
                     0
                 )
-                ordersService.RequestTrade(order)
+                ordersService.requestTrade(order)
                 return ResponseEntity.ok().build()
 
             }
@@ -118,20 +117,20 @@ class OrdersController(
                     orderRequestDTO.limitOrderPrice,
                     orderRequestDTO.stopOrderPrice,
                     0,
-                    Instant.now().epochSecond,
+                    LocalDateTime.now(),
                     lastTick.key,
                     null,
                     null,
                     0
                 )
-                ordersService.InsertOpenOrder(order)
+                ordersService.insertOpenOrder(order)
                 return ResponseEntity.ok().build()
 
             }
 
             2-> {}                                          //Open order stop + SL + TP
 
-            4 -> {                                          //Close open order
+            4 -> {                                          //Close open position
                 val order = Order(
                     0,
                     orderRequestDTO.marketId,
@@ -143,19 +142,19 @@ class OrdersController(
                     0f,
                     0f,
                     0,
-                    Instant.now().epochSecond,
+                    LocalDateTime.now(),
                     lastTick.key,
                     null,
                     null,
                     orderRequestDTO.positionId
                 )
-                ordersService.InsertClosePosition(order)
+                ordersService.insertClosePosition(order)
                 return ResponseEntity.ok().build()
 
             }
 
             else -> {
-                log.error("Order failed. Bad orderMode: " + orderRequestDTO.orderMode)
+                log.error("Order failed. Bad orderMode: ${orderRequestDTO.orderMode}")
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
             }
         }
