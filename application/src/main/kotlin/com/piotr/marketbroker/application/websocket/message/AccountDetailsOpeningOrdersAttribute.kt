@@ -21,7 +21,6 @@ data class AccountDetailsOpeningOrdersAttribute(
 data class OpeningOrdersRecord (
 
     @JsonProperty("Currency")
-    @JsonIgnore
     private val currency: String,
 
     @JsonProperty("CurrentPrice")
@@ -102,10 +101,10 @@ data class OpeningOrdersRecord (
     @JsonProperty("OrderPriceModeEnum")
     val orderPriceModeEnum: String,
 
+    @JsonIgnore
     @JsonProperty("CurrencySymbol")
     val currencySymbol: String,
 
     @JsonProperty("CurrencyCode")
-    @JsonIgnore
     val currencyCode: String
 )

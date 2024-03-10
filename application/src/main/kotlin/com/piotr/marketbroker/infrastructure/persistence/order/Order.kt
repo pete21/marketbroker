@@ -22,10 +22,10 @@ class Order(
 //    val orderModeID: Int,           //orderModeID: 0 - market order, 1 - limit order, 2 - stop order
     val limitOrderPrice: Float=0f,
     val stopOrderPrice: Float=0f,
-                                                                                    //     float IDOLimitOrderPrice;
-                                                                                    //     float IDOStopOrderPrice;
+//     float IDOLimitOrderPrice;
+//     float IDOStopOrderPrice;
     val trailingPoint: Int=0,
-    val createdAt: LocalDateTime,
+    val createdAt: LocalDateTime = LocalDateTime.now(),
 
     @Transient
     val key: String?=null,

@@ -134,24 +134,24 @@ class OrdersService(
             iDOStopOrderPrice = order.stopOrderPrice.toString()
         )
 
-        val httpResponse: HttpAdapterResponse
+        var httpResponse: HttpAdapterResponse = HttpAdapterResponse(0, "")
         try {
             val jsonString = mapper.writeValueAsString(insertOpenOrderRequestDTO)
             log.info("Open order request: $jsonString")
             httpResponse = httpAdapter.postRequest(INSERT_OPEN_ORDER, jsonString, RequestHeaders.postHeaders)
         } catch (e: Exception) {
-            log.error("RequestTrade error")
+            log.error("RequestTrade error: ${httpResponse.statusCode} ${httpResponse.body}")
             // TODO Auto-generated catch block
             return false
         }
         val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
-        log.info("Market order response: $response")
+        log.info("Open order response: $response")
         try {
             val openOrderRequest: OpenOrderRequest = mapper.readValue(response)
-            order.openOrderRequest=openOrderRequest
+            order.openOrderRequest = openOrderRequest
             ordersRepository.save(order)
         } catch (e: Exception) {
-            log.error("RequestTrade response mapping error")
+            log.error("RequestTrade response mapping error: $e")
             // TODO Auto-generated catch block
             return false
         }
@@ -159,25 +159,27 @@ class OrdersService(
     }
 
     fun deleteOrder(orderId: Int): Boolean {
+        var httpResponse: HttpAdapterResponse = HttpAdapterResponse(0, "")
         try {
             log.info("DeleteOrder request: $orderId")
-            val httpResponse =
+            httpResponse =
                 httpAdapter.postRequest(DELETE_ORDER, String.format(ORDER_QUERY, orderId), RequestHeaders.postHeaders)
             return httpResponse.statusCode == 200
         } catch (e: Exception) {
-            log.error("DeleteOrder error")
+            log.error("DeleteOrder error: ${httpResponse.statusCode} ${httpResponse.body}")
             return false
         }
     }
 
     fun getOrder(id: Int): Boolean {
+        var httpResponse: HttpAdapterResponse = HttpAdapterResponse(0, "")
         try {
             log.info("GetOrder request: $id")
-            val httpResponse =
+            httpResponse =
                 httpAdapter.postRequest(GET_OPEN_ORDER, String.format(ORDER_QUERY, id), RequestHeaders.postHeaders)
             return httpResponse.statusCode == 200
         } catch (e: Exception) {
-            log.error("GetOrder error")
+            log.error("GetOrder error: ${httpResponse.statusCode} ${httpResponse.body}")
             return false
         }
     }
@@ -194,7 +196,7 @@ class OrdersService(
             order.tradeRequest = tradeRequest
             ordersRepository.save(order)
         } catch (e: Exception) {
-            log.error("TradeRequest mapping error")
+            log.error("TradeRequest mapping error: $e")
             // TODO Auto-generated catch block
             return false
         }

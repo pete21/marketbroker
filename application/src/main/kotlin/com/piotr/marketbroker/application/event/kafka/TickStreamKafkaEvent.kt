@@ -7,20 +7,17 @@ import com.piotr.marketbroker.infrastructure.persistence.tick.Tick
 
 @KafkaMessage(type = "TICKSTREAMKAFKAEVENT", sourceSystem = "TICKSTREAM_PRODUCER")
 @SendToTopic(topicSuffix = KafkaTopics.TOPIC_TICKSTREAM)
-class TickStreamKafkaEvent(val p: List<PriceTick>) {
-    companion object {
-        fun invoke(t: List<Tick>): TickStreamKafkaEvent {
-            return TickStreamKafkaEvent(t.map { tick: Tick ->
-                PriceTick(tick.quoteId, tick.bid, tick.ask, tick.mid, tick.time, tick.millis)
-            } )
-        }
-    }
-}
-class PriceTick (
+class TickStreamKafkaEvent(
     val q: Int,
     val b: Float,
     val a: Float,
     val m: Float,
     val t: Int,
-    val mi: Int,
-)
+    val mi: Int
+) {
+    companion object {
+        fun invoke(tick: Tick): TickStreamKafkaEvent {
+            return TickStreamKafkaEvent(tick.quoteId, tick.bid, tick.ask, tick.mid, tick.time, tick.millis)
+        }
+    }
+}

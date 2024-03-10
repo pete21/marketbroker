@@ -14,7 +14,7 @@ management:
     web:
       base-path: /
       exposure:
-        include: health,info,prometheus
+        include: health,info,prometheus,startup
   server:
     port: 8090
   tracing:
@@ -61,7 +61,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: "https://sso.keycloak-01.dev.v2.symmetrical.ai/auth/realms/mobile"
+          issuer-uri: "https://auth-server:9000"
           jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
       client:
         registration:
@@ -157,10 +157,6 @@ ai.symmetrical:
     producer:
       enabled: true
       scan-package: com.piotr.marketbroker.application.event
-
-
-websocket:
-  server: "wss://demo-api.finsa.com.au/"
 
 
 java:

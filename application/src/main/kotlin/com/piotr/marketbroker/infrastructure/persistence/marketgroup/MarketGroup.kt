@@ -7,8 +7,7 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name = "marketgroup")
-class
-MarketGroup (
+class MarketGroup (
     @Id
     @JsonProperty("ID")
     val id: Int=0,

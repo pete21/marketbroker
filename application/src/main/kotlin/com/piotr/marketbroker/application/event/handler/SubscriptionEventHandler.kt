@@ -1,5 +1,6 @@
 package com.piotr.marketbroker.application.event.handler
 
+import com.piotr.marketbroker.application.event.SessionClosedEvent
 import com.piotr.marketbroker.application.event.SubscriptionEvent
 import com.piotr.marketbroker.infrastructure.persistence.keys.KeysRepository
 import com.piotr.marketbroker.infrastructure.persistence.subscription.SpringDataSubscriptionsRepository
@@ -44,6 +45,12 @@ class SubscriptionEventHandler (
                 }
             }
         }
+    }
+
+    @Async
+    @EventListener
+    fun removeSubscriptions(event: SessionClosedEvent) {
+        subscriptionsRepository.deleteAll()
     }
 
 }

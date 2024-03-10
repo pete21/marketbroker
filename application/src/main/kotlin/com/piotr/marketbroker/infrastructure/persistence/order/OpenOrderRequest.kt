@@ -64,10 +64,10 @@ class OpenOrderRequest (
     val isForceOpen: Boolean=false,
 
     @JsonProperty("IDOID")
-    val iDOID: String="",
+    val iDOID: String?="",
 
     @JsonProperty("IDOOrderMode")
-    val iDOOrderMode: String="",
+    val iDOOrderMode: String?="",
 
     @JsonProperty("IDOTradeMode")
     val iDOTradeMode: String="",

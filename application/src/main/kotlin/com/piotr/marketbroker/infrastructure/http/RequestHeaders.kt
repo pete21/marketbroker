@@ -32,11 +32,11 @@ data class RequestHeaders(var headers: Map<String, String>) {
     fun setHeader(k: String, v:String) {
         headers = headers.plus(Pair(k,v))
     }
-/*
+
     fun removeHeader(k: String) {
-        headers.keys.remove(k)
+        headers = headers.filterKeys { it!=k }
     }
- */
+
 
     companion object {
         val redirectHeaders: RequestHeaders = RequestHeaders(

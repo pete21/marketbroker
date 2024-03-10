@@ -33,6 +33,6 @@ class MarketbrokerApplication {
     @Async
     @EventListener
     fun onReady(event: ApplicationReadyEvent) {
-        log.info("Application is ready {}", event.toString())
+        log.info("Application is ready: $event")
     }
 }

@@ -22,10 +22,12 @@ data class AccountDetailsDto(
 //    @JsonProperty("Alerts")
 //    val alerts: Any?,
 
-    @JsonProperty("ClientLanguageId")
-    val clientLanguageId: Int,
+//    @JsonIgnore
+//    @JsonProperty("ClientLanguageId")
+//    val clientLanguageId: Int,
 
-    @JsonProperty("CalculatedUTCTicks")
-    val calculatedUtcTicks: Long
+//    @JsonIgnore
+//    @JsonProperty("CalculatedUTCTicks")
+//    val calculatedUtcTicks: Long
 )
 

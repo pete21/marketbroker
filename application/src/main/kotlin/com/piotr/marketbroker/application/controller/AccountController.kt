@@ -25,8 +25,13 @@ class AccountController(
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @GetMapping(value = ["/account/summary"], produces = [MediaType.APPLICATION_JSON_VALUE])
     override fun getAccountSummary(): ResponseEntity<AccountSummaryResponseDTO> {
-        log.info("getAccountSummery request")
-        return ResponseEntity(accountSummaryHandler.getSummary(), HttpStatus.OK)
+        log.info("getAccountSummary request")
+        val accountSummary = accountSummaryHandler.getSummary()
+        return if (accountSummary!=null) {
+            ResponseEntity(accountSummary, HttpStatus.OK)
+        } else {
+            ResponseEntity.notFound().build()
+        }
     }
 
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")

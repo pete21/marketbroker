@@ -21,7 +21,7 @@ class TickEventHandler (
     @EventListener
     fun handleTickEvent(event: TickEvent) {
         val ticks = TickMapper.toTick(event.ticks)
-        producer.produce(TickStreamKafkaEvent.invoke(ticks), null, null)
+        ticks.forEach {producer.produce(TickStreamKafkaEvent.invoke(it), null, null) }
 
         tickRepository.saveAll(ticks)
 

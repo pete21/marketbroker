@@ -43,7 +43,7 @@ class InstrumentsService(
     }
 
     fun postInstrumentGroups() {
-        val response = httpAdapter.postRequest("GetMarketSuperGroup", "", RequestHeaders.postHeaders);
+        val response = httpAdapter.postRequest("GetMarketSuperGroup", "{}", RequestHeaders.postHeaders);
         saveMarketGroups(response.body.substring(5, response.body.length - 1))
         val groupIDs = springDataMarketGroupRepository.findAll()
             .filter { m -> !m.isWhiteLabelPopularMarket }

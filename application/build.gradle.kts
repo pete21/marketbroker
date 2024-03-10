@@ -96,6 +96,9 @@ dependencies {
 //    implementation("org.apache.logging.log4j:log4j-api:2.23.0")
 //    implementation("org.apache.logging.log4j:log4j-core:2.23.0")
 
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.1")
+
 }
 
 tasks.processAot.configure {

@@ -3,6 +3,7 @@ package com.piotr.marketbroker.application.websocket
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.piotr.marketbroker.application.event.AccountDetailsEvent
@@ -34,6 +35,7 @@ class WebsocketMessageEventHandler(
 
     private val stringBuilder = StringBuilder(2000)
     private val mapper = jacksonObjectMapper()
+        .registerModule(JavaTimeModule())
         .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
@@ -72,7 +74,7 @@ class WebsocketMessageEventHandler(
                     applicationEventPublisher.publishEvent(SubscriptionEvent(m.quoteId, m.action, m.result))
                 }
             } catch (e: Exception) {
-                // TODO Auto-generated catch block
+                log.error(e.toString())
                 log.error(msg.t + ": " + msg.d)
             }
 
@@ -92,7 +94,7 @@ class WebsocketMessageEventHandler(
                 }
                 applicationEventPublisher.publishEvent(TickEvent(tickList))
             } catch (e: Exception) {
-                // TODO Auto-generated catch block
+                log.error(e.toString())
                 log.error(msg.t + ": " + msg.d)
             }
 
@@ -101,7 +103,7 @@ class WebsocketMessageEventHandler(
                 log.info("${msg.t} : $m")
                 applicationEventPublisher.publishEvent(AccountSummaryEvent(m))
             } catch (e: Exception) {
-                // TODO Auto-generated catch block
+                log.error(e.toString())
                 log.error(msg.t + ": " + msg.d)
             }
 
@@ -118,7 +120,7 @@ class WebsocketMessageEventHandler(
                     log.info("OpeningOrders: ${m.openingOrders.totalRecords} ${m.openingOrders.records}")
                 }
             } catch (e: Exception) {
-                // TODO Auto-generated catch block
+                log.error(e.toString())
                 log.error(msg.t + ": " + msg.d)
             }
 

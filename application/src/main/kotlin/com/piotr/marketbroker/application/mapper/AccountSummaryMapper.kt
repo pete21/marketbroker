@@ -20,7 +20,7 @@ object AccountSummaryMapper {
 
         accountBalance = account.accountBalance ?: 0f,
 
-        credit = account.credit!!,
+        credit = account.credit ?: 0f,
 
         waivedMargin = account.waivedMargin ?: 0f,
 

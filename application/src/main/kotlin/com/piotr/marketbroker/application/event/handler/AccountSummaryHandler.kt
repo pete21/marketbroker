@@ -1,6 +1,7 @@
 package com.piotr.marketbroker.application.event.handler
 
 import com.piotr.marketbroker.application.event.AccountSummaryEvent
+import com.piotr.marketbroker.application.event.SessionClosedEvent
 import com.piotr.marketbroker.application.mapper.AccountSummaryMapper.mapToAccountSummaryResponseDto
 import com.piotr.marketbroker.application.model.AccountSummaryResponseDTO
 import com.piotr.marketbroker.application.websocket.message.AccountSummaryDto
@@ -10,16 +11,27 @@ import org.springframework.stereotype.Service
 
 @Service
 class AccountSummaryHandler {
-    private lateinit var accountSummary: AccountSummaryDto
+    private var accountSummary: AccountSummaryDto? = null
 
     @Async
     @EventListener
     fun handleAccountSummaryEvent(event: AccountSummaryEvent) {
-        accountSummary = event.accountSummaryDto
+        if (event.accountSummaryDto.platformId!=0) {
+            accountSummary = event.accountSummaryDto
+        }
     }
 
-    fun getSummary(): AccountSummaryResponseDTO {
-        return mapToAccountSummaryResponseDto(accountSummary)
+    fun getSummary(): AccountSummaryResponseDTO? {
+        if (accountSummary==null) {
+            return null
+        }
+        return mapToAccountSummaryResponseDto(accountSummary!!)
+    }
+
+    @Async
+    @EventListener
+    fun removeSubscriptions(event: SessionClosedEvent) {
+        accountSummary = null
     }
 
 }

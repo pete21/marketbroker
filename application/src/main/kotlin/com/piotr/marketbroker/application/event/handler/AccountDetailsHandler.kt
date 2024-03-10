@@ -1,6 +1,7 @@
 package com.piotr.marketbroker.application.event.handler
 
 import com.piotr.marketbroker.application.event.AccountDetailsEvent
+import com.piotr.marketbroker.application.event.SessionClosedEvent
 import com.piotr.marketbroker.application.mapper.AccountDetailsMapper.mapToPositionResponseDto
 import com.piotr.marketbroker.application.mapper.AccountDetailsMapper.mapToOpeningOrderResponseDto
 import com.piotr.marketbroker.application.model.OpeningOrderResponseDTO
@@ -21,6 +22,13 @@ class AccountDetailsHandler {
     fun handleAccountDetailsEvent(event: AccountDetailsEvent) {
         if (event.positions.isNotEmpty()) positions = event.positions.associateBy { it.positionId }
         if (event.openingOrders.isNotEmpty()) openingOrders = event.openingOrders.associateBy { it.orderId }
+    }
+
+    @Async
+    @EventListener
+    fun removeSubscriptions(event: SessionClosedEvent) {
+        positions = mapOf()
+        openingOrders = mapOf()
     }
 
     fun getPositions(): List<PositionResponseDTO> {

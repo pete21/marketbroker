@@ -21,11 +21,10 @@ class SubscriptionsService(
         return quoteIds.map { s -> marketQuotesRepository.findByQuoteID(s)?.toString()?:s.toString() }
     }
 
-
     fun postSubscriptions(quoteId: Int, status: Boolean): Boolean {
         log.info("postSubscriptions request: $quoteId $status")
         val subscription = subscriptionsRepository.findById(quoteId).unwrap()
-        return if (subscription!=null && subscription.status!=status) {
+        return if (subscription==null || subscription.status!=status) {
             websocketService.subscribe(quoteId, status)
             true
         } else {

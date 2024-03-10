@@ -111,6 +111,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountSummaryResponseDTO'
+        '404':
+          description: Account summary not found
       operationId: get-account-summary
       description: Get Account summary
 
