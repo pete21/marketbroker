@@ -10,7 +10,7 @@ import java.time.ZoneOffset
 object OrderMapper {
 
     fun mapOrderToOrderResponseDto(order: Order) = OrderResponseDTO (
-        orderId = order.id,
+        orderId = 0,
         marketId = order.marketId,
         quoteId = order.quoteId,
         price = order.price,

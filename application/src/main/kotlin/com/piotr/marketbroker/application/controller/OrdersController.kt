@@ -90,7 +90,7 @@ class OrdersController(
         }
 
         log.info("createOrder: $orderRequestDTO")
-        var orderResponseDto: OrderResponseDTO?
+        val orderResponseDto: OrderResponseDTO?
 
         when (orderRequestDTO.orderMode) {
             0 -> {                                          //Market order, MO+SL, MO+TP, MO+SL+TP
@@ -112,7 +112,6 @@ class OrdersController(
                     0
                 )
                 orderResponseDto = ordersService.requestTrade(order)
-
             }
 
             1 -> {                                          //Open order, OO+SL, OO+TP, OO+SL+TP
@@ -134,7 +133,6 @@ class OrdersController(
                     0
                 )
                 orderResponseDto = ordersService.insertOpenOrder(order)
-
             }
 
             2-> {                                          //Open order stop + SL + TP
