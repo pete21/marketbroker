@@ -172,6 +172,10 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponseDTO'
       description: Create order
       requestBody:
         required: true
@@ -181,7 +185,50 @@ paths:
               $ref: '#/components/schemas/OrderRequestDTO'
       tags:
         - orders
+  '/orders/{id}':
+    parameters:
+      - schema:
+          type: integer
+        name: id
+        in: path
+        required: true
+        description: orderId
+    get:
+      summary: Get Order details
+      tags:
+        - orders
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponseDTO'
+      operationId: get-order-by-id
+      description: Get order details
+    patch:
+      summary: Amend Order
+      tags:
+        - orders
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponseDTO'
+      operationId: amend-order-by-id
+      description: Amend order details
 
+    delete:
+      summary: Delete open order
+      operationId: delete-order-by-id
+      responses:
+        '200':
+          description: OK
+      description: Delete open order
+      tags:
+        - orders
   /demo/session:
     post:
       summary: Demo session controller
@@ -382,33 +429,6 @@ paths:
               $ref: '#/components/schemas/SubscriptionsRequestDTO'
       tags:
         - subscriptions
-  '/orders/{id}':
-    parameters:
-      - schema:
-          type: integer
-        name: id
-        in: path
-        required: true
-        description: orderId
-    get:
-      summary: Get Order details
-      tags:
-        - orders
-      responses:
-        '200':
-          description: OK
-      operationId: get-order-by-id
-      description: Get order details
-
-    delete:
-      summary: Delete open order
-      operationId: delete-order-by-id
-      responses:
-        '200':
-          description: OK
-      description: Delete open order
-      tags:
-        - orders
 
 components:
   schemas:
@@ -682,7 +702,7 @@ components:
       title: OrderResponseDTO
       type: object
       properties:
-        id:
+        orderId:
           type: integer
           format: int32
         marketId:
@@ -716,7 +736,7 @@ components:
           type: integer
           format: int32
       required:
-        - id
+        - orderId
         - marketId
         - quoteId
         - price

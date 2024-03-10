@@ -22,7 +22,7 @@ class TradeRequest (
     val type: String="",
 
     @JsonProperty("MarketID")
-    val marketID: Int=0,
+    val marketId: Int=0,
 
     @JsonProperty("Direction")
     val direction: String="",
@@ -43,10 +43,10 @@ class TradeRequest (
     val tradeStatus: String="",
 
     @JsonProperty("PositionID")
-    val positionID: Int=0,
+    val positionId: Int=0,
 
     @JsonProperty("ReferralID")
-    val referralID: String="",
+    val referralId: String="",
 
     @JsonProperty("CloseBets")
     @JsonIgnore
@@ -65,7 +65,7 @@ class TradeRequest (
     val limitOrderPrice: String="",
 
     @JsonProperty("OrderID")
-    val orderID: String="",
+    val orderId: String="",
 
     @JsonProperty("Status")
     val status: Int=0,

@@ -52,17 +52,27 @@ class OrdersController(
 
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
-        method = [RequestMethod.POST],
+        method = [RequestMethod.GET],
         value = ["/orders/{id}"]
     )
-    override fun getOrderById(@PathVariable("id") id: Int): ResponseEntity<Unit> {
+    override fun getOrderById(@PathVariable("id") id: Int): ResponseEntity<OrderResponseDTO> {
         log.info("getOrderById request: $id")
         val result = ordersService.getOrder(id)
-        return if (result) {
-            ResponseEntity.ok().build()
+        return if (result!=null) {
+            ResponseEntity(result, HttpStatus.OK)
         } else {
             ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
         }
+    }
+
+    @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
+    @RequestMapping(
+        method = [RequestMethod.PATCH],
+        value = ["/orders/{id}"],
+        produces = ["application/json"]
+    )
+    override fun amendOrderById(@PathVariable("id") id: Int): ResponseEntity<OrderResponseDTO> {
+        TODO("Not yet implemented")
     }
 
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
@@ -71,7 +81,7 @@ class OrdersController(
         value = ["/orders"],
         consumes = ["application/json"]
     )
-    override fun createOrder(orderRequestDTO: OrderRequestDTO): ResponseEntity<Unit> {
+    override fun createOrder(orderRequestDTO: OrderRequestDTO): ResponseEntity<OrderResponseDTO> {
 
         val lastTick = keysRepository.get(orderRequestDTO.quoteId)
         if (lastTick == null) {
@@ -80,6 +90,7 @@ class OrdersController(
         }
 
         log.info("createOrder: $orderRequestDTO")
+        var orderResponseDto: OrderResponseDTO?
 
         when (orderRequestDTO.orderMode) {
             0 -> {                                          //Market order, MO+SL, MO+TP, MO+SL+TP
@@ -90,7 +101,7 @@ class OrdersController(
                     if (orderRequestDTO.direction == -1) lastTick.bid else lastTick.ask,
                     orderRequestDTO.stake,
                     orderRequestDTO.direction,
-//                    orderRequestDTO.orderMode,
+                    0, //                    orderRequestDTO.orderMode,
                     orderRequestDTO.limitOrderPrice,
                     orderRequestDTO.stopOrderPrice,
                     orderRequestDTO.trailingPoint,
@@ -100,8 +111,7 @@ class OrdersController(
                     null,
                     0
                 )
-                ordersService.requestTrade(order)
-                return ResponseEntity.ok().build()
+                orderResponseDto = ordersService.requestTrade(order)
 
             }
 
@@ -113,7 +123,7 @@ class OrdersController(
                     orderRequestDTO.price,
                     orderRequestDTO.stake,
                     orderRequestDTO.direction,
-//                    orderRequestDTO.orderMode,
+                    1, //                    orderRequestDTO.orderMode,
                     orderRequestDTO.limitOrderPrice,
                     orderRequestDTO.stopOrderPrice,
                     0,
@@ -123,12 +133,30 @@ class OrdersController(
                     null,
                     0
                 )
-                ordersService.insertOpenOrder(order)
-                return ResponseEntity.ok().build()
+                orderResponseDto = ordersService.insertOpenOrder(order)
 
             }
 
-            2-> {}                                          //Open order stop + SL + TP
+            2-> {                                          //Open order stop + SL + TP
+                val order = Order(
+                    0,
+                    orderRequestDTO.marketId,
+                    orderRequestDTO.quoteId,
+                    orderRequestDTO.price,
+                    orderRequestDTO.stake,
+                    orderRequestDTO.direction,
+                    2, //           orderRequestDTO.orderMode,
+                    orderRequestDTO.limitOrderPrice,
+                    orderRequestDTO.stopOrderPrice,
+                    0,
+                    LocalDateTime.now(),
+                    lastTick.key,
+                    null,
+                    null,
+                    0
+                )
+                orderResponseDto = ordersService.insertOpenOrder(order)
+            }
 
             4 -> {                                          //Close open position
                 val order = Order(
@@ -138,7 +166,7 @@ class OrdersController(
                     if (orderRequestDTO.direction == -1) lastTick.bid else lastTick.ask,
                     orderRequestDTO.stake,
                     orderRequestDTO.direction,
-//                    orderRequestDTO.orderMode,
+                    4, //                    orderRequestDTO.orderMode,
                     0f,
                     0f,
                     0,
@@ -148,8 +176,7 @@ class OrdersController(
                     null,
                     orderRequestDTO.positionId
                 )
-                ordersService.insertClosePosition(order)
-                return ResponseEntity.ok().build()
+                orderResponseDto = ordersService.insertClosePosition(order)
 
             }
 
@@ -158,7 +185,7 @@ class OrdersController(
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
             }
         }
-        return ResponseEntity.ok().build()
+        return ResponseEntity(orderResponseDto, HttpStatus.OK)
 
     }
 }

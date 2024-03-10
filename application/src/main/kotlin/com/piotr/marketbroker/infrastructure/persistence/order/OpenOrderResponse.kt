@@ -11,7 +11,7 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name="openorderrequests")
-class OpenOrderRequest (
+class OpenOrderResponse (
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -20,15 +20,15 @@ class OpenOrderRequest (
 
     @JsonProperty("__type")
     val type: String="",
-    
+
     @JsonProperty("OrderID")
-    val orderID: String="",
+    val orderId: String="",
 
     @JsonProperty("QuoteID")
-    val quoteID: String?=null,
+    val quoteId: String?=null,
 
     @JsonProperty("MarketID")
-    val marketID: String?=null,
+    val marketId: String?=null,
 
     @JsonProperty("Market")
     val market: String="",
@@ -96,6 +96,6 @@ class OpenOrderRequest (
     @JsonProperty("Message")
     val message: String?=null,
 
-    @OneToOne(mappedBy = "openOrderRequest")
+    @OneToOne(mappedBy = "openOrderResponse")
     val order: Order?=null
 )

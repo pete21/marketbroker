@@ -19,7 +19,7 @@ class Order(
     val price: Float=0f,
     val stake: Int=0,                //orderStake
     val direction: Int=0,             //-1 - sell; 1-buy      -> "tradeModeID" false-buy true-sell
-//    val orderModeID: Int,           //orderModeID: 0 - market order, 1 - limit order, 2 - stop order
+    val orderModeID: Int=0,           //orderModeID: 0 - market order, 1 - limit order, 2 - stop order
     val limitOrderPrice: Float=0f,
     val stopOrderPrice: Float=0f,
 //     float IDOLimitOrderPrice;
@@ -36,7 +36,7 @@ class Order(
 
     @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "openorderrequests_id", referencedColumnName = "id")
-    var openOrderRequest: OpenOrderRequest? = null,
+    var openOrderResponse: OpenOrderResponse? = null,
 
     val positionId: Int=0
 )

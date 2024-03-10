@@ -7,12 +7,14 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.piotr.marketbroker.application.event.handler.AccountDetailsHandler
+import com.piotr.marketbroker.application.mapper.OrderMapper.mapOpenOrderResponseToOrderResponseDTO
 import com.piotr.marketbroker.application.mapper.OrderMapper.mapOrderToOrderResponseDto
+import com.piotr.marketbroker.application.mapper.OrderMapper.mapTradeRequestToOrderResponseDTO
 import com.piotr.marketbroker.application.model.OrderResponseDTO
 import com.piotr.marketbroker.infrastructure.http.ApacheHttpAdapter
 import com.piotr.marketbroker.infrastructure.http.HttpAdapterResponse
 import com.piotr.marketbroker.infrastructure.http.RequestHeaders
-import com.piotr.marketbroker.infrastructure.persistence.order.OpenOrderRequest
+import com.piotr.marketbroker.infrastructure.persistence.order.OpenOrderResponse
 import com.piotr.marketbroker.infrastructure.persistence.order.Order
 import com.piotr.marketbroker.infrastructure.persistence.order.SpringDataOrdersRepository
 import com.piotr.marketbroker.infrastructure.persistence.order.TradeRequest
@@ -40,11 +42,11 @@ class OrdersService(
         .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-    fun insertClosePosition(order: Order): Boolean {
+    fun insertClosePosition(order: Order): OrderResponseDTO? {
 //        val orderToClose = ordersRepository.findOrderByPositionId(order.positionId)
         if (!accountDetailsHandler.positionExists(order.positionId)) {
             log.warn("InsertClosePosition error: Position ${order.positionId} does not exist")
-            return false
+            return null
         }
 
         val insertClosePositionRequestDTO = InsertClosePositionRequestDTO(
@@ -62,14 +64,16 @@ class OrdersService(
             val jsonString = mapper.writeValueAsString(insertClosePositionRequestDTO)
             log.info("insertClosePosition: $jsonString")
             httpResponse = httpAdapter.postRequest(INSERT_CLOSE_POSITION, jsonString, RequestHeaders.postHeaders)
-            return saveTradeRequest(httpResponse, order)
         } catch (e: Exception) {
             log.error("InsertClosePosition error: {}", e.message)
-            return false
+            return null
         }
+        val tradeRequst = saveTradeRequest(httpResponse, order)
+        return if (tradeRequst!=null) mapTradeRequestToOrderResponseDTO(tradeRequst) else null
+
     }
 
-    fun requestTrade(order: Order): Boolean {                               //Market order
+    fun requestTrade(order: Order): OrderResponseDTO? {                               //Market order
         val limit: Boolean = order.limitOrderPrice > 0
         val stop: Boolean = order.stopOrderPrice > 0
 
@@ -99,25 +103,22 @@ class OrdersService(
             val jsonString = mapper.writeValueAsString(requestTradeDTO)
             log.info("requestTrade: $jsonString")
             httpResponse = httpAdapter.postRequest(REQUEST_TRADE, jsonString, RequestHeaders.postHeaders)
-            return saveTradeRequest(httpResponse, order)
         } catch (e: Exception) {
-            log.error("requestTrade error")
+            log.error("requestTrade error: $e")
             // TODO Auto-generated catch block
-            return false
+            return null
         }
+        val tradeRequst = saveTradeRequest(httpResponse, order)
+        return if (tradeRequst!=null) mapTradeRequestToOrderResponseDTO(tradeRequst) else null
     }
 
-
-    /*
+/*
     private void GetOpenOrderDetails(int orderId) {
-
         String query = String.format(GET_OPEN_ORDER_QUERY, orderId);
-
         HttpResponseDto httpResponseDto = tdHttpClient.postRequest(GET_OPEN_ORDER, query);
-
     }
 */
-    fun insertOpenOrder(order: Order): Boolean {
+    fun insertOpenOrder(order: Order): OrderResponseDTO? {                      // Open order or Open stop order
         val limit: Boolean = order.limitOrderPrice > 0
         val stop: Boolean = order.stopOrderPrice > 0
 
@@ -126,8 +127,9 @@ class OrdersService(
             marketQuoteID = order.quoteId,
             tradeModeID = order.direction == -1,
             orderStake = order.stake.toString(),
-            orderModeID = 1,
-            limitOrderPrice = order.price,
+            orderModeID = order.orderModeID,
+            limitOrderPrice = if (order.orderModeID==1) order.price else 0f,
+            stopOrderPrice = if (order.orderModeID==2) order.price else 0f,
             hasIfDoneOrder = limit || stop,
             iDOOrderModeID = (if (limit) 1 else 0) + (if (stop) 2 else 0),
             iDOLimitOrderPrice = order.limitOrderPrice.toString(),
@@ -137,32 +139,33 @@ class OrdersService(
         var httpResponse: HttpAdapterResponse = HttpAdapterResponse(0, "")
         try {
             val jsonString = mapper.writeValueAsString(insertOpenOrderRequestDTO)
-            log.info("Open order request: $jsonString")
+            log.info("insertOpenOrder request: $jsonString")
             httpResponse = httpAdapter.postRequest(INSERT_OPEN_ORDER, jsonString, RequestHeaders.postHeaders)
         } catch (e: Exception) {
             log.error("RequestTrade error: ${httpResponse.statusCode} ${httpResponse.body}")
             // TODO Auto-generated catch block
-            return false
+            return null
         }
         val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
-        log.info("Open order response: $response")
+        log.info("insertOpenOrder response: $response")
         try {
-            val openOrderRequest: OpenOrderRequest = mapper.readValue(response)
-            order.openOrderRequest = openOrderRequest
+            val openOrderResponse: OpenOrderResponse = mapper.readValue(response)
+            if (openOrderResponse.status!=0) return null
+            order.openOrderResponse = openOrderResponse
             ordersRepository.save(order)
+            return mapOpenOrderResponseToOrderResponseDTO(openOrderResponse)
         } catch (e: Exception) {
-            log.error("RequestTrade response mapping error: $e")
+            log.error("OpenOrderResponse mapping error: $e")
             // TODO Auto-generated catch block
-            return false
+            return null
         }
-        return true
     }
 
     fun deleteOrder(orderId: Int): Boolean {
         var httpResponse: HttpAdapterResponse = HttpAdapterResponse(0, "")
         try {
             log.info("DeleteOrder request: $orderId")
-            httpResponse =
+            val httpResponse =
                 httpAdapter.postRequest(DELETE_ORDER, String.format(ORDER_QUERY, orderId), RequestHeaders.postHeaders)
             return httpResponse.statusCode == 200
         } catch (e: Exception) {
@@ -171,16 +174,25 @@ class OrdersService(
         }
     }
 
-    fun getOrder(id: Int): Boolean {
+    fun getOrder(id: Int): OrderResponseDTO? {
         var httpResponse: HttpAdapterResponse = HttpAdapterResponse(0, "")
         try {
             log.info("GetOrder request: $id")
             httpResponse =
                 httpAdapter.postRequest(GET_OPEN_ORDER, String.format(ORDER_QUERY, id), RequestHeaders.postHeaders)
-            return httpResponse.statusCode == 200
+            val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
+            log.info("getOrder response: $response")
+            try {
+                val openOrderResponse: OpenOrderResponse = mapper.readValue(response)
+                return mapOpenOrderResponseToOrderResponseDTO(openOrderResponse)
+            } catch (e: Exception) {
+                log.error("OpenOrderResponse mapping error: $e")
+                // TODO Auto-generated catch block
+                return null
+            }
         } catch (e: Exception) {
             log.error("GetOrder error: ${httpResponse.statusCode} ${httpResponse.body}")
-            return false
+            return null
         }
     }
 
@@ -189,18 +201,18 @@ class OrdersService(
     }
 
 
-    private fun saveTradeRequest(httpResponse: HttpAdapterResponse, order: Order): Boolean {
+    private fun saveTradeRequest(httpResponse: HttpAdapterResponse, order: Order): TradeRequest? {
         val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
         try {
             val tradeRequest: TradeRequest = mapper.readValue(response)
             order.tradeRequest = tradeRequest
             ordersRepository.save(order)
+            return tradeRequest
         } catch (e: Exception) {
             log.error("TradeRequest mapping error: $e")
             // TODO Auto-generated catch block
-            return false
+            return null
         }
-        return true
     }
 
 }
@@ -274,7 +286,7 @@ internal class InsertOpenOrderRequestDTO(
     private val orderTypeID: Int = 2,
     private val orderPriceModeID: Int = 2,
     private val limitOrderPrice: Float,
-    private val stopOrderPrice: Int = 0,
+    private val stopOrderPrice: Float,
     private val hasIfDoneOrder: Boolean,
 
     @JsonProperty("IDOIsGuarantee")
@@ -296,25 +308,40 @@ internal class InsertOpenOrderRequestDTO(
         orderStake: String,
         orderModeID: Int,
         limitOrderPrice: Float,
+        stopOrderPrice: Float,
         hasIfDoneOrder: Boolean,
         iDOOrderModeID: Int,
         iDOLimitOrderPrice: String,
         iDOStopOrderPrice: String
     ) : this(1, marketID, marketQuoteID, tradeModeID, orderStake, orderModeID, 2, 2,
-        limitOrderPrice, 0, hasIfDoneOrder,
+        limitOrderPrice, stopOrderPrice, hasIfDoneOrder,
         false, iDOOrderModeID, iDOLimitOrderPrice, iDOStopOrderPrice)
 }
 
 internal class AmendOpenOrderRequestDTO(
-    private val orderID: Int,
-    private val orderStake: String,
-    private val orderModeID: Int,
-    private val orderTypeID: Int = 2,
-    private val orderPriceModeID: Int = 2,
-    private val limitOrderPrice: Float,
-    private val stopOrderPrice: Int = 0,
 
-    @JsonProperty("IDOAction")
+    @JsonProperty("orderID")
+    private val orderId: Int,
+
+    @JsonProperty("orderStake")
+    private val orderStake: String,
+
+    @JsonProperty("orderModeId")                        // 1 - Open limit order, 2 - Open stop limit order
+    private val orderModeID: Int,
+
+    @JsonProperty("orderTypeId")
+    private val orderTypeID: Int = 2,
+
+    @JsonProperty("orderPriceModeId")
+    private val orderPriceModeID: Int = 2,
+
+    @JsonProperty("limitOrderPrice")
+    private val limitOrderPrice: Float,
+
+    @JsonProperty("stopOrderPrice")
+    private val stopOrderPrice: Float,
+
+    @JsonProperty("iDOAction")
     private val iDOAction: Int,
 
     @JsonProperty("IDOIsGuarantee")
@@ -334,10 +361,11 @@ internal class AmendOpenOrderRequestDTO(
         orderStake: String,
         orderModeID: Int,
         limitOrderPrice: Float,
+        stopOrderPrice: Float,
         iDOAction: Int,
         iDOOrderModeID: Int,
         iDOLimitOrderPrice: String,
         iDOStopOrderPrice: String
-    ) : this(orderID, orderStake, orderModeID, 2, 2, limitOrderPrice, 0,
+    ) : this(orderID, orderStake, orderModeID, 2, 2, limitOrderPrice, stopOrderPrice,
         iDOAction, false, iDOOrderModeID, iDOLimitOrderPrice, iDOStopOrderPrice)
 }
