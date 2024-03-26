@@ -6,6 +6,7 @@ import com.piotr.marketbroker.application.service.OrdersService
 import com.piotr.marketbroker.configuration.security.properties.SecurityRole
 import com.piotr.marketbroker.infrastructure.persistence.keys.KeysRepository
 import com.piotr.marketbroker.infrastructure.persistence.order.Order
+import io.swagger.v3.oas.annotations.tags.Tag
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -24,6 +25,7 @@ class OrdersController(
     private val ordersService: OrdersService
 ): OrdersApi {
 
+    @Tag(name="orders")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.DELETE],
@@ -39,6 +41,7 @@ class OrdersController(
         }
     }
 
+    @Tag(name="orders")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.GET],
@@ -50,6 +53,7 @@ class OrdersController(
         return ResponseEntity(ordersService.getOrders(), HttpStatus.OK)
     }
 
+    @Tag(name="orders")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.GET],
@@ -65,6 +69,7 @@ class OrdersController(
         }
     }
 
+    @Tag(name="orders")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.PATCH],
@@ -75,6 +80,7 @@ class OrdersController(
         TODO("Not yet implemented")
     }
 
+    @Tag(name="orders")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.POST],

@@ -55,8 +55,8 @@ org-springframework-boot-spring-boot-starter-validation = { module = "org.spring
 org-springframework-boot-spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
 org-springframework-boot-spring-boot-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers" }
 org-springframework-cloud-spring-cloud-starter-openfeign = {module = "org.springframework.cloud:spring-cloud-starter-openfeign"}
-org-springdoc-springdoc-openapi-starter-webmvc-ui = "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0"
-org-springdoc-springdoc-openapi-starter-common = "org.springdoc:springdoc-openapi-starter-common:2.1.0"
+org-springdoc-springdoc-openapi-starter-webmvc-ui = "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0"
+org-springdoc-springdoc-openapi-starter-common = "org.springdoc:springdoc-openapi-starter-common:2.4.0"
 org-springframework-cloud-spring-cloud-contract-wiremock = "org.springframework.cloud:spring-cloud-contract-wiremock:4.0.3"
 
 org-springframework-web = { module = "org.springframework:spring-web", version.ref = "org-springframework-web" }
@@ -73,7 +73,7 @@ org-testcontainers-kafka = { module = "org.testcontainers:kafka", version.ref = 
 
 ai-symmetrical-sym-kafka = "ai.symmetrical:sym-kafka:7.3.0"
 ai-symmetrical-sym-kafka-annotations = "ai.symmetrical:sym-kafka-annotations:1.0.0"
-org-springdoc-springdoc-openapi-ui = "org.springdoc:springdoc-openapi-ui:1.7.0"
+org-springdoc-springdoc-openapi-ui = "org.springdoc:springdoc-openapi-ui:1.8.0"
 org-danilopianini-khttp = "org.danilopianini:khttp:1.3.2"
 net-datafaker-datafaker = "net.datafaker:datafaker:2.0.2"
 

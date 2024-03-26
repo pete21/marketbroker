@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.org.springframework.boot)
     kotlin("jvm") version libs.versions.org.jetbrains.kotlin
     kotlin("plugin.spring") version libs.versions.org.jetbrains.kotlin
-    id("org.openapi.generator") version "7.3.0"
+    id("org.openapi.generator") version "7.4.0"
 }
 
 
@@ -30,11 +30,15 @@ tasks.getByName<Jar>("jar") {
     enabled = true
 }
 
+// Validating a single specification
+openApiValidate {
+    inputSpec.set("$projectDir/src/main/resources/marketbroker.yaml")
+}
 
 openApiGenerate {
     generatorName.set("kotlin-spring")
     inputSpec.set("$projectDir/src/main/resources/marketbroker.yaml")
-    outputDir.set("$buildDir/generated")
+    outputDir.set("${layout.buildDirectory}/generated")
     configFile.set("$projectDir/src/main/resources/config.json")
 
     globalProperties.set(mapOf(
@@ -48,7 +52,7 @@ tasks {
         description = "Removes generated Open API code"
 
         doLast {
-            File("$buildDir/generated").deleteRecursively()
+            File("$layout.buildDirectory/generated").deleteRecursively()
         }
     }
 
@@ -59,6 +63,6 @@ tasks {
 
 sourceSets[SourceSet.MAIN_SOURCE_SET_NAME].java {
     srcDir(
-        "$buildDir/generated/src/main/kotlin"
+        "$layout.buildDirectory/generated/src/main/kotlin"
     )
 }

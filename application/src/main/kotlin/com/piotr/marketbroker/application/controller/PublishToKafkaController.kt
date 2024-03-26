@@ -6,6 +6,7 @@ import com.piotr.marketbroker.application.event.kafka.TextDataKafkaEvent
 import com.piotr.marketbroker.application.model.JsonDataDTO
 import com.piotr.marketbroker.application.model.TextDataDTO
 import com.piotr.marketbroker.configuration.security.properties.SecurityRole
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RequestMapping
@@ -18,6 +19,7 @@ class PublishToKafkaController(
     private val textProducer: FixedTopicMessageProducer<TextDataKafkaEvent>
 ): KafkaApi {
 
+    @Tag(name="kafka")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.POST],
@@ -29,6 +31,7 @@ class PublishToKafkaController(
         return ResponseEntity.ok().build()
     }
 
+    @Tag(name="kafka")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.POST],

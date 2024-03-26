@@ -71,7 +71,7 @@ spring:
             client-secret: ${AI_SYMMETRICAL_KEYCLOAK_CLIENT_SECRET}
         provider:
           keycloak:
-            token-uri: "https://sso.keycloak-01.dev.v2.symmetrical.ai/auth/realms/mobile/protocol/openid-connect/token"
+            token-uri: "https://auth-server/auth/realms/mobile/protocol/openid-connect/token"
 
   datasource:
 #    url: jdbc:h2:mem:test           #jdbc:h2:file:/data/demo
@@ -121,14 +121,16 @@ com.piotr.marketbroker:
     ignored-urls: [ /openapi.yaml,
                     /health/**, /info/**, /prometheus/**,
                     /v3/**,
-                    /v3/api-docs,
+                    /v3/api-docs/**,
                     /configuration/ui, /configuration/security,
                     /swagger-resources/**, /swagger-ui/**,
                     /webjars/**,
                     /favicon.ico,
                     /h2-console/**,
                     /*/*.png, /*/*.gif, /*/*.svg, /*/*.jpg, /*/*.css, /*/*.js ]
-
+  openapi:
+    dev-url: http://localhost:8080
+    prod-url: http://localhost:8080
 com.piotr:
 #  cors:
 #    enabled: false
@@ -185,3 +187,12 @@ org:
                 commons:
                   httpclient: debug
 
+springdoc:
+#  packages-to-scan: com.piotr.marketbroker.application.controller
+#  show-actuator: true
+  api-docs:
+#    path: /api-docs
+    enabled: true
+#  paths-to-match: /**
+swagger-ui:
+  tryItOutEnabled: true

@@ -2,6 +2,7 @@ package com.piotr.marketbroker.application.controller
 
 import com.piotr.marketbroker.application.service.InstrumentsService
 import com.piotr.marketbroker.configuration.security.properties.SecurityRole
+import io.swagger.v3.oas.annotations.tags.Tag
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -17,6 +18,7 @@ class InstrumentsController(
     private val instrumentsService: InstrumentsService
 ): InstrumentsApi {
 
+    @Tag(name="instruments")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.GET],
@@ -28,6 +30,7 @@ class InstrumentsController(
         return ResponseEntity<List<String>>(instrumentsService.getInstrumentGroups(), HttpStatus.OK)
     }
 
+    @Tag(name="instruments")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.GET],
@@ -39,6 +42,7 @@ class InstrumentsController(
         return ResponseEntity<List<String>>(instrumentsService.getInstrumentQuotes(), HttpStatus.OK)
     }
 
+    @Tag(name="instruments")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.POST],
@@ -49,6 +53,7 @@ class InstrumentsController(
         return ResponseEntity.ok().build()
     }
 
+    @Tag(name="instruments")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.POST],

@@ -6,6 +6,7 @@ import com.piotr.marketbroker.application.model.ResponseDTO
 import com.piotr.marketbroker.application.model.SessionDTO
 import com.piotr.marketbroker.application.service.TD365SessionService
 import com.piotr.marketbroker.configuration.security.properties.SecurityRole
+import io.swagger.v3.oas.annotations.tags.Tag
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -20,6 +21,7 @@ class LiveController(
     private val td365SessionService: TD365SessionService
 ): LiveApi {
 
+    @Tag(name="live")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.POST],
@@ -46,6 +48,7 @@ class LiveController(
         return ResponseEntity<ResponseDTO>(ResponseDTO(1, "Bad request"), HttpStatus.BAD_REQUEST)
     }
 
+    @Tag(name="live")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.GET],
@@ -59,6 +62,7 @@ class LiveController(
         return ResponseEntity<List<LiveAccountDTO>>(accounts, HttpStatus.OK)
     }
 
+    @Tag(name="live")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.POST],
@@ -71,7 +75,7 @@ class LiveController(
 
         when (sessionDTO.state) {
             "START" -> {
-                if (td365SessionService.liveSessionStart(sessionDTO!!.accountId!!)) {
+                if (td365SessionService.liveSessionStart(sessionDTO.accountId!!)) {
                         log.info("liveSession started")
                         return ResponseEntity<ResponseDTO>(ResponseDTO(0, "Session started"), HttpStatus.OK)
                     }

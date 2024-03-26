@@ -3,6 +3,7 @@ package com.piotr.marketbroker.application.controller
 import com.piotr.marketbroker.application.model.SubscriptionsRequestDTO
 import com.piotr.marketbroker.application.service.SubscriptionsService
 import com.piotr.marketbroker.configuration.security.properties.SecurityRole
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -15,6 +16,7 @@ class SubscriptionsController(
 private val subscriptionsService: SubscriptionsService
 ) : SubscriptionsApi {
 
+    @Tag(name="subscriptions")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.GET],
@@ -26,6 +28,7 @@ private val subscriptionsService: SubscriptionsService
 
     }
 
+    @Tag(name="subscriptions")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.POST],

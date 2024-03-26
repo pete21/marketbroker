@@ -29,7 +29,7 @@ dependencies {
     implementation(libs.ai.symmetrical.sym.kafka)
     implementation(libs.ai.symmetrical.sym.kafka.annotations)
 
-    implementation(libs.org.springframework.cloud.spring.cloud.starter.openfeign)
+//    implementation(libs.org.springframework.cloud.spring.cloud.starter.openfeign)
     implementation(libs.org.springframework.boot.spring.boot.starter.actuator)
     implementation(libs.org.springframework.boot.spring.boot.starter.oauth2.resource.server)
     implementation(libs.org.springframework.boot.spring.boot.starter.security)
@@ -83,12 +83,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springframework/spring-websocket
     implementation("org.springframework:spring-websocket:6.1.2")
 
-//Observability
+    //Observability
     // https://mvnrepository.com/artifact/com.github.loki4j/loki-logback-appender
     implementation("com.github.loki4j:loki-logback-appender:1.4.2")
-
-    // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
-    //implementation("org.apache.httpcomponents:httpclient:4.5.14")
 
     // https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5
     implementation("org.apache.httpcomponents.client5:httpclient5:5.3.1")
