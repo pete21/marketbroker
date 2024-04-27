@@ -19,7 +19,7 @@ class OpenAPIConfig {
     private val prodUrl: String? = null
 
     @Bean
-    fun myOpenAPI(): OpenAPI {
+    fun openAPI(): OpenAPI {
         val devServer = Server()
         devServer.url = devUrl
         devServer.description = "Server URL in Development environment"

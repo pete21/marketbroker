@@ -4,6 +4,7 @@ import com.piotr.marketbroker.application.event.WebsocketDisconnectedEvent
 import com.piotr.marketbroker.infrastructure.websocket.WebsocketSessionHandler
 import mu.KotlinLogging
 import org.springframework.context.event.EventListener
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 
 private val log = KotlinLogging.logger {}
@@ -16,7 +17,8 @@ class WebsocketService(
     private var login: String? = null
     private var token: String? = null
     private var websocketServer: String? = null
-    private var sessionState = false
+    private var sessionState: Boolean = false
+    private val subscribed = mutableSetOf<Int>()
 
     fun connect(login: String, token: String, websocketServer: String): Boolean {
         this.login = login
@@ -44,16 +46,19 @@ class WebsocketService(
     fun disconnect() {
         sessionState = false
         websocketSessionHandler.disconnect()
+        subscribed.clear()
     }
 
     fun subscribe(quoteId: Int, status: Boolean) {
         if (status) {
             val msg = String.format(SUBSCRIBE, quoteId)
             websocketSessionHandler.sendMsg(msg)
+            subscribed.add(quoteId)
             log.info("Subscribe: $msg")
         } else {
             val msg = String.format(UNSUBSCRIBE, quoteId)
             websocketSessionHandler.sendMsg(msg)
+            subscribed.remove(quoteId)
             log.info("Unsubscribe: $msg")
         }
     }
@@ -67,14 +72,16 @@ class WebsocketService(
 
     private fun accountSummary() {
         websocketSessionHandler.sendMsg(ACCOUNT_SUMMARY)
-        log.info("Account summary: " + ACCOUNT_SUMMARY)
+        log.info("Account summary: $ACCOUNT_SUMMARY")
     }
 
+    @Async
     @EventListener
-    private fun WebsocketDisconnectedEvent.handleDisconnect() {
+    fun handleDisconnect(event: WebsocketDisconnectedEvent) {
         log.info("handle WebsocketDisconnectedEvent")
         if (sessionState) {
             connect(login!!, token!!, websocketServer!!)
+            subscribed.forEach { subscribe(it, true) }
         }
     }
 

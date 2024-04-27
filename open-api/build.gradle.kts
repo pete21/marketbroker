@@ -38,7 +38,7 @@ openApiValidate {
 openApiGenerate {
     generatorName.set("kotlin-spring")
     inputSpec.set("$projectDir/src/main/resources/marketbroker.yaml")
-    outputDir.set("${layout.buildDirectory}/generated")
+    outputDir.set("${buildDir}/generated")
     configFile.set("$projectDir/src/main/resources/config.json")
 
     globalProperties.set(mapOf(
@@ -52,7 +52,7 @@ tasks {
         description = "Removes generated Open API code"
 
         doLast {
-            File("$layout.buildDirectory/generated").deleteRecursively()
+            File("${buildDir}/generated").deleteRecursively()
         }
     }
 
@@ -63,6 +63,6 @@ tasks {
 
 sourceSets[SourceSet.MAIN_SOURCE_SET_NAME].java {
     srcDir(
-        "$layout.buildDirectory/generated/src/main/kotlin"
+        "${buildDir}/generated/src/main/kotlin"
     )
 }

@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 
+@Tag(name="kafka")
 @RestController
 class PublishToKafkaController(
     private val jsonProducer: FixedTopicMessageProducer<JsonDataKafkaEvent>,
     private val textProducer: FixedTopicMessageProducer<TextDataKafkaEvent>
 ): KafkaApi {
 
-    @Tag(name="kafka")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.POST],
@@ -31,7 +31,6 @@ class PublishToKafkaController(
         return ResponseEntity.ok().build()
     }
 
-    @Tag(name="kafka")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.POST],

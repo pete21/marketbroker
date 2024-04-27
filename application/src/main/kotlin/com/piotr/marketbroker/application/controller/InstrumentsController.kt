@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RestController
 
 private val log = KotlinLogging.logger(InstrumentsController::class.toString())
 
+@Tag(name="instruments")
 @RestController
 class InstrumentsController(
     private val instrumentsService: InstrumentsService
 ): InstrumentsApi {
 
-    @Tag(name="instruments")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.GET],
@@ -30,7 +30,6 @@ class InstrumentsController(
         return ResponseEntity<List<String>>(instrumentsService.getInstrumentGroups(), HttpStatus.OK)
     }
 
-    @Tag(name="instruments")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.GET],
@@ -42,7 +41,6 @@ class InstrumentsController(
         return ResponseEntity<List<String>>(instrumentsService.getInstrumentQuotes(), HttpStatus.OK)
     }
 
-    @Tag(name="instruments")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.POST],
@@ -53,7 +51,6 @@ class InstrumentsController(
         return ResponseEntity.ok().build()
     }
 
-    @Tag(name="instruments")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.POST],

@@ -10,13 +10,12 @@ import java.io.IOException
 
 private val log = KotlinLogging.logger(LoggingResponseInterceptor::class.toString())
 
-
 class LoggingResponseInterceptor : HttpResponseInterceptor {
     @Throws(HttpException::class, IOException::class)
     override fun process(response: HttpResponse?, p1: EntityDetails?, context: HttpContext?) {
         log.info(buildResponse(response!!) +
-            buildHeaders(response!!.headers) +
-            buildResponseEntity(response!!, p1))
+            buildHeaders(response.headers) +
+            buildResponseEntity(response, p1))
     }
 
 }

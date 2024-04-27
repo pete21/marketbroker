@@ -4,6 +4,14 @@ import com.piotr.marketbroker.application.model.ResponseDTO
 import com.piotr.marketbroker.application.model.SessionDTO
 import com.piotr.marketbroker.application.service.TD365SessionService
 import com.piotr.marketbroker.configuration.security.properties.SecurityRole
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.extensions.Extension
+import io.swagger.v3.oas.annotations.extensions.ExtensionProperty
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -21,6 +29,23 @@ class DemoController(
 ): DemoApi {
 
     @Tag(name="demo")
+    @Operation(
+        operationId = "demoSession",
+        summary = "demoSession",
+        description = "Operation Description",
+        extensions = [
+            Extension(name = "x-operation", properties = [ExtensionProperty(name = "name", value = "demoSession")]),
+            Extension(properties = [
+                ExtensionProperty(name = "x-external", value = "true")
+            ])
+        ]
+    )
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "demoSession", content = [
+            (Content(mediaType = "application/json", array = (
+                    ArraySchema(schema = Schema(implementation = ResponseDTO::class)))))]),
+        ApiResponse(responseCode = "400", description = "Bad request", content = [Content()])
+    ])
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.POST],
@@ -52,6 +77,23 @@ class DemoController(
     }
 
     @Tag(name="config")
+    @Operation(
+        operationId = "getConfig",
+        summary = "getConfig",
+        description = "Operation Description",
+        extensions = [
+            Extension(name = "x-operation", properties = [ExtensionProperty(name = "name", value = "getConfig")]),
+            Extension(properties = [
+                ExtensionProperty(name = "x-internal", value = "true")
+            ])
+        ]
+    )
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "getConfig", content = [
+            (Content(mediaType = "application/json", array = (
+                    ArraySchema(schema = Schema(implementation = String::class)))))]),
+        ApiResponse(responseCode = "400", description = "Bad request", content = [Content()])
+    ])
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.GET],

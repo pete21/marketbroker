@@ -16,12 +16,13 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 
 private val log = KotlinLogging.logger(LiveController::class.toString())
+
+@Tag(name="live")
 @RestController
 class LiveController(
     private val td365SessionService: TD365SessionService
 ): LiveApi {
 
-    @Tag(name="live")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.POST],
@@ -48,7 +49,6 @@ class LiveController(
         return ResponseEntity<ResponseDTO>(ResponseDTO(1, "Bad request"), HttpStatus.BAD_REQUEST)
     }
 
-    @Tag(name="live")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.GET],
@@ -62,7 +62,6 @@ class LiveController(
         return ResponseEntity<List<LiveAccountDTO>>(accounts, HttpStatus.OK)
     }
 
-    @Tag(name="live")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(
         method = [RequestMethod.POST],

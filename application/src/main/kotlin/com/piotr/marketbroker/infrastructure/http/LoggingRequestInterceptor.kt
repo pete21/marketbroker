@@ -14,7 +14,7 @@ class LoggingRequestInterceptor : HttpRequestInterceptor {
     @Throws(IOException::class)
     override fun process(request: HttpRequest?, p1: EntityDetails?, context: HttpContext?) {
         log.info(buildRequest(request!!, context!!) +
-            buildHeaders(request!!.headers) +
+            buildHeaders(request.headers) +
             buildRequestEntity(request, p1))
     }
 

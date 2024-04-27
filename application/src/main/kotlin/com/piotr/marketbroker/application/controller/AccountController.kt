@@ -40,17 +40,17 @@ class AccountController(
         extensions = [
             Extension(name = "x-operation", properties = [ExtensionProperty(name = "name", value = "getAccountSummary")]),
             Extension(properties = [
-                ExtensionProperty(name = "x-internal", value = "true")
+                ExtensionProperty(name = "x-external", value = "true")
             ])
         ]
     )
     @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Found Foos", content = [
+        ApiResponse(responseCode = "200", description = "AccountSummary", content = [
             (Content(mediaType = "application/json", array = (
                     ArraySchema(schema = Schema(implementation = AccountSummaryResponseDTO::class)))))]),
         ApiResponse(responseCode = "400", description = "Bad request", content = [Content()]),
         ApiResponse(responseCode = "404", description = "Not found", content = [Content(
-            examples = [ExampleObject(value = "{\"errorMessage\": \"AccountSummary not found.\"}")])])]
+            examples = [ExampleObject(value = "{\"message\": \"AccountSummary not found.\"}")])])]
     )
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @GetMapping(value = ["/account/summary"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -73,9 +73,17 @@ class AccountController(
         extensions = [
             Extension(name = "x-operation", properties = [ExtensionProperty(name = "name", value = "getOpeningOrders")]),
             Extension(properties = [
-                ExtensionProperty(name = "x-internal", value = "false")
+                ExtensionProperty(name = "x-external", value = "true")
             ])
         ]
+    )
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "OpeningOrders", content = [
+            (Content(mediaType = "application/json", array = (
+                    ArraySchema(schema = Schema(implementation = OpeningOrderResponseDTO::class)))))]),
+        ApiResponse(responseCode = "400", description = "Bad request", content = [Content()]),
+        ApiResponse(responseCode = "404", description = "Not found", content = [Content(
+            examples = [ExampleObject(value = "{\"message\": \"OpeningOrders not found.\"}")])])]
     )
     override fun getOpeningOrders(): ResponseEntity<List<OpeningOrderResponseDTO>> {
         log.info("getPositions request")
@@ -91,9 +99,17 @@ class AccountController(
         extensions = [
             Extension(name = "x-operation", properties = [ExtensionProperty(name = "name", value = "getPositions")]),
             Extension(properties = [
-                ExtensionProperty(name = "x-internal", value = "false")
+                ExtensionProperty(name = "x-external", value = "true")
             ])
         ]
+    )
+    @ApiResponses(value = [
+        ApiResponse(responseCode = "200", description = "Positions", content = [
+            (Content(mediaType = "application/json", array = (
+                    ArraySchema(schema = Schema(implementation = PositionResponseDTO::class)))))]),
+        ApiResponse(responseCode = "400", description = "Bad request", content = [Content()]),
+        ApiResponse(responseCode = "404", description = "Not found", content = [Content(
+            examples = [ExampleObject(value = "{\"message\": \"Positions not found.\"}")])])]
     )
     override fun getPositions(): ResponseEntity<List<PositionResponseDTO>> {
         log.info("getPositions request")
