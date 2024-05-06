@@ -162,14 +162,13 @@ class OrdersService(
     }
 
     fun deleteOrder(orderId: Int): Boolean {
-        var httpResponse: HttpAdapterResponse = HttpAdapterResponse(0, "")
         try {
             log.info("DeleteOrder request: $orderId")
             val httpResponse =
                 httpAdapter.postRequest(DELETE_ORDER, String.format(ORDER_QUERY, orderId), RequestHeaders.postHeaders)
             return httpResponse.statusCode == 200
         } catch (e: Exception) {
-            log.error("DeleteOrder error: ${httpResponse.statusCode} ${httpResponse.body}")
+            log.error("DeleteOrder error: ${String.format(ORDER_QUERY, orderId)}")
             return false
         }
     }

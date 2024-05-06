@@ -1,6 +1,7 @@
 package com.piotr.marketbroker.infrastructure.http
 
 import mu.KotlinLogging
+import org.apache.hc.client5.http.classic.methods.HttpDelete
 import org.apache.hc.client5.http.classic.methods.HttpGet
 import org.apache.hc.client5.http.classic.methods.HttpOptions
 import org.apache.hc.client5.http.classic.methods.HttpPost
@@ -58,6 +59,14 @@ class ApacheHttpAdapter {
         return httpAdapterResponse
     }
 
+    fun deleteRequest(url: String, headers: RequestHeaders?) : HttpAdapterResponse {
+        log.info("getRequest: $url")
+        val response = execute(HttpDelete(url), "", headers)
+        val httpAdapterResponse = HttpAdapterResponse(response.code, EntityUtils.toString(response.entity))
+        response.close()
+        return httpAdapterResponse
+    }
+
     fun optionsRequest(url: String, headers: RequestHeaders?) : HttpAdapterResponse {
         log.info("optionsRequest: $url")
         val response = execute(HttpOptions(url), "{}", headers)
@@ -96,10 +105,6 @@ class ApacheHttpAdapter {
         return client.execute(httpRequest, httpClientContext)
     }
 
-    fun resetClient() {
-        cookieStore.clear()
-        defaultHeaders = null
-    }
 }
 
 data class HttpAdapterResponse (val statusCode: Int, val body: String)

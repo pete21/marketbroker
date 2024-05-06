@@ -7,7 +7,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 
-private val log = KotlinLogging.logger {}
+private val log = KotlinLogging.logger(WebsocketService::class.toString())
 
 @Service
 class WebsocketService(

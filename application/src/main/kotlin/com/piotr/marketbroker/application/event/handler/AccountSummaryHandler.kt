@@ -30,7 +30,7 @@ class AccountSummaryHandler {
 
     @Async
     @EventListener
-    fun removeSubscriptions(event: SessionClosedEvent) {
+    fun clearSummary(event: SessionClosedEvent) {
         accountSummary = null
     }
 

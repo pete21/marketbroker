@@ -62,7 +62,7 @@ class TD365SessionService(
     @Scheduled(fixedRateString = "\${td365ConfigurationProperties.sessionupdateinterval}")
     fun httpClientSessionUpdate() {
         if (sessionState == 1) {
-            httpAdapter.postRequest("UpdateClientSessionID", "{}", RequestHeaders.redirectHeaders)
+            httpAdapter.postRequest("UpdateClientSessionID", "{}", redirectHeaders)
         }
     }
 
@@ -74,8 +74,12 @@ class TD365SessionService(
         lowCardinalityKeyValues = ["type","demo"]
     )
     fun demoSessionStart(): Boolean {
-        if (liveLogin || sessionState==1) {
-            log.warn("Demo Session already established or logged in to live account")
+        if (liveLogin) {
+            log.warn("Logged in to live account, log out first before starting demo session")
+            return false
+        }
+        if (sessionState==1) {
+            log.warn("Demo Session already started")
             return false
         }
         httpAdapter.baseUrl = td365ConfigurationProperties.demobaseurl
@@ -103,7 +107,7 @@ class TD365SessionService(
     )
     fun liveLogin(): Boolean {
         if (sessionState==1) {
-            log.warn("Session already connected")
+            log.warn("liveLogin: Session already started")
             return false
         }
         httpAdapter.baseUrl = td365ConfigurationProperties.prodbaseurl
@@ -127,7 +131,11 @@ class TD365SessionService(
             log.error("liveSessionStart: Login required")
             return false
         }
-        val account = liveAccounts!!.results.first {it.id==accountId}
+        if (sessionState==1) {
+            log.error("liveSessionStart: Session already started")
+            return false
+        }
+            val account = liveAccounts!!.results.first {it.id==accountId}
         val launchUrl = getUrl(accountId)
 
         var websocketServer: String
@@ -140,7 +148,7 @@ class TD365SessionService(
         }
 
         val pair =
-            httpAdapter.getRequestRedirects(launchUrl, RequestHeaders.redirectHeaders)
+            httpAdapter.getRequestRedirects(launchUrl, redirectHeaders)
         setValues(pair)
 
         if (websocketService.connect(account.ctLoginId, token, websocketServer)) {
@@ -166,7 +174,7 @@ class TD365SessionService(
             val redirectUrl: RedirectUrl = mapper.readValue(httpResponse.body)
             return redirectUrl.url
         } catch (e: JsonProcessingException) {
-            log.error("RedirectUrl mapping failed: ", httpResponse)
+            log.error("RedirectUrl mapping failed: %s", httpResponse)
             return ""
         }
     }
@@ -195,7 +203,6 @@ class TD365SessionService(
             sessionState = 0
             ots = ""
             token = ""
-            httpAdapter.resetClient()
         }
     }
 
@@ -205,8 +212,10 @@ class TD365SessionService(
             jwt = null
             liveAccounts = null
             loginHeaders.removeHeader(HttpHeaders.AUTHORIZATION)
+            httpAdapter.baseUrl = ""
+            httpAdapter.defaultHeaders = null
         } else {
-            log.error("liveLogout: you must stop your session first or not logged in")
+            log.error("liveLogout: Not logged in or session is active")
         }
     }
 
@@ -222,7 +231,7 @@ class TD365SessionService(
         try {
             jwt = mapper.readValue(httpResponseDto.body)
         } catch (e: JsonProcessingException) {
-            log.error("Jwt mapping failed: ", httpResponseDto)
+            log.error("Jwt mapping failed: %s", httpResponseDto)
             return false
         }
         return true
@@ -265,7 +274,7 @@ class TD365SessionService(
         try {
             liveAccounts = mapper.readValue(httpResponse.body)
         } catch (e: JsonProcessingException) {
-            log.error("Accounts mapping failed: ", httpResponse)
+            log.error("Accounts mapping failed: %s", httpResponse)
             return false
         }
         return true

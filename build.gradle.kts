@@ -120,3 +120,23 @@ copy {
 //        property("sonar.projectKey", "marketbroker")
 //    }
 //}
+
+/*
+tasks.getByName<BootJar>("bootJar") {
+    mainClass.set("com.piotr.marketbroker.MarketbrokerApplication")
+}
+
+tasks.getByName<BootRun>("bootRun") {
+    mainClass.set("com.piotr.marketbroker.MarketbrokerApplication")
+}
+
+tasks.bootJar {
+    archiveFileName.set("app.jar")
+    mainClass.set("com.piotr.marketbroker.MarketbrokerApplication")
+}
+
+tasks.bootRun {
+    mainClass.set("com.piotr.marketbroker.MarketbrokerApplication")
+}
+
+ */

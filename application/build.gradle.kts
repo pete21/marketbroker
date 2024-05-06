@@ -112,7 +112,7 @@ tasks.withType<Test>().configureEach {
 
 openApi {
     customBootRun {
-        apiDocsUrl.set("http://localhost:8080/v3/api-docs.yaml")
+        apiDocsUrl.set("http://localhost:8090/v3/api-docs.yaml")
         outputFileName.set("rest-contract.yaml")
         args.set(listOf("--spring.profiles.active=openapi"))
     }

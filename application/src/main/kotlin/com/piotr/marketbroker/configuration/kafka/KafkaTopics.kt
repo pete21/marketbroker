@@ -11,6 +11,8 @@ object KafkaTopics {
     const val TOPIC_JSON_DATA = "JSON_DATA_TOPIC"
     const val TOPIC_TEXT_DATA = "TEXT_DATA_TOPIC"
 
+    const val TOPIC_TICKSTREAM_TICKER_TEMPLATE = "TICKSTREAM_%d_TOPIC"
+
     fun getAllTopics(): List<String> {
         val fields = KafkaTopics::class.declaredMemberProperties
         return fields.map { it.call() as String }

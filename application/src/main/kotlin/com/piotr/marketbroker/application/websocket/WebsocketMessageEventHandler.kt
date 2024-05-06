@@ -48,7 +48,6 @@ class WebsocketMessageEventHandler(
     @EventListener
     fun handleMessage(event: WebsocketMessageEvent) {
         val msg = event.message
-        log.info("handleMessage: ${msg.t}")
         when (msg.t) {
             "heartbeat" -> {
                 val timestamp = Instant.now().truncatedTo(ChronoUnit.MILLIS)

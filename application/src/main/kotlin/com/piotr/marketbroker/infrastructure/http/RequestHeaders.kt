@@ -92,7 +92,15 @@ data class RequestHeaders(var headers: Map<String, String>) {
             )
         )
 
+        val jsonRequestHeaders: RequestHeaders = RequestHeaders(
+            mapOf(
+                HttpHeaders.HOST to "",
+                "Origin" to "",
+                HttpHeaders.REFERER to "",
+                HttpHeaders.ACCEPT to "application/json",
+                HttpHeaders.CONTENT_TYPE to "application/json"
+            )
+        )
     }
 
 }
-

@@ -140,7 +140,10 @@ com.piotr:
   testcontainers:
     kafka:
       enabled: false
-
+  kafka-connect:
+    url: http://localhost:8083
+  questdb:
+    host: questdb
 
 ai.symmetrical:
   kafka:
@@ -196,3 +199,18 @@ springdoc:
 #  paths-to-match: /**
 swagger-ui:
   tryItOutEnabled: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "docker"
+  kafka:
+    bootstrap-servers: kafka0:29092
+com.piotr:
+  kafka-connect:
+    url: http://kafka-connect:8083
+management:
+  zipkin:
+    tracing:
+      endpoint: http://tempo:9411

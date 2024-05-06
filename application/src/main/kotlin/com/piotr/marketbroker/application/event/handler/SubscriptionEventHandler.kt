@@ -2,6 +2,7 @@ package com.piotr.marketbroker.application.event.handler
 
 import com.piotr.marketbroker.application.event.SessionClosedEvent
 import com.piotr.marketbroker.application.event.SubscriptionEvent
+import com.piotr.marketbroker.infrastructure.kafkaconnect.KafkaConnectAdapter
 import com.piotr.marketbroker.infrastructure.persistence.keys.KeysRepository
 import com.piotr.marketbroker.infrastructure.persistence.subscription.SpringDataSubscriptionsRepository
 import com.piotr.marketbroker.infrastructure.persistence.subscription.Subscription
@@ -15,13 +16,14 @@ private val log = KotlinLogging.logger(SubscriptionEventHandler::class.toString(
 @Service
 class SubscriptionEventHandler (
     private val subscriptionsRepository: SpringDataSubscriptionsRepository,
-    private val keysRepository: KeysRepository
+    private val keysRepository: KeysRepository,
+    private val kafkaConnectAdapter: KafkaConnectAdapter
 ) {
 
     @Async
     @EventListener
     fun handleSubscriptionEvent(event: SubscriptionEvent) {
-
+        kafkaConnectAdapter.manageConnector(event.quoteId, event.action=="subscribe")
         when (event.action) {
             "subscribe" -> {
                 val s = Subscription(event.quoteId, true)

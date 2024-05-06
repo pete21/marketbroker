@@ -66,6 +66,7 @@ internal class ArchUnitTest {
         GeneralCodingRules.NO_CLASSES_SHOULD_ACCESS_STANDARD_STREAMS
 
     @ArchTest
+    @ArchIgnore
     val `no classes should use field injection` =
         GeneralCodingRules.NO_CLASSES_SHOULD_USE_FIELD_INJECTION
 

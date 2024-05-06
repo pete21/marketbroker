@@ -26,7 +26,7 @@ class AccountDetailsHandler {
 
     @Async
     @EventListener
-    fun removeSubscriptions(event: SessionClosedEvent) {
+    fun clearPositionsAndOrders(event: SessionClosedEvent) {
         positions = mapOf()
         openingOrders = mapOf()
     }
