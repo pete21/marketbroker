@@ -1,0 +1,123 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "ai.symmetrical",
+    "module": "sym-kafka",
+    "version": "7.3.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.4.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.8.22"
+          }
+        },
+        {
+          "group": "org.springframework.kafka",
+          "module": "spring-kafka"
+        }
+      ],
+      "files": [
+        {
+          "name": "sym-kafka-7.3.0.jar",
+          "url": "sym-kafka-7.3.0.jar",
+          "size": 42632,
+          "sha512": "35667deea4720ef97d3f3c542e1062c217c965c7f494aa5a2dcfeaa613301cf0501fedd99a01db472444d464a7b37e261ce1558e204ee406f5c6e9095cde4a35",
+          "sha256": "9432f64881caba5c8d3a7cbbb1e922a4f74c3a40662d643c4de8bfeba749866e",
+          "sha1": "dc851cf6015a5cb844afca5c4186c6762a72a9ee",
+          "md5": "1d70242d24f11d663319781003ea865c"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-starter"
+        },
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-starter-aop"
+        },
+        {
+          "group": "com.fasterxml.jackson.module",
+          "module": "jackson-module-kotlin"
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-reflect",
+          "version": {
+            "requires": "1.8.22"
+          }
+        },
+        {
+          "group": "com.fasterxml.jackson.datatype",
+          "module": "jackson-datatype-jsr310",
+          "version": {
+            "requires": "2.15.2"
+          }
+        },
+        {
+          "group": "ai.symmetrical",
+          "module": "sym-kafka-annotations",
+          "version": {
+            "requires": "1.0.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.8.22"
+          }
+        },
+        {
+          "group": "org.springframework.kafka",
+          "module": "spring-kafka"
+        }
+      ],
+      "files": [
+        {
+          "name": "sym-kafka-7.3.0.jar",
+          "url": "sym-kafka-7.3.0.jar",
+          "size": 42632,
+          "sha512": "35667deea4720ef97d3f3c542e1062c217c965c7f494aa5a2dcfeaa613301cf0501fedd99a01db472444d464a7b37e261ce1558e204ee406f5c6e9095cde4a35",
+          "sha256": "9432f64881caba5c8d3a7cbbb1e922a4f74c3a40662d643c4de8bfeba749866e",
+          "sha1": "dc851cf6015a5cb844afca5c4186c6762a72a9ee",
+          "md5": "1d70242d24f11d663319781003ea865c"
+        }
+      ]
+    }
+  ]
+}

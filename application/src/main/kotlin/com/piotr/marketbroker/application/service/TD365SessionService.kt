@@ -54,6 +54,10 @@ class TD365SessionService(
     private var jwt : Jwt? = null
     private var liveAccounts: LiveAccounts? = null
 
+    @Observed(name = "TD365SessionService",
+        contextualName = "getTD365ConfigurationProperties",
+        lowCardinalityKeyValues = ["type","config"]
+    )
     fun getTD365ConfigurationProperties(): String {
         log.info(td365ConfigurationProperties.toString())
         return td365ConfigurationProperties.toString()
@@ -206,6 +210,10 @@ class TD365SessionService(
         }
     }
 
+    @Observed(name = "TD365SessionService",
+        contextualName = "liveLogout",
+        lowCardinalityKeyValues = ["type","live"]
+    )
     fun liveLogout() {
         if (sessionState==0 && liveLogin) {
             liveLogin = false

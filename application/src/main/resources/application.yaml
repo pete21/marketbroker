@@ -68,7 +68,7 @@ spring:
           keycloak:
             authorization-grant-type: client_credentials
             client-id: marketbroker
-            client-secret: ${AI_SYMMETRICAL_KEYCLOAK_CLIENT_SECRET}
+            client-secret: marketbroker
         provider:
           keycloak:
             token-uri: "https://auth-server/auth/realms/mobile/protocol/openid-connect/token"
@@ -107,12 +107,16 @@ logging:
   level:
     ROOT: INFO
     com.piotr.marketbroker: DEBUG
-    org.springframework.security: INFO
     ai.symmetrical.kafka.common.logging: DEBUG
     org.apache.http: DEBUG
+    org.springframework:
+      web: DEBUG
+      security: INFO
   pattern:
     level: "%5p [%X{traceId:-},%X{spanId:-}]"
     correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+
 
 com.piotr.marketbroker:
   security:
@@ -144,6 +148,8 @@ com.piotr:
     url: http://localhost:8083
   questdb:
     host: questdb
+  loki:
+    host: localhost:3100
 
 ai.symmetrical:
   kafka:
@@ -199,18 +205,3 @@ springdoc:
 #  paths-to-match: /**
 swagger-ui:
   tryItOutEnabled: true
-
----
-spring:
-  config:
-    activate:
-      on-profile: "docker"
-  kafka:
-    bootstrap-servers: kafka0:29092
-com.piotr:
-  kafka-connect:
-    url: http://kafka-connect:8083
-management:
-  zipkin:
-    tracing:
-      endpoint: http://tempo:9411

@@ -4,21 +4,23 @@ services:
   marketbroker:
     build:
       dockerfile: docker/Dockerfile
-    image: marketbroker
+    image: marketbroker:0.1.0
     container_name: marketbroker
     hostname: marketbroker
     ports:
       - "8080:8080"
       - "8090:8090"
     environment:
-      - SPRING_PROFILES_ACTIVE="docker"
+      - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - kafka0
       - questdb
       - kafka-connect
+#    volumes:
+#      - $HOME/.m2:/root/.m2
     networks:
       - marketbroker_net
-
+    profiles: [all]
 
   kafka0:
     image: bitnami/kafka:3.7.0-debian-12-r2
@@ -234,18 +236,33 @@ services:
       - marketbroker_net
 
   jupyter-notebook:
-    image: jupyter/scipy-notebook:ubuntu-22.04
+    image: quay.io/jupyter/tensorflow-notebook:tensorflow-2.16.1
     container_name: jupyter
     volumes:
       - ./notebooks:/home/jovyan
     ports:
       - "8888:8888"
-    command: sh -c "pip install questdb psycopg[binary] psycopg2-binary PyGithub kafka-python confluent-kafka \"confluent-kafka[avro]\" fastavro requests && start-notebook.sh --NotebookApp.password= --NotebookApp.token="
+    command: sh -c "pip install questdb psycopg[binary] psycopg2-binary kafka-python confluent-kafka \"confluent-kafka[avro]\" fastavro requests \
+      && start-notebook.sh --NotebookApp.password= --NotebookApp.token="
+#    toolz cytoolz \
+#    plotly \
+#    hyperopt \
+#    fitter \
+#    xgboost \
+#    seaborn \
+#    bayesian-optimization \
+#    pandas_summary \
+#    setuptools \
+#    gputil \
+#    rl_zoo3 \
+#    stable-baselines3[extra] \
+#    cmake openmpi \
+#    git+https://github.com/AI4Finance-Foundation/FinRL.git \
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
       - RESTARTABLE=yes
-      - DOCKER_STACKS_JUPYTER_CMD=notebook
+#      - DOCKER_STACKS_JUPYTER_CMD=notebook
     networks:
       - marketbroker_net
 

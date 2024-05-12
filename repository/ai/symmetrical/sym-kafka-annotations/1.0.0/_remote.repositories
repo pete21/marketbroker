@@ -1,0 +1,4 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Mon Apr 22 14:28:04 CEST 2024
+sym-kafka-annotations-1.0.0.jar>nexus-releases=
+sym-kafka-annotations-1.0.0.pom>nexus-releases=

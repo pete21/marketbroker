@@ -1,21 +1,33 @@
 ARG VERSION=21.0.3-10
-ARG APP_PATH="/usr/app"
 
-FROM bellsoft/liberica-openjdk-alpine:${VERSION} as BUILD
-WORKDIR $APP_PATH
-COPY . .
-RUN ./gradlew
+FROM gradle:8.7.0-jdk21-alpine AS CACHE
+RUN mkdir -p /home/gradle/cache_home
+ENV GRADLE_USER_HOME /home/gradle/cache_home
+WORKDIR /home/gradle/src
+COPY ./repository /root/.m2/repository
+COPY --chown=gradle:gradle . /home/gradle/src
+RUN gradle clean build -i --stacktrace
+
+
+FROM gradle:8.7.0-jdk21-alpine AS BUILD
+#COPY --from=cache /home/gradle/cache_home /home/gradle/.gradle
+WORKDIR /home/gradle/src
+COPY ./repository /root/.m2/repository
+COPY --chown=gradle:gradle . /home/gradle/src
+RUN gradle clean bootJar
+
 
 FROM bellsoft/liberica-openjre-alpine:${VERSION}
 
 ARG GROUP="piotr-group"
 ARG USER="piotr-user"
 
-ARG JAR_NAME="marketbroker-0.1.0-SNAPSHOT.jar"
-
 RUN addgroup -g 1111 $GROUP && adduser -u 1111 --disabled-password -G $GROUP $USER
 USER $USER
 WORKDIR /home/$USER
 EXPOSE 8080 8090
-COPY --from=BUILD --chown=$USER:$GROUP $APP_PATH/build/libs/$JAR_NAME ./app.jar
+HEALTHCHECK --interval=15s \
+            --timeout=3s \
+            CMD curl -f http://localhost:8080/actuator/health || exit 1
+COPY --from=BUILD --chown=$USER:$GROUP /home/gradle/src/application/build/libs/*.jar ./
 ENTRYPOINT ["java", "-jar", "./app.jar"]

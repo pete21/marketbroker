@@ -1,5 +1,8 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
 plugins {
-    alias(libs.plugins.org.graalvm.buildtools.native)
+//    alias(libs.plugins.org.graalvm.buildtools.native)
+    application
     alias(libs.plugins.org.jetbrains.kotlin.jvm)
 
     alias(libs.plugins.org.jetbrains.kotlin.plugin.allopen)
@@ -11,10 +14,14 @@ plugins {
     alias(libs.plugins.org.springdoc.openapi.gradle.plugin)
 }
 
+application {
+    mainClass = "com.piotr.marketbroker.MarketbrokerApplication"
+}
+
 springBoot {
     buildInfo()
 }
-
+/*
 tasks.bootJar {
     archiveFileName.set("app.jar")
     mainClass.set("com.piotr.marketbroker.MarketbrokerApplication")
@@ -23,6 +30,16 @@ tasks.bootJar {
 tasks.bootRun {
     mainClass.set("com.piotr.marketbroker.MarketbrokerApplication")
 }
+*/
+tasks.named<BootJar>("bootJar") {
+    archiveFileName.set("app.jar")
+    mainClass.set("com.piotr.marketbroker.MarketbrokerApplication")
+    manifest {
+        attributes("Start-Class" to "com.piotr.marketbroker.MarketbrokerApplication")
+    }
+}
+
+
 
 dependencies {
     implementation(project(":open-api"))
@@ -97,11 +114,11 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.1")
 
 }
-
+/*
 tasks.processAot.configure {
     environment("SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI", "https://fake/auth/realms/mobile")
 }
-
+*/
 gitProperties {
     branch = System.getenv("BITBUCKET_BRANCH") ?: System.getenv("BITBUCKET_TAG")
 }

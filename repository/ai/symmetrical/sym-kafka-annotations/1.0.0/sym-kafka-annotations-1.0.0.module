@@ -1,0 +1,82 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "ai.symmetrical",
+    "module": "sym-kafka-annotations",
+    "version": "1.0.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.4.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.8.22"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "sym-kafka-annotations-1.0.0.jar",
+          "url": "sym-kafka-annotations-1.0.0.jar",
+          "size": 2072,
+          "sha512": "f65012a977adc8ddc78ce32d35ef6b1eb2963213404864f2f87c74c9ebed0e7d7293777d5136ca845085e92548ff67941b4bbd09ac1e06fc3bcbe0b81eee7542",
+          "sha256": "e9093c0e15554690ff90c322c2e9f96817d5779a9bde54dbc014e638ccf5f1eb",
+          "sha1": "9c6619896cc9dba51a6c1b1fb460e1a87a925883",
+          "md5": "982956da12a962ec580f2d791e626240"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.8.22"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "sym-kafka-annotations-1.0.0.jar",
+          "url": "sym-kafka-annotations-1.0.0.jar",
+          "size": 2072,
+          "sha512": "f65012a977adc8ddc78ce32d35ef6b1eb2963213404864f2f87c74c9ebed0e7d7293777d5136ca845085e92548ff67941b4bbd09ac1e06fc3bcbe0b81eee7542",
+          "sha256": "e9093c0e15554690ff90c322c2e9f96817d5779a9bde54dbc014e638ccf5f1eb",
+          "sha1": "9c6619896cc9dba51a6c1b1fb460e1a87a925883",
+          "md5": "982956da12a962ec580f2d791e626240"
+        }
+      ]
+    }
+  ]
+}

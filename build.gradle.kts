@@ -13,9 +13,6 @@ plugins {
     id("jacoco")
 }
 
-val nexusDomain: String by project
-val nexusUser: String by project
-val nexusPassword: String by project
 val appVersion: String by project
 
 configurations {
@@ -60,28 +57,12 @@ allprojects {
         }
     }
 
-    group = "com.piotr.marketbroker"
+    group = "com.piotr"
     version = appVersion.ifEmpty { "0.1.0-SNAPSHOT" }
 
     repositories {
+        mavenLocal()
         mavenCentral()
-        maven {
-            url = uri("https://${nexusDomain}/repository/maven-releases")
-            credentials {
-                username = nexusUser
-                password = nexusPassword
-            }
-        }
-        maven {
-            url = uri("https://${nexusDomain}/repository/maven-snapshots")
-            credentials {
-                username = nexusUser
-                password = nexusPassword
-            }
-            mavenContent {
-                snapshotsOnly()
-            }
-        }
     }
 
     tasks.withType<KotlinCompile> {

@@ -1,0 +1,12 @@
+spring:
+  kafka:
+    bootstrap-servers: kafka0:29092
+com.piotr:
+  kafka-connect:
+    url: http://kafka-connect:8083
+  loki:
+    host: loki:3100
+management:
+  zipkin:
+    tracing:
+      endpoint: http://tempo:9411

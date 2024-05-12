@@ -12,6 +12,7 @@ import com.piotr.marketbroker.infrastructure.persistence.marketgroup.MarketGroup
 import com.piotr.marketbroker.infrastructure.persistence.marketgroup.SpringDataMarketGroupRepository
 import com.piotr.marketbroker.infrastructure.persistence.marketquote.MarketQuote
 import com.piotr.marketbroker.infrastructure.persistence.marketquote.SpringDataMarketQuotesRepository
+import io.micrometer.observation.annotation.Observed
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 
@@ -32,16 +33,28 @@ class InstrumentsService(
         .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
+    @Observed(name = "InstrumentsService",
+        contextualName = "getInstrumentGroups",
+        lowCardinalityKeyValues = ["type","GET"]
+    )
     fun getInstrumentGroups(): List<String> {
         val marketGroups = springDataMarketGroupRepository.findAll()
         return marketGroups.map { m: MarketGroup -> m.toString() }
     }
 
+    @Observed(name = "InstrumentsService",
+        contextualName = "getInstrumentQuotes",
+        lowCardinalityKeyValues = ["type","GET"]
+    )
     fun getInstrumentQuotes(): List<String> {
         val marketQuotes = springDataMarketQuotesRepository.findAll()
         return marketQuotes.map { m: MarketQuote -> m.toString() }
     }
 
+    @Observed(name = "InstrumentsService",
+        contextualName = "postInstrumentGroups",
+        lowCardinalityKeyValues = ["type","POST"]
+    )
     fun postInstrumentGroups() {
         val response = httpAdapter.postRequest("GetMarketSuperGroup", "{}", RequestHeaders.postHeaders);
         saveMarketGroups(response.body.substring(5, response.body.length - 1))
@@ -68,6 +81,10 @@ class InstrumentsService(
         }
     }
 
+    @Observed(name = "InstrumentsService",
+        contextualName = "postInstrumentQuotes",
+        lowCardinalityKeyValues = ["type","POST"]
+    )
     fun postInstrumentQuotes() {
         val marketGroups = springDataMarketGroupRepository.findAll()
         marketGroups.forEach { m -> if (!m.isSuperGroup) httpClientGetMarketQuote(m.id) }
