@@ -87,8 +87,11 @@ services:
     environment:
       - QDB_METRICS_ENABLED=TRUE
       - QDB_WRITERS=stdout,http.min
+      - QDB_CAIRO_SQL_COPY_ROOT=/var/lib/questdb/questdb_import
+      - QDB_TELEMETRY_ENABLED=false
     volumes:
-#      - ./questdb/questdb_root:/var/lib/questdb/
+#      - ./docker/questdb-data:/root/.questdb
+      - ./docker/questdb-import:/var/lib/questdb/questdb_import
       - questdb-data:/root/.questdb
     networks:
       - marketbroker_net

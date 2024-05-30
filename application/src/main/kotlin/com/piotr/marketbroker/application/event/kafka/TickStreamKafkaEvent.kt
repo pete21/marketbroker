@@ -11,12 +11,12 @@ class TickStreamKafkaEvent(
     val q: Int,
     val b: Float,
     val a: Float,
-    val m: Float,
+//    val m: Float,
     val t: Long
 ) {
     companion object {
         fun invoke(tick: Tick): TickStreamKafkaEvent {
-            return TickStreamKafkaEvent(tick.quoteId, tick.bid, tick.ask, tick.mid, tick.time*1000L + tick.millis)
+            return TickStreamKafkaEvent(tick.quoteId, tick.bid, tick.ask, tick.time*1000L + tick.millis)
         }
     }
 }

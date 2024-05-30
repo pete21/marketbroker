@@ -47,7 +47,6 @@ class ApplicationListener(private val environment: Environment) {
     private fun logAppInfo(event: ContextRefreshedEvent) {
         log.info("=========================== App Info ============================")
         log.info(RUNNING, event.applicationContext.id)
-
         log.info(PROFILES, listOf(*environment.activeProfiles))
     }
 

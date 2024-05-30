@@ -74,11 +74,11 @@ spring:
             token-uri: "https://auth-server/auth/realms/mobile/protocol/openid-connect/token"
 
   datasource:
-#    url: jdbc:h2:mem:test           #jdbc:h2:file:/data/demo
+#    url: jdbc:h2:mem:testdb           #jdbc:h2:file:/data/demo
     driverClassName: org.h2.Driver
     username: sa
     password:
-    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE;DATABASE_TO_UPPER=false;
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE;DATABASE_TO_UPPER=false;
 
 
   jpa:
@@ -107,7 +107,7 @@ logging:
   level:
     ROOT: INFO
     com.piotr.marketbroker: DEBUG
-    ai.symmetrical.kafka.common.logging: DEBUG
+    ai.symmetrical.kafka.common.logging: INFO
     org.apache.http: DEBUG
     org.springframework:
       web: DEBUG
@@ -146,8 +146,9 @@ com.piotr:
       enabled: false
   kafka-connect:
     url: http://localhost:8083
+    questdb-host: questdb:9000
   questdb:
-    host: questdb
+    url: http://localhost:9000
   loki:
     host: localhost:3100
 

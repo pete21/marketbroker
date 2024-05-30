@@ -7,8 +7,7 @@ import org.springframework.stereotype.Component
 
 
 @Component
-class EnvironmentPropertiesPrinter(env: Environment) {
-    private val env: Environment = env
+class EnvironmentPropertiesPrinter(private val env: Environment) {
 
     @PostConstruct
     fun logApplicationProperties() {

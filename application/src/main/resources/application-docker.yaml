@@ -4,6 +4,8 @@ spring:
 com.piotr:
   kafka-connect:
     url: http://kafka-connect:8083
+  questdb:
+    url: http://questdb:9000
   loki:
     host: loki:3100
 management:

@@ -28,6 +28,6 @@ WORKDIR /home/$USER
 EXPOSE 8080 8090
 HEALTHCHECK --interval=15s \
             --timeout=3s \
-            CMD curl -f http://localhost:8080/actuator/health || exit 1
+            CMD curl -f http://localhost:8090/health || exit 1
 COPY --from=BUILD --chown=$USER:$GROUP /home/gradle/src/application/build/libs/*.jar ./
 ENTRYPOINT ["java", "-jar", "./app.jar"]

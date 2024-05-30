@@ -2,4 +2,6 @@
 .idea/
 bin/
 build/
-application/build/
+docker/
+notebooks/
+development/

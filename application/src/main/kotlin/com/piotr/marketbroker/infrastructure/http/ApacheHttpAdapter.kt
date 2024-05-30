@@ -1,10 +1,12 @@
 package com.piotr.marketbroker.infrastructure.http
 
+import io.micrometer.observation.annotation.Observed
 import mu.KotlinLogging
 import org.apache.hc.client5.http.classic.methods.HttpDelete
 import org.apache.hc.client5.http.classic.methods.HttpGet
 import org.apache.hc.client5.http.classic.methods.HttpOptions
 import org.apache.hc.client5.http.classic.methods.HttpPost
+import org.apache.hc.client5.http.classic.methods.HttpPut
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient
 import org.apache.hc.client5.http.impl.classic.HttpClients
@@ -40,11 +42,24 @@ class ApacheHttpAdapter {
 //            HttpHeaders.USER_AGENT,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")))
             .build()
     }
-
+    @Observed(name = "ApacheHttpAdapter",
+        contextualName = "postRequest",
+        lowCardinalityKeyValues = ["type","POST"]
+    )
     fun postRequest(url: String, body: String, headers: RequestHeaders?): HttpAdapterResponse {
         val targetUrl = if (url.length>20) { url } else { baseUrl + url }
         log.info("postRequest: $targetUrl")
         val response = execute(HttpPost(targetUrl), body, headers)          //.ifEmpty { "{}" }
+
+        val httpAdapterResponse = HttpAdapterResponse(response.code, EntityUtils.toString(response.entity))
+        response.close()
+        return httpAdapterResponse
+    }
+
+    fun putRequest(url: String, body: String, headers: RequestHeaders?): HttpAdapterResponse {
+        val targetUrl = if (url.length>20) { url } else { baseUrl + url }
+        log.info("putRequest: $targetUrl")
+        val response = execute(HttpPut(targetUrl), body, headers)          //.ifEmpty { "{}" }
 
         val httpAdapterResponse = HttpAdapterResponse(response.code, EntityUtils.toString(response.entity))
         response.close()
