@@ -74,7 +74,7 @@ services:
 
 
   questdb:
-    image: questdb/questdb:7.4.0
+    image: questdb/questdb:8.0.0
     container_name: questdb
     ports:
       - "8812:8812"

@@ -75,9 +75,9 @@ class ApacheHttpAdapter {
     }
 
     fun deleteRequest(url: String, headers: RequestHeaders?) : HttpAdapterResponse {
-        log.info("getRequest: $url")
+        log.info("deleteRequest: $url")
         val response = execute(HttpDelete(url), "", headers)
-        val httpAdapterResponse = HttpAdapterResponse(response.code, EntityUtils.toString(response.entity))
+        val httpAdapterResponse = HttpAdapterResponse(response.code, "")
         response.close()
         return httpAdapterResponse
     }
@@ -91,7 +91,7 @@ class ApacheHttpAdapter {
     }
 
     fun getRequestRedirects(url: String, headers: RequestHeaders?) : Pair<List<String>, Map<String,String>> {
-        log.info("getRequestWithRedirect: $url")
+        log.info("getRequestRedirects: $url")
         val response = execute(HttpGet(url), "", headers)
         val redirectURIs = httpClientContext.redirectLocations.all.map { it.toString()}
         val cookies = httpClientContext.cookieStore.cookies.associateBy( {it.name}, {it.value})
