@@ -45,6 +45,7 @@ class KafkaConnectAdapter(
         val connectorStatus = connectors[quoteId]
         if (status) {
             when (connectorStatus) {
+                ConnectorStatus.UNASSIGNED -> {}
                 ConnectorStatus.STARTING -> {}
                 ConnectorStatus.RUNNING -> {}
                 ConnectorStatus.PAUSED, ConnectorStatus.STOPPED -> resumeConnector(quoteId)
@@ -56,7 +57,8 @@ class KafkaConnectAdapter(
             }
         } else {
             when (connectorStatus) {
-                ConnectorStatus.STARTING, ConnectorStatus.RUNNING, ConnectorStatus.FAILED -> pauseConnector(quoteId)
+                ConnectorStatus.STARTING, ConnectorStatus.RUNNING,
+                ConnectorStatus.FAILED, ConnectorStatus.UNASSIGNED -> pauseConnector(quoteId)
                 ConnectorStatus.PAUSED, ConnectorStatus.STOPPED -> {}
                 null -> {}
             }
@@ -74,6 +76,12 @@ class KafkaConnectAdapter(
 
     fun deleteAllConnectors() {
         listConnectors()
+    }
+
+    private fun connectorStatus(quoteId: Int): ConnectorStatus? {
+        val name = String.format(CONNECTOR_NAME_TEMPLATE, quoteId)
+        val response = httpAdapter.getRequest("$kafkaConnectUrl/connectors/$name/status", RequestHeaders.jsonRequestHeaders)
+        return null
     }
 
     private fun listConnectors(): List<String>? {
@@ -164,5 +172,12 @@ enum class ConnectorStatus {
     PAUSED,
     STOPPED,
     STARTING,
-    FAILED
+    FAILED,
+    UNASSIGNED
 }
+/* Confluent:
+UNASSIGNED: The connector/task has not yet been assigned to a worker.
+RUNNING: The connector/task is running.
+PAUSED: The connector/task has been administratively paused.
+FAILED: The connector/task has failed (usually by raising an exception, which is reported in the status output).
+ */

@@ -3,6 +3,18 @@ import sys
 
 loadcols = ['timestamp', 'close']
 
+mapping = {"deuidxeur": "6374",  # Germany 40
+           "usa30idxusd": "6647",  # Wall Street 30
+           "usatechidxusd": "16917",  # US Tech 100       roznica 3 punktow 31/05
+           "usa500idxusd": "872703",  # US 500
+           "gbridxgbp": "5945",  # UK 100
+           "jpnidxjpy": "862708",  # JPY 225           roznica 8 punktow 31/05
+           "brentcmdusd": "883341",  # Brent
+
+           "plnidxpln": "100"  # Poland 20 Index
+           }
+
+
 def merge(_ticker, _from, _to, _period):
     print(f"Merging: {_ticker}, {_from}, {_to}, {_period}")
 
@@ -14,13 +26,14 @@ def merge(_ticker, _from, _to, _period):
 
     combinecsv = pd.merge(bid, ask, on='timestamp', how='inner', suffixes=('bid', 'ask'))
 
-#    combinecsv['m'] = combinecsv[
-#        ['openbid', 'highbid', 'lowbid', 'closebid', 'openask', 'highask', 'lowask', 'closeask']].mean(axis=1).round(5)
-#    combinecsv['timestamp'] = combinecsv['timestamp'].multiply(1000)
-    combinecsv.index = combinecsv.index*1000
-    combinecsv = combinecsv.rename(columns={'closebid': 'b', 'closeask': 'a'})
+    #    combinecsv['m'] = combinecsv[
+    #        ['openbid', 'highbid', 'lowbid', 'closebid', 'openask', 'highask', 'lowask', 'closeask']].mean(axis=1).round(5)
 
-    combinecsv.to_csv(f"download/{_ticker}-{_period}-{_from}-{_to}.csv", columns=["b", "a"])
+    combinecsv.index = combinecsv.index * 1000
+    combinecsv = combinecsv.rename(columns={'closebid': 'b', 'closeask': 'a'})
+    combinecsv["q"] = mapping.get(_ticker, _ticker)
+
+    combinecsv.to_csv(f"download/{_ticker}-{_period}-{_from}-{_to}.csv", columns=["q", "b", "a"])
 
 
 # pandas.merge(left, right, how='inner', on=None, left_on=None, right_on=None, left_index=False, right_index=False, sort=False, suffixes=('_x', '_y'), copy=None, indicator=False, validate=None)
