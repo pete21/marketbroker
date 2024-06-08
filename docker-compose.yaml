@@ -269,7 +269,7 @@ services:
 #      - DOCKER_STACKS_JUPYTER_CMD=notebook
     networks:
       - marketbroker_net
-
+    profiles: [ml]
 
 networks:
   marketbroker_net:

@@ -1,7 +1,6 @@
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
-//    alias(libs.plugins.org.graalvm.buildtools.native)
     application
     alias(libs.plugins.org.jetbrains.kotlin.jvm)
 
@@ -21,16 +20,7 @@ application {
 springBoot {
     buildInfo()
 }
-/*
-tasks.bootJar {
-    archiveFileName.set("app.jar")
-    mainClass.set("com.piotr.marketbroker.MarketbrokerApplication")
-}
 
-tasks.bootRun {
-    mainClass.set("com.piotr.marketbroker.MarketbrokerApplication")
-}
-*/
 tasks.named<BootJar>("bootJar") {
     archiveFileName.set("app.jar")
     mainClass.set("com.piotr.marketbroker.MarketbrokerApplication")
@@ -135,10 +125,3 @@ openApi {
     }
 }
 
-/*
-configurations {
-    runtimeOnly {
-        exclude(group = "commons-logging", module = "commons-logging")
-    }
-}
-*/

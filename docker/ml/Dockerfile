@@ -1,0 +1,66 @@
+FROM continuumio/anaconda3:2023.03-1
+
+# Use C.UTF-8 locale to avoid issues with ASCII encoding
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+
+RUN apt update && apt install -y build-essential && rm -rf /var/lib/apt/lists/*
+
+#USER root
+WORKDIR /root
+
+# TA-lib
+COPY ta-lib-0.4.0-src.tar.gz .
+RUN tar xvf ./ta-lib-0.4.0-src.tar.gz
+RUN rm ./ta-lib-0.4.0-src.tar.gz
+WORKDIR /root/ta-lib
+RUN ./configure --prefix=/usr
+RUN make && make install
+
+WORKDIR /root
+RUN pip install TA-Lib
+
+
+# FinRL
+RUN pip install git+https://github.com/AI4Finance-Foundation/FinRL.git
+RUN pip install box2d
+
+RUN mkdir /opt/notebooks
+
+#RUN python3 -mpip install -U psutil dill joblib
+#RUN python3 -mpip install -U setuptools wheel build scikit-build
+#RUN python3 -mpip install -U numpy pandas pandas-datareader
+#RUN python3 -mpip install -U scikit-learn
+RUN pip install matplotlib seaborn
+
+RUN pip install pytest tox pyyaml
+RUN pip install dash flask flask_restful connexion requests
+RUN pip install tensorflow
+RUN pip install mlflow
+RUN pip install lightgbm
+RUN pip install mlxtend
+RUN pip install catboost
+RUN pip install xgboost
+
+RUN pip install opentraveldata OpenTrepWrapper Neobase
+RUN pip install elasticsearch kafka-python
+RUN pip install questdb psycopg[binary] psycopg2-binary confluent-kafka confluent-kafka[avro] fastavro
+
+RUN pip install openai
+RUN pip install langchain
+RUN pip install bottleneck --upgrade
+# RUN pip install tensorrt
+RUN pip install boto3
+
+RUN mkdir /root/.aws
+COPY credentials /root/.aws/
+
+ENV MLFLOW_TRACKING_URI=http://host.docker.internal:5000
+ENV MLFLOW_S3_ENDPOINT_URL=http://host.docker.internal:9000
+
+EXPOSE 8888
+EXPOSE 2000-2100
+
+CMD ["bash", "-c", "jupyter lab \
+    --notebook-dir=/opt/notebooks --ip=0.0.0.0 --port=8888 \
+    --no-browser --allow-root"]
