@@ -17,16 +17,16 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
-import mu.KotlinLogging
+import com.piotr.marketbroker.common.logger
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.RestController
-
-private val log = KotlinLogging.logger(DemoController::class.toString())
 
 @RestController
 class DemoController(
     private val td365SessionService: TD365SessionService
 ): DemoApi {
+
+    private val log by logger()
 
     @Tag(name="demo")
     @Operation(

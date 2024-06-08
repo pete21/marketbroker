@@ -1,7 +1,7 @@
 package com.piotr.marketbroker
 
 import com.piotr.marketbroker.configuration.td365.TD365ConfigurationProperties
-import mu.KotlinLogging
+import com.piotr.marketbroker.common.logger
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup
@@ -13,14 +13,13 @@ import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.annotation.EnableAsync
 
 
-private val log = KotlinLogging.logger(MarketbrokerApplication::class.toString())
-
 @EnableAsync
 @SpringBootApplication
 @PropertySource("classpath:td365config.properties")
 @EnableConfigurationProperties(TD365ConfigurationProperties::class)
 class MarketbrokerApplication {
 
+    private val log by logger()
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {

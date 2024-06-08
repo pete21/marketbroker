@@ -1,6 +1,6 @@
 package com.piotr.marketbroker.infrastructure.http
 /*
-import mu.KotlinLogging
+import com.piotr.marketbroker.common.logger
 import org.springframework.stereotype.Component
 import java.net.CookieHandler
 import java.net.CookieManager

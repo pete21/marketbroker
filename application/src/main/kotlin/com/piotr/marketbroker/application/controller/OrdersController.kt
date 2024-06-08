@@ -7,7 +7,7 @@ import com.piotr.marketbroker.configuration.security.properties.SecurityRole
 import com.piotr.marketbroker.infrastructure.persistence.keys.KeysRepository
 import com.piotr.marketbroker.infrastructure.persistence.order.Order
 import io.swagger.v3.oas.annotations.tags.Tag
-import mu.KotlinLogging
+import com.piotr.marketbroker.common.logger
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDateTime
 
-private val log = KotlinLogging.logger(OrdersController::class.toString())
-
 @RestController
 class OrdersController(
     private val keysRepository: KeysRepository,
     private val ordersService: OrdersService
 ): OrdersApi {
+
+    private val log by logger()
 
     @Tag(name="orders")
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")

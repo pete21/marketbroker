@@ -5,10 +5,8 @@ import com.piotr.marketbroker.common.unwrap
 import com.piotr.marketbroker.infrastructure.persistence.marketquote.SpringDataMarketQuotesRepository
 import com.piotr.marketbroker.infrastructure.persistence.subscription.SpringDataSubscriptionsRepository
 import io.micrometer.observation.annotation.Observed
-import mu.KotlinLogging
+import com.piotr.marketbroker.common.logger
 import org.springframework.stereotype.Service
-
-private val log = KotlinLogging.logger(SubscriptionsService::class.toString())
 
 @Service
 class SubscriptionsService(
@@ -16,6 +14,8 @@ class SubscriptionsService(
     private val subscriptionsRepository: SpringDataSubscriptionsRepository,
     private val websocketService: WebsocketService
 ) {
+
+    private val log by logger()
 
     @Observed(name = "SubscriptionsService",
         contextualName = "getSubscriptions",

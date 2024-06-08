@@ -6,7 +6,7 @@ import com.piotr.marketbroker.infrastructure.http.ApacheHttpAdapter
 import com.piotr.marketbroker.infrastructure.http.RequestHeaders
 import com.piotr.marketbroker.infrastructure.questdb.QuestDbAdapter
 import io.micrometer.observation.annotation.Observed
-import mu.KotlinLogging
+import com.piotr.marketbroker.common.logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Async
@@ -19,13 +19,15 @@ private const val CREATE_CONNECTOR_DTO_NO_TYPES = "{\"name\":\"%s\",\"config\":{
 private const val CONNECTOR_NAME_TEMPLATE = "TICKSTREAM_%d"
 private const val TOPIC_NAME = "%s.%s.%s"
 
-private val log = KotlinLogging.logger(KafkaConnectAdapter::class.toString())
 
 @Service
 class KafkaConnectAdapter(
     private val httpAdapter: ApacheHttpAdapter,
     private val questDbAdapter: QuestDbAdapter
 ) {
+
+    private val log by logger()
+
     @Value("\${spring.application.name}")
     lateinit var appName: String
     @Value("\${ai.symmetrical.kafka.env}")

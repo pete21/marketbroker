@@ -2,17 +2,18 @@ package com.piotr.marketbroker.application.websocket
 
 import com.piotr.marketbroker.application.event.WebsocketDisconnectedEvent
 import com.piotr.marketbroker.infrastructure.websocket.WebsocketSessionHandler
-import mu.KotlinLogging
+import com.piotr.marketbroker.common.logger
 import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 
-private val log = KotlinLogging.logger(WebsocketService::class.toString())
 
 @Service
 class WebsocketService(
     private val websocketSessionHandler: WebsocketSessionHandler
 ) {
+
+    private val log by logger()
 
     private var login: String? = null
     private var token: String? = null

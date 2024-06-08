@@ -17,7 +17,7 @@ import com.piotr.marketbroker.application.websocket.message.AccountSummaryDto
 import com.piotr.marketbroker.application.websocket.message.QuotesDto
 import com.piotr.marketbroker.application.websocket.message.SubscribeResponseDto
 import com.piotr.marketbroker.infrastructure.websocket.WebsocketSessionHandler
-import mu.KotlinLogging
+import com.piotr.marketbroker.common.logger
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Async
@@ -25,13 +25,14 @@ import org.springframework.stereotype.Service
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
-private val log = KotlinLogging.logger {}
 
 @Service
 class WebsocketMessageEventHandler(
     private val websocketSessionHandler: WebsocketSessionHandler,
     private val applicationEventPublisher: ApplicationEventPublisher
 ) {
+
+    private val log by logger()
 
     private val stringBuilder = StringBuilder(2000)
     private val mapper = jacksonObjectMapper()

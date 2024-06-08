@@ -13,14 +13,13 @@ import com.piotr.marketbroker.infrastructure.persistence.marketgroup.SpringDataM
 import com.piotr.marketbroker.infrastructure.persistence.marketquote.MarketQuote
 import com.piotr.marketbroker.infrastructure.persistence.marketquote.SpringDataMarketQuotesRepository
 import io.micrometer.observation.annotation.Observed
-import mu.KotlinLogging
+import com.piotr.marketbroker.common.logger
 import org.springframework.stereotype.Service
 
 private const val GET_MARKET_GROUP = "{\"superGroupId\":%d}"
 private const val GROUP_QUOTES_QUERY =
     "{\"groupID\":%d,\"keyword\":\"\",\"portfolio\":false,\"search\":false,\"popular\":false}"
 
-private val log = KotlinLogging.logger(InstrumentsService::class.toString())
 
 @Service
 class InstrumentsService(
@@ -28,6 +27,8 @@ class InstrumentsService(
     private val springDataMarketQuotesRepository: SpringDataMarketQuotesRepository,
     private val httpAdapter: ApacheHttpAdapter
 ) {
+
+    private val log by logger()
 
     private val mapper = jacksonObjectMapper()
         .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)

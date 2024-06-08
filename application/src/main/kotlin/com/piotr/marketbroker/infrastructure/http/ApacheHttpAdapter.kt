@@ -1,7 +1,7 @@
 package com.piotr.marketbroker.infrastructure.http
 
 import io.micrometer.observation.annotation.Observed
-import mu.KotlinLogging
+import com.piotr.marketbroker.common.logger
 import org.apache.hc.client5.http.classic.methods.HttpDelete
 import org.apache.hc.client5.http.classic.methods.HttpGet
 import org.apache.hc.client5.http.classic.methods.HttpOptions
@@ -19,10 +19,10 @@ import org.apache.hc.core5.http.io.entity.EntityUtils
 import org.apache.hc.core5.http.io.entity.StringEntity
 import org.springframework.stereotype.Component
 
-private val log = KotlinLogging.logger(ApacheHttpAdapter::class.toString())
-
 @Component
 class ApacheHttpAdapter {
+
+    private val log by logger()
 
     private val cookieStore: CookieStore = BasicCookieStore()
     private lateinit var client: CloseableHttpClient

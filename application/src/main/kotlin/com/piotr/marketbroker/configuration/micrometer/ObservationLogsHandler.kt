@@ -3,12 +3,12 @@ package com.piotr.marketbroker.configuration.micrometer
 import io.micrometer.common.KeyValue
 import io.micrometer.observation.Observation
 import io.micrometer.observation.ObservationHandler
-import mu.KotlinLogging
+import com.piotr.marketbroker.common.logger
 import java.util.stream.StreamSupport
 
-val log = KotlinLogging.logger(ObservationLogsHandler::class.toString())
-
 class ObservationLogsHandler() : ObservationHandler<Observation.Context> {
+
+    private val log by logger()
 
     override fun onStart(context: Observation.Context) {
         log.info("Before running the observation for context [{}], userType [{}]", context.getName(), getTypeFromContext(context));

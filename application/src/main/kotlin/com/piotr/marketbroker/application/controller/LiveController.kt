@@ -7,7 +7,7 @@ import com.piotr.marketbroker.application.model.SessionDTO
 import com.piotr.marketbroker.application.service.TD365SessionService
 import com.piotr.marketbroker.configuration.security.properties.SecurityRole
 import io.swagger.v3.oas.annotations.tags.Tag
-import mu.KotlinLogging
+import com.piotr.marketbroker.common.logger
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 
-private val log = KotlinLogging.logger(LiveController::class.toString())
-
 @Tag(name="live")
 @RestController
 class LiveController(
     private val td365SessionService: TD365SessionService
 ): LiveApi {
+
+    private val log by logger()
 
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(

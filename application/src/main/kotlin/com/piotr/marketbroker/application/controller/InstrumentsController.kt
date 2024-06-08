@@ -3,7 +3,7 @@ package com.piotr.marketbroker.application.controller
 import com.piotr.marketbroker.application.service.InstrumentsService
 import com.piotr.marketbroker.configuration.security.properties.SecurityRole
 import io.swagger.v3.oas.annotations.tags.Tag
-import mu.KotlinLogging
+import com.piotr.marketbroker.common.logger
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 
-private val log = KotlinLogging.logger(InstrumentsController::class.toString())
-
 @Tag(name="instruments")
 @RestController
 class InstrumentsController(
     private val instrumentsService: InstrumentsService
 ): InstrumentsApi {
+
+    private val log by logger()
 
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     @RequestMapping(

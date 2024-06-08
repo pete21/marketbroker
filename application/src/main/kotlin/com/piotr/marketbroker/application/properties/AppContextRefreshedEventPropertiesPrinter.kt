@@ -1,6 +1,6 @@
 package com.piotr.marketbroker.application.properties
 
-import org.slf4j.LoggerFactory
+import com.piotr.marketbroker.common.logger
 import org.springframework.context.event.ContextRefreshedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.core.env.ConfigurableEnvironment
@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component
 
 @Component
 class AppContextRefreshedEventPropertiesPrinter {
+
+    private val log by logger()
+
     @EventListener
     fun handleContextRefreshed(event: ContextRefreshedEvent) {
         printAllActiveProperties(event.applicationContext.environment as ConfigurableEnvironment)
@@ -18,7 +21,7 @@ class AppContextRefreshedEventPropertiesPrinter {
     }
 
     private fun printAllActiveProperties(env: ConfigurableEnvironment) {
-        LOGGER.info("************************* ALL PROPERTIES(EVENT) ******************************")
+        log.info("************************* ALL PROPERTIES(EVENT) ******************************")
 
         env.propertySources
             .stream()
@@ -27,19 +30,13 @@ class AppContextRefreshedEventPropertiesPrinter {
             .flatMap { obj: Set<String> -> obj.stream() }
             .distinct()
             .sorted()
-            .forEach { key: String? ->
-                LOGGER.info(
-                    "{}={}", key, env.getProperty(
-                        key!!
-                    )
-                )
-            }
+            .forEach { key: String? -> log.info("{}={}", key, env.getProperty(key!!)) }
 
-        LOGGER.info("******************************************************************************")
+        log.info("******************************************************************************")
     }
 
     private fun printAllApplicationProperties(env: ConfigurableEnvironment) {
-        LOGGER.info("************************* APP PROPERTIES(EVENT) ******************************")
+        log.info("************************* APP PROPERTIES(EVENT) ******************************")
 
         env.propertySources
             .stream()
@@ -51,17 +48,9 @@ class AppContextRefreshedEventPropertiesPrinter {
             .distinct()
             .sorted()
             .forEach { key: String? ->
-                LOGGER.info(
-                    "{}={}", key, env.getProperty(
-                        key!!
-                    )
-                )
-            }
+                log.info("{}={}", key, env.getProperty(key!!)) }
 
-        LOGGER.info("******************************************************************************")
+        log.info("******************************************************************************")
     }
 
-    companion object {
-        private val LOGGER = LoggerFactory.getLogger(AppContextRefreshedEventPropertiesPrinter::class.java)
-    }
 }

@@ -18,7 +18,7 @@ import com.piotr.marketbroker.infrastructure.persistence.order.OpenOrderResponse
 import com.piotr.marketbroker.infrastructure.persistence.order.Order
 import com.piotr.marketbroker.infrastructure.persistence.order.SpringDataOrdersRepository
 import com.piotr.marketbroker.infrastructure.persistence.order.TradeRequest
-import mu.KotlinLogging
+import com.piotr.marketbroker.common.logger
 import org.springframework.stereotype.Service
 
 private const val INSERT_OPEN_ORDER = "InsertOpenOrder"
@@ -29,7 +29,6 @@ private const val INSERT_CLOSE_POSITION = "InsertClosePosition"
 
 private const val ORDER_QUERY = "{\"orderID\":%d}"
 
-private val log = KotlinLogging.logger(OrdersService::class.toString())
 
 @Service
 class OrdersService(
@@ -37,6 +36,8 @@ class OrdersService(
     private val ordersRepository: SpringDataOrdersRepository,
     private val accountDetailsHandler: AccountDetailsHandler
 ) {
+
+    private val log by logger()
 
     private val mapper = jacksonObjectMapper()
         .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)

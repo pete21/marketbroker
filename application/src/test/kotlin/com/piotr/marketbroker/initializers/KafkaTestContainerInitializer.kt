@@ -1,6 +1,6 @@
 package com.piotr.marketbroker.initializers
 
-import mu.KotlinLogging
+import com.piotr.marketbroker.common.logger
 import org.springframework.boot.test.util.TestPropertyValues
 import org.springframework.context.ApplicationContextInitializer
 import org.springframework.context.ConfigurableApplicationContext

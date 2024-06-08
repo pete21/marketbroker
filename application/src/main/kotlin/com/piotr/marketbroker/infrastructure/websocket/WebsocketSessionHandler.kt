@@ -4,12 +4,11 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.piotr.marketbroker.application.event.WebsocketDisconnectedEvent
 import com.piotr.marketbroker.application.event.WebsocketMessageEvent
-import mu.KotlinLogging
+import com.piotr.marketbroker.common.logger
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.web.socket.CloseStatus
@@ -19,7 +18,6 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient
 import org.springframework.web.socket.handler.TextWebSocketHandler
 import java.io.IOException
 
-private val log = KotlinLogging.logger(WebsocketSessionHandler::class.toString())
 
 @Service
 class WebsocketSessionHandler(val applicationEventPublisher: ApplicationEventPublisher) : TextWebSocketHandler() {
@@ -34,6 +32,7 @@ class WebsocketSessionHandler(val applicationEventPublisher: ApplicationEventPub
 
     private var websocketSession: Int = 0
 
+    private val log by logger()
 
     fun connect(websocketServer: String): Boolean {
         this.websocketServer = websocketServer
@@ -64,7 +63,7 @@ class WebsocketSessionHandler(val applicationEventPublisher: ApplicationEventPub
         } catch (e: JsonProcessingException) {
             // TODO Auto-generated catch block
             log.error(message.payload)
-        } catch (e: JsonMappingException) {
+        } catch (e: Exception) {
             // TODO Auto-generated catch block
             log.error(message.payload)
         }

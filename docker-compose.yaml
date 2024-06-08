@@ -23,7 +23,7 @@ services:
     profiles: [all]
 
   kafka0:
-    image: bitnami/kafka:3.7.0-debian-12-r2
+    image: bitnami/kafka:3.7.0-debian-12-r7
     container_name: kafka0
     hostname: kafka0
     ports:
@@ -246,9 +246,10 @@ services:
     ports:
       - "8888:8888"
     command: sh -c "pip install questdb psycopg[binary] psycopg2-binary kafka-python confluent-kafka \"confluent-kafka[avro]\" fastavro requests \
+      prophet \
+      plotly \
       && start-notebook.sh --NotebookApp.password= --NotebookApp.token="
 #    toolz cytoolz \
-#    plotly \
 #    hyperopt \
 #    fitter \
 #    xgboost \

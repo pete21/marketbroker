@@ -6,12 +6,10 @@ import com.piotr.marketbroker.infrastructure.kafkaconnect.KafkaConnectAdapter
 import com.piotr.marketbroker.infrastructure.persistence.keys.KeysRepository
 import com.piotr.marketbroker.infrastructure.persistence.subscription.SpringDataSubscriptionsRepository
 import com.piotr.marketbroker.infrastructure.persistence.subscription.Subscription
-import mu.KotlinLogging
+import com.piotr.marketbroker.common.logger
 import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
-
-private val log = KotlinLogging.logger(SubscriptionEventHandler::class.toString())
 
 @Service
 class SubscriptionEventHandler (
@@ -19,6 +17,7 @@ class SubscriptionEventHandler (
     private val keysRepository: KeysRepository,
     private val kafkaConnectAdapter: KafkaConnectAdapter
 ) {
+    private val log by logger()
 
     @Async
     @EventListener

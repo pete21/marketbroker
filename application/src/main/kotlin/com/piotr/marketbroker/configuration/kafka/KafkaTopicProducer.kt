@@ -1,7 +1,7 @@
 package com.piotr.marketbroker.configuration.kafka
 
 import ai.symmetrical.kafka.topic.TopicFactory
-import mu.KotlinLogging
+import com.piotr.marketbroker.common.logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.ApplicationListener
@@ -9,7 +9,6 @@ import org.springframework.context.event.ContextRefreshedEvent
 import org.springframework.kafka.core.KafkaAdmin
 import org.springframework.stereotype.Component
 
-private val logger = KotlinLogging.logger {}
 
 @Component
 @ConditionalOnProperty(
@@ -27,6 +26,8 @@ class KafkaTopicProducer(
     val defaultDltPartitionsNumber: Int,
 ) : ApplicationListener<ContextRefreshedEvent> {
 
+    private val log by logger()
+
     override fun onApplicationEvent(event: ContextRefreshedEvent) {
 
         val topics = KafkaTopics.getAllTopics()
@@ -37,14 +38,14 @@ class KafkaTopicProducer(
 
     @Suppress("SpreadOperator")
     private fun createMainTopics(topics: List<String>) {
-        logger.info("Main topics creation process started")
+        log.info("Main topics creation process started")
         kafkaAdmin.createOrModifyTopics(*topics.map { topicFactory.createTopic(it) }.toTypedArray())
-        logger.info("Main topics creation process finished")
+        log.info("Main topics creation process finished")
     }
 
     @Suppress("SpreadOperator")
     private fun createDltTopics(topics: List<String>) {
-        logger.info("DLT topics creation process started")
+        log.info("DLT topics creation process started")
         val topicsToBeCreated = topics.map {
             topicFactory.createTopic(
                 "$it.DLT",
@@ -53,6 +54,6 @@ class KafkaTopicProducer(
             )
         }
         kafkaAdmin.createOrModifyTopics(*topicsToBeCreated.toTypedArray())
-        logger.info("DLT topics creation process finished")
+        log.info("DLT topics creation process finished")
     }
 }

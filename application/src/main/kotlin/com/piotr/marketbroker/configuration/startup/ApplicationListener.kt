@@ -1,6 +1,6 @@
 package com.piotr.marketbroker.configuration.startup
 
-import mu.KotlinLogging
+import com.piotr.marketbroker.common.logger
 import org.springframework.context.event.ContextRefreshedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.core.env.Environment
@@ -9,7 +9,8 @@ import java.text.NumberFormat
 
 @Suppress("SpreadOperator", "MagicNumber")
 class ApplicationListener(private val environment: Environment) {
-    private val log = KotlinLogging.logger {}
+
+    private val log by logger()
 
     @EventListener(ContextRefreshedEvent::class)
     @Throws(UnknownHostException::class)
@@ -21,8 +22,8 @@ class ApplicationListener(private val environment: Environment) {
 
     private fun logEnvInfo() {
         log.info("=========================== Env Info ============================")
-        log.info { "JAVA_OPTS" + System.getenv() }
-        log.info { "PROPERTIES" + System.getProperties() }
+        log.info("JAVA_OPTS" + System.getenv())
+        log.info("PROPERTIES" + System.getProperties())
         log.info(LINE_SEPARATOR)
     }
 

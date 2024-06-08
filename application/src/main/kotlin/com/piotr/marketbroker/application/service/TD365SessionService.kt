@@ -17,13 +17,12 @@ import com.piotr.marketbroker.infrastructure.http.RequestHeaders.Companion.login
 import com.piotr.marketbroker.infrastructure.http.RequestHeaders.Companion.postHeaders
 import com.piotr.marketbroker.infrastructure.http.RequestHeaders.Companion.redirectHeaders
 import io.micrometer.observation.annotation.Observed
-import mu.KotlinLogging
+import com.piotr.marketbroker.common.logger
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpHeaders
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 
-private val log = KotlinLogging.logger(TD365SessionService::class.toString())
 
 private const val USER_AUTH =
     "{\"realm\":\"Username-Password-Authentication\",\"client_id\":\"eeXrVwSMXPZ4pJpwStuNyiUa7XxGZRX9\",\"scope\":\"openid\",\"grant_type\":\"http://auth0.com/oauth/grant-type/password-realm\",\"username\":\"%s\",\"password\":\"%s\"}"
@@ -39,6 +38,8 @@ class TD365SessionService(
     private val websocketService: WebsocketService,
     private val applicationEventPublisher: ApplicationEventPublisher
 ) {
+
+    private val log by logger()
 
     private val mapper = jacksonObjectMapper()
         .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
