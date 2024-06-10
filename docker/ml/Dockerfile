@@ -4,7 +4,7 @@ FROM continuumio/anaconda3:2023.03-1
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 
-RUN apt update && apt install -y build-essential && rm -rf /var/lib/apt/lists/*
+RUN apt update && apt install -y build-essential zip && rm -rf /var/lib/apt/lists/*
 
 #USER root
 WORKDIR /root
@@ -35,12 +35,14 @@ RUN pip install matplotlib seaborn
 
 RUN pip install pytest tox pyyaml
 RUN pip install dash flask flask_restful connexion requests
-RUN pip install tensorflow
+RUN pip install tensorflow torch_geometric
 RUN pip install mlflow
 RUN pip install lightgbm
 RUN pip install mlxtend
 RUN pip install catboost
 RUN pip install xgboost
+
+RUN pip install elegantrl tensorboardX wrds ccxt
 
 RUN pip install opentraveldata OpenTrepWrapper Neobase
 RUN pip install elasticsearch kafka-python
@@ -49,17 +51,19 @@ RUN pip install questdb psycopg[binary] psycopg2-binary confluent-kafka confluen
 RUN pip install openai
 RUN pip install langchain
 RUN pip install bottleneck --upgrade
+RUN pip install stockstats pyfolio-reloaded quantstats
 # RUN pip install tensorrt
 RUN pip install boto3
 
 RUN mkdir /root/.aws
-COPY credentials /root/.aws/
+COPY examples/ .
+COPY credentials ./.aws/
 
 ENV MLFLOW_TRACKING_URI=http://host.docker.internal:5000
 ENV MLFLOW_S3_ENDPOINT_URL=http://host.docker.internal:9000
 
 EXPOSE 8888
-EXPOSE 2000-2100
+EXPOSE 2000-2010
 
 CMD ["bash", "-c", "jupyter lab \
     --notebook-dir=/opt/notebooks --ip=0.0.0.0 --port=8888 \
