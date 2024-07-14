@@ -1,0 +1,906 @@
+openapi: 3.1.0
+info:
+  title: Marketbroker
+  version: '1.0'
+  summary: Marketbroker API
+  description: Marketbroker API
+  contact:
+    name: piotr.nazarewicz@gmail.com
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /users/{userId}:
+    parameters:
+      - schema:
+          type: integer
+        name: userId
+        in: path
+        required: true
+        description: Id of an existing user.
+    get:
+      summary: Get User Info by User ID
+      tags:
+        - users
+      responses:
+        '200':
+          description: User Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                Get User Alice Smith:
+                  value:
+                    id: 142
+                    firstName: Alice
+                    lastName: Smith
+                    email: alice.smith@gmail.com
+                    dateOfBirth: '1997-10-31'
+                    emailVerified: true
+                    signUpDate: '2019-08-24'
+        '404':
+          description: User Not Found
+      operationId: get-users-userId
+      description: Retrieve the information of the user with the matching user ID.
+
+    patch:
+      summary: Update User Information
+      operationId: patch-users-userId
+      responses:
+        '200':
+          description: User Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                Updated User Rebecca Baker:
+                  value:
+                    id: 13
+                    firstName: Rebecca
+                    lastName: Baker
+                    email: rebecca@gmail.com
+                    dateOfBirth: '1985-10-02'
+                    emailVerified: false
+                    createDate: '2019-08-24'
+        '404':
+          description: User Not Found
+        '409':
+          description: Email Already Taken
+      description: Update the information of an existing user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                  description: 'If a new email is given, the user''s email verified property will be set to false.'
+                dateOfBirth:
+                  type: string
+            examples:
+              Update First Name:
+                value:
+                  firstName: Rebecca
+              Update Email:
+                value:
+                  email: rebecca@gmail.com
+              Update Last Name & Date of Birth:
+                value:
+                  lastName: Baker
+                  dateOfBirth: '1985-10-02'
+        description: Patch user properties to update.
+      tags:
+        - users
+
+  /account/summary:
+    get:
+      summary: Get Account summary
+      tags:
+        - account
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountSummaryResponseDTO'
+        '404':
+          description: Account summary not found
+      operationId: get-account-summary
+      description: Get Account summary
+
+  /account/positions:
+    get:
+      summary: Get Positions
+      tags:
+        - account
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PositionResponseDTO'
+      operationId: get-positions
+      description: Get Positions
+  /account/opening-orders:
+    get:
+      summary: Get Opening orders
+      tags:
+        - account
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OpeningOrderResponseDTO'
+      operationId: get-opening-orders
+      description: Get Opening orders
+
+  /orders:
+    get:
+      summary: List Orders
+      tags:
+        - orders
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderResponseDTO'
+      operationId: list-orders
+
+      description: List Orders
+    post:
+      summary: Create order
+      operationId: create-order
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponseDTO'
+      description: Create order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRequestDTO'
+      tags:
+        - orders
+  '/orders/{id}':
+    parameters:
+      - schema:
+          type: integer
+        name: id
+        in: path
+        required: true
+        description: orderId
+    get:
+      summary: Get Order details
+      tags:
+        - orders
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponseDTO'
+      operationId: get-order-by-id
+      description: Get order details
+    patch:
+      summary: Amend Order
+      tags:
+        - orders
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponseDTO'
+      operationId: amend-order-by-id
+      description: Amend order details
+
+    delete:
+      summary: Delete open order
+      operationId: delete-order-by-id
+      responses:
+        '200':
+          description: OK
+      description: Delete open order
+      tags:
+        - orders
+  /demo/session:
+    post:
+      summary: Demo session controller
+      operationId: demo-session
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDTO'
+      description: Demo session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionDTO'
+
+      tags:
+        - demo
+  /instruments/groups:
+    get:
+      summary: Get Instrument groups
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+      operationId: get-instrument-groups
+
+      tags:
+        - instruments
+      description: Get Instrument groups
+    post:
+      summary: Generate Instrument groups
+      operationId: post-instrument-groups
+      responses:
+        '200':
+          description: OK
+
+      tags:
+        - instruments
+      description: Generate Instrument groups
+  /instruments/quotes:
+    get:
+      summary: Get Instrument quotes
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+      operationId: get-instrument-quotes
+
+      tags:
+        - instruments
+      description: Get Instrument quotes
+    post:
+      summary: Generate Instrument quotes
+      operationId: post-instrument-quotes
+      responses:
+        '200':
+          description: OK
+
+      tags:
+        - instruments
+      description: Generate Instrument quotes
+  /publish-json:
+    post:
+      summary: Publish json data to kafka topic
+      tags:
+        - kafka
+      responses:
+        '200':
+          description: OK
+      operationId: publish-json
+
+      description: Publish json data to kafka topic
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JsonDataDTO'
+  /publish-text:
+    post:
+      summary: Publish text data to kafka topic
+      tags:
+        - kafka
+      responses:
+        '200':
+          description: OK
+      operationId: publish-text
+
+      description: Publish text data to kafka topic
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TextDataDTO'
+  /live/login:
+    post:
+      summary: Live Login controller
+      operationId: live-login
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDTO'
+      description: Live login controller
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDTO'
+      tags:
+        - live
+
+  /live/accounts:
+    get:
+      summary: Get Live accounts
+      operationId: get-live-accounts
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LiveAccountDTO'
+      description: Get live accounts
+      tags:
+        - live
+
+  /live/session:
+    post:
+      summary: Live start session controller
+      operationId: live-session
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDTO'
+      description: Live session controller
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionDTO'
+      tags:
+        - live
+
+  /instruments/subscriptions:
+    get:
+      summary: Get Instrument subscriptions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+      operationId: get-subscriptions
+      description: Get subscriptions
+      tags:
+        - subscriptions
+    post:
+      summary: Create Instrument subscription
+      operationId: create-subscription
+      responses:
+        '200':
+          description: OK
+      description: Create subscription
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionsRequestDTO'
+      tags:
+        - subscriptions
+
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: 'User'
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified
+    PositionResponseDTO:
+      title: PositionResponseDTO
+      type: object
+      properties:
+        positionId:
+          type: integer
+          format: int32
+        marketId:
+          type: integer
+          format: int32
+        quoteId:
+          type: integer
+          format: int32
+        type:
+          type: string
+        direction:
+          type: string
+        creationTimeUTC:
+          type: string
+          format: date-time
+        stake:
+          type: integer
+          format: int32
+        openingPriceDecimal:
+          type: number
+          format: float
+        currentPriceDecimal:
+          type: number
+          format: float
+        openPL:
+          type: integer
+        stopOrderPrice:
+          type: number
+          format: float
+        limitOrderPrice:
+          type: number
+          format: float
+        imr:
+          type: number
+          format: float
+        prcGenDecimalPlaces:
+          type: integer
+        betPer:
+          type: number
+          format: float
+        tradable:
+          type: boolean
+        isRollingMarket:
+          type: boolean
+        isTriggered:
+          type: boolean
+        currencyCode:
+          type: string
+        isTotal:
+          type: boolean
+      required:
+        - positionId
+        - marketId
+        - quoteId
+        - type
+        - direction
+        - creationTimeUTC
+        - stake
+        - openingPriceDecimal
+        - currencyCode
+
+    OpeningOrderResponseDTO:
+      title: OpeningOrderResponseDTO
+      type: object
+      properties:
+        currentPrice:
+          type: number
+          format: float
+        direction:
+          type: integer
+          format: int32
+        expiryDate:
+          type: string
+        goodTill:
+          type: string
+        iDOLimitOrderPrice:
+          type: number
+          format: float
+        iDOStopOrderPrice:
+          type: number
+          format: float
+        isTriggered:
+          type: boolean
+        limitOrderPrice:
+          type: number
+          format: float
+        margin:
+          type: number
+          format: float
+        market:
+          type: string
+        marketId:
+          type: integer
+          format: int32
+        marketTradable:
+          type: boolean
+        orderId:
+          type: integer
+          format: int32
+        period:
+          type: string
+        creationTimeUTC:
+          type: string
+        quoteId:
+          type: integer
+          format: int32
+        quoteMode:
+          type: string
+        stake:
+          type: integer
+          format: int32
+        status:
+          type: integer
+          format: int32
+        stopOrderPrice:
+          type: number
+          format: float
+        type:
+          type: string
+        trailingPoint:
+          type: integer
+          format: int32
+        isGuarantee:
+          type: boolean
+        isForceOpen:
+          type: boolean
+        orderPriceModeEnum:
+          type: string
+        currencySymbol:
+          type: string
+      required:
+        - currentPrice
+        - direction
+        - expiryDate
+        - goodTill
+        - iDOLimitOrderPrice
+        - iDOStopOrderPrice
+        - isTriggered
+        - limitOrderPrice
+        - margin
+        - market
+        - marketId
+        - marketTradable
+        - orderId
+        - period
+        - creationTimeUTC
+        - quoteId
+        - quoteMode
+        - stake
+        - status
+        - stopOrderPrice
+        - type
+        - trailingPoint
+        - isGuarantee
+        - isForceOpen
+        - orderPriceModeEnum
+        - currencySymbol
+
+    AccountSummaryResponseDTO:
+      title: AccountSummaryResponseDTO
+      type: object
+      properties:
+        accountId:
+          type: integer
+          format: int32
+        platformId:
+          type: integer
+          format: int32
+        accountValuation:
+          type: number
+          format: float
+        fundedPercentage:
+          type: string
+        margin:
+          type: integer
+          format: int32
+        openPnLQuote:
+          type: integer
+          format: int32
+        accountBalance:
+          type: number
+          format: float
+        credit:
+          type: number
+          format: float
+        waivedMargin:
+          type: number
+          format: float
+        resources:
+          type: number
+          format: float
+        changeIMR:
+          type: number
+          format: float
+        variationMarginRequired:
+          type: number
+          format: float
+        marginPercent:
+          type: number
+          format: float
+        calculatedUTCTicks:
+          type: integer
+          format: int64
+        hasError:
+          type: boolean
+      required:
+        - accountId
+        - platformId
+        - accountValuation
+        - fundedPercentage
+        - margin
+        - openPnLQuote
+        - accountBalance
+        - credit
+        - waivedMargin
+        - resources
+        - changeIMR
+        - variationMarginRequired
+        - marginPercent
+        - calculatedUTCTicks
+        - hasError
+    OrderResponseDTO:
+      title: OrderResponseDTO
+      type: object
+      properties:
+        orderId:
+          type: integer
+          format: int32
+        marketId:
+          type: integer
+          format: int32
+        quoteId:
+          type: integer
+          format: int32
+        price:
+          type: number
+          format: float
+        stake:
+          type: integer
+          format: int32
+        direction:
+          type: integer
+          format: int32
+        limitOrderPrice:
+          type: number
+          format: float
+        stopOrderPrice:
+          type: number
+          format: float
+        trailingPoint:
+          type: integer
+          format: float
+        createdAt:
+          type: string
+          format: date-time
+        positionId:
+          type: integer
+          format: int32
+      required:
+        - orderId
+        - marketId
+        - quoteId
+        - price
+        - stake
+        - direction
+        - limitOrderPrice
+        - stopOrderPrice
+        - trailingPoint
+        - createdAt
+        - positionId
+    SessionDTO:
+      title: SessionDTO
+      type: object
+      properties:
+        state:
+          type: string
+        accountId:
+          type: integer
+          format: int32
+      required:
+        - state
+    ResponseDTO:
+      title: ResponseDTO
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+        message:
+          type: string
+      required:
+        - status
+        - message
+    JsonDataDTO:
+      title: JsonDataDTO
+      type: object
+      x-class-extra-annotation: '@KafkaTopic(KafkaTopics.TOPIC_JSON_DATA)'
+      properties:
+        type:
+          type: string
+        data:
+          type: string
+      required:
+        - type
+        - data
+    TextDataDTO:
+      title: TextDataDTO
+      type: object
+      x-class-extra-annotation: '@KafkaTopic(KafkaTopics.TOPIC_TEXT_DATA)'
+      properties:
+        message:
+          type: string
+      required:
+        - message
+    SubscriptionsRequestDTO:
+      title: SubscriptionsRequestDTO
+      type: object
+      properties:
+        quoteId:
+          type: integer
+          format: int32
+        status:
+          type: boolean
+      required:
+        - quoteId
+        - status
+    OrderRequestDTO:
+      title: OrderRequestDTO
+      type: object
+      properties:
+        marketId:
+          type: integer
+          format: int32
+        quoteId:
+          type: integer
+          format: int32
+        price:
+          type: number
+          format: float
+        stake:
+          type: integer
+          format: int32
+        direction:
+          type: integer
+          format: int32
+        orderMode:
+          type: integer
+          format: int32
+          description: '0 - market order, 1 - limit order, 2 - stop order, 4 - close position'
+        limitOrderPrice:
+          type: number
+          format: float
+        stopOrderPrice:
+          type: number
+          format: float
+        trailingPoint:
+          type: integer
+        positionId:
+          type: integer
+          description: for InsertCloseOrder (orderMode==4)
+      required:
+        - marketId
+        - quoteId
+        - price
+        - stake
+        - direction
+        - orderMode
+        - limitOrderPrice
+        - stopOrderPrice
+        - trailingPoint
+        - positionId
+    LoginDTO:
+      title: LoginDTO
+      type: object
+      properties:
+        state:
+          type: string
+        login:
+          type: string
+        password:
+          type: string
+    LiveAccountDTO:
+      title: LiveAccountDTO
+      type: object
+      description: Live accounts
+      properties:
+        id:
+          type: integer
+          format: int32
+        platform:
+          type: string
+        account:
+          type: string
+        accountType:
+          type: string
+        currency:
+          type: string
+        balance:
+          type: number
+          format: float
+        equity:
+          type: number
+          format: float
+        ct_login_id:
+          type: string
+        ct_login_password:
+          type: string
+      required:
+        - id
+        - platform
+        - account
+        - accountType
+        - currency
+        - balance
+        - equity
+        - ct_login_id
+        - ct_login_password
+x-internal: true
+tags:
+  - name: account
+  - name: demo
+  - name: instruments
+  - name: kafka
+  - name: live
+  - name: orders
+  - name: subscriptions
+  - name: users

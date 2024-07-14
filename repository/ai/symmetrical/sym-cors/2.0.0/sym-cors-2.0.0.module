@@ -1,0 +1,90 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "ai.symmetrical",
+    "module": "sym-cors",
+    "version": "2.0.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.4.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.8.22"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "sym-cors-2.0.0.jar",
+          "url": "sym-cors-2.0.0.jar",
+          "size": 6498,
+          "sha512": "c15b8b68b97fb397ce2806ae1a48f8c691fc3575ede75279bf9e261491db251103ae04ea17d771e2260a3ad3c58d3fdb0b648c60a0f1ee50d0657b1bceae2bb6",
+          "sha256": "69e6c88a67f49180b9b86d3f352e75aa7b4be593c45147abe80b764d43181da9",
+          "sha1": "80d5282eebe111200773565041bfced65d163e7e",
+          "md5": "62e145ba4315edc9c60c5681554bfe29"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-starter"
+        },
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-starter-web"
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.8.22"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "sym-cors-2.0.0.jar",
+          "url": "sym-cors-2.0.0.jar",
+          "size": 6498,
+          "sha512": "c15b8b68b97fb397ce2806ae1a48f8c691fc3575ede75279bf9e261491db251103ae04ea17d771e2260a3ad3c58d3fdb0b648c60a0f1ee50d0657b1bceae2bb6",
+          "sha256": "69e6c88a67f49180b9b86d3f352e75aa7b4be593c45147abe80b764d43181da9",
+          "sha1": "80d5282eebe111200773565041bfced65d163e7e",
+          "md5": "62e145ba4315edc9c60c5681554bfe29"
+        }
+      ]
+    }
+  ]
+}

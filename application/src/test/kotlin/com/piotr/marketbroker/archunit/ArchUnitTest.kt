@@ -25,7 +25,7 @@ internal class ArchUnitTest {
 
 
     @ArchTest
-    val `methods in rest controllers should have pre authorize annotation` = ArchRuleDefinition.methods()
+    val `methods in rest controllers should have pre-authorize annotation` = ArchRuleDefinition.methods()
         .that()
         .areDeclaredInClassesThat()
         .areAnnotatedWith(RestController::class.java)
@@ -35,22 +35,35 @@ internal class ArchUnitTest {
         .beAnnotatedWith(PreAuthorize::class.java)
 
     @ArchTest
-    @ArchIgnore
-    val `the domain package does not use infrastucture packages` = ArchRuleDefinition.noClasses()
+    val `the domain package does not use infrastucture packages` = ArchRuleDefinition
+        .noClasses()
         .that()
         .resideInAPackage("$MAIN_PACKAGE.domain..")
         .should()
         .accessClassesThat()
-        .resideInAnyPackage("$MAIN_PACKAGE.domain.infrastructure..")
+        .resideInAnyPackage("$MAIN_PACKAGE.infrastructure..")
+        .allowEmptyShould(true)
 
     @ArchTest
-    @ArchIgnore
-    val `the domain package does not use application packages` = ArchRuleDefinition.noClasses()
+    val `the domain package does not use application packages` = ArchRuleDefinition
+        .noClasses()
         .that()
         .resideInAPackage("$MAIN_PACKAGE.domain..")
         .should()
         .accessClassesThat()
         .resideInAnyPackage("$MAIN_PACKAGE.application..")
+        .allowEmptyShould(true)
+
+    @ArchTest
+    @ArchIgnore
+    val `the application package does not use infrastucture packages` = ArchRuleDefinition
+        .noClasses()
+        .that()
+        .resideInAPackage("$MAIN_PACKAGE.application..")
+        .should()
+        .accessClassesThat()
+        .resideInAnyPackage("$MAIN_PACKAGE.infrastructure..")
+        .allowEmptyShould(true)
 
     @ArchTest
     @ArchIgnore

@@ -17,8 +17,8 @@ import io.kotest.core.spec.style.ExpectSpec
 class ArchUnitTestNamingConventionTest {
 
     @ArchTest
-    @ArchIgnore
-    val `test classes should end with test` = ArchRuleDefinition.classes()
+    val `test classes should end with test` = ArchRuleDefinition
+        .classes()
         .that()
         .areAssignableTo(ExpectSpec::class.java)
         .should()

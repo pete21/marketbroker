@@ -136,11 +136,11 @@ com.piotr.marketbroker:
     dev-url: http://localhost:8080
     prod-url: http://localhost:8080
 com.piotr:
-#  cors:
-#    enabled: false
-#    headers: "*"
-#    domain: "*"
-#    exposed-headers: ""
+  cors:
+    enabled: false
+    headers: "*"
+    domain: "*"
+    exposed-headers: ""
   testcontainers:
     kafka:
       enabled: false
@@ -171,12 +171,12 @@ ai.symmetrical:
       scan-package: com.piotr.marketbroker.application.event
 
 
-java:
-  util:
-    logging:
-      ConsoleHandler:
-        formatter: java.util.logging.SimpleFormatter
-        level: ALL
+#java:
+#  util:
+#    logging:
+#      ConsoleHandler:
+#        formatter: java.util.logging.SimpleFormatter
+#        level: ALL
 org:
   apache:
     http:

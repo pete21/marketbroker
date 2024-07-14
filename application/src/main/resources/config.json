@@ -1,0 +1,11 @@
+{
+  "interfaceOnly": true,
+  "modelPackage": "com.piotr.marketbroker.application.model",
+  "apiPackage": "com.piotr.marketbroker.application.controller",
+  "implicitHeaders": true,
+  "hideGenerationTimestamp": true,
+  "useTags": true,
+  "documentationProvider": "none",
+  "useSpringBoot3": "true",
+  "skipDefaultInterface": true
+}
