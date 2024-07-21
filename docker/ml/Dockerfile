@@ -4,7 +4,7 @@ FROM continuumio/anaconda3:2023.03-1
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 
-RUN apt update && apt install -y build-essential zip && rm -rf /var/lib/apt/lists/*
+RUN apt update && apt install -y build-essential zip python-dev libsdl2-dev && rm -rf /var/lib/apt/lists/*
 
 #USER root
 WORKDIR /root
@@ -18,49 +18,47 @@ RUN ./configure --prefix=/usr
 RUN make && make install
 
 WORKDIR /root
-RUN pip install TA-Lib
+RUN --mount=type=cache,target=/root/.cache/pip pip install TA-Lib
 
 
 # FinRL
 RUN --mount=type=cache,target=/root/.cache/pip pip install git+https://github.com/AI4Finance-Foundation/FinRL.git
 RUN --mount=type=cache,target=/root/.cache/pip pip install box2d
 
-RUN mkdir /opt/notebooks
-
 #RUN python3 -mpip install -U psutil dill joblib
 #RUN python3 -mpip install -U setuptools wheel build scikit-build
 #RUN python3 -mpip install -U numpy pandas pandas-datareader
 #RUN python3 -mpip install -U scikit-learn
-RUN pip install matplotlib seaborn
+RUN --mount=type=cache,target=/root/.cache/pip pip install matplotlib seaborn
 
-RUN pip install pytest tox pyyaml
-RUN pip install dash flask flask_restful connexion requests
-RUN pip install tensorflow torch_geometric
-RUN pip install mlflow
-RUN pip install lightgbm
-RUN pip install mlxtend
-RUN pip install catboost
-RUN pip install xgboost
+RUN --mount=type=cache,target=/root/.cache/pip pip install pytest tox pyyaml
+RUN --mount=type=cache,target=/root/.cache/pip pip install dash flask flask_restful connexion requests
+RUN --mount=type=cache,target=/root/.cache/pip pip install tensorflow torch_geometric
+RUN --mount=type=cache,target=/root/.cache/pip pip install mlflow
+RUN --mount=type=cache,target=/root/.cache/pip pip install lightgbm
+RUN --mount=type=cache,target=/root/.cache/pip pip install mlxtend
+RUN --mount=type=cache,target=/root/.cache/pip pip install catboost
+RUN --mount=type=cache,target=/root/.cache/pip pip install xgboost
 
-RUN pip install elegantrl tensorboardX wrds ccxt
+RUN --mount=type=cache,target=/root/.cache/pip pip install elegantrl tensorboardX wrds ccxt
 
-RUN pip install opentraveldata OpenTrepWrapper Neobase
-RUN pip install elasticsearch kafka-python
-RUN pip install questdb psycopg[binary] psycopg2-binary confluent-kafka confluent-kafka[avro] fastavro
+RUN --mount=type=cache,target=/root/.cache/pip pip install opentraveldata OpenTrepWrapper Neobase
+RUN --mount=type=cache,target=/root/.cache/pip pip install elasticsearch kafka-python
+RUN --mount=type=cache,target=/root/.cache/pip pip install questdb psycopg[binary] psycopg2-binary confluent-kafka confluent-kafka[avro] fastavro
 
-RUN pip install openai
-RUN pip install langchain
-RUN pip install bottleneck --upgrade
-RUN pip install stockstats pyfolio-reloaded quantstats
+RUN --mount=type=cache,target=/root/.cache/pip pip install openai
+RUN --mount=type=cache,target=/root/.cache/pip pip install langchain
+RUN --mount=type=cache,target=/root/.cache/pip pip install bottleneck --upgrade
+RUN --mount=type=cache,target=/root/.cache/pip pip install stockstats pyfolio-reloaded quantstats
 # RUN pip install tensorrt
-RUN pip install boto3
+RUN --mount=type=cache,target=/root/.cache/pip pip install boto3
 
 RUN mkdir /root/.aws
 COPY examples/ .
 COPY credentials ./.aws/
 
 ENV MLFLOW_TRACKING_URI=http://host.docker.internal:5000
-ENV MLFLOW_S3_ENDPOINT_URL=http://host.docker.internal:9000
+ENV MLFLOW_S3_ENDPOINT_URL=http://host.docker.internal:9900
 
 EXPOSE 8888
 EXPOSE 2000-2010
