@@ -54,6 +54,7 @@ services:
   #      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
     networks:
       - marketbroker_net
+    profiles: [all,infra]
 
 
   kafka-ui:
@@ -71,10 +72,11 @@ services:
       - kafka0
     networks:
       - marketbroker_net
+    profiles: [all,infra]
 
 
   questdb:
-    image: questdb/questdb:8.0.0
+    image: questdb/questdb:8.0.3
     container_name: questdb
     ports:
       - "8812:8812"
@@ -95,7 +97,7 @@ services:
       - questdb-data:/root/.questdb
     networks:
       - marketbroker_net
-
+    profiles: [all,infra,ml]
 
   kafka-connect:
 #    image: ueisele/apache-kafka-connect-standalone:3.7.0
@@ -140,6 +142,7 @@ services:
       CONNECT_PLUGIN_PATH: /etc/kafka-connect/jars
     networks:
       - marketbroker_net
+    profiles: [all,infra]
 
 #    command:
 #      - bash
@@ -187,7 +190,7 @@ services:
       - ./docker/grafana/etc_grafana:/etc/grafana/
     networks:
       - marketbroker_net
-
+    profiles: [all,infra,ml]
 
   prometheus:
     image: prom/prometheus:v2.49.1
@@ -207,6 +210,7 @@ services:
       - "9090:9090"
     networks:
       - marketbroker_net
+    profiles: [all,infra,ml]
 
 
   loki:
@@ -219,6 +223,7 @@ services:
       - ./docker/loki-config.yml:/etc/loki/loki-config.yml
     networks:
       - marketbroker_net
+    profiles: [all,infra,ml]
 
 
   tempo:
@@ -237,6 +242,7 @@ services:
       - "9411:9411"   # zipkin
     networks:
       - marketbroker_net
+    profiles: [all,infra]
 
   jupyter-notebook:
     image: quay.io/jupyter/tensorflow-notebook:tensorflow-2.16.1
@@ -269,7 +275,42 @@ services:
 #      - DOCKER_STACKS_JUPYTER_CMD=notebook
     networks:
       - marketbroker_net
-    profiles: [ml]
+    profiles: [ml_old]
+
+  jupyter-lab:
+    image: anaconda3_py10_ml:1
+    container_name: jupyter-lab
+    volumes:
+      - ./notebooks:/home/notebooks
+    ports:
+      - "8888:8888"
+#    command: sh -c "pip install questdb psycopg[binary] psycopg2-binary kafka-python confluent-kafka \"confluent-kafka[avro]\" fastavro requests \
+#      prophet \
+#      plotly \
+#      && start-notebook.sh --NotebookApp.password= --NotebookApp.token="
+    #    toolz cytoolz \
+    #    hyperopt \
+    #    fitter \
+    #    xgboost \
+    #    seaborn \
+    #    bayesian-optimization \
+    #    pandas_summary \
+    #    setuptools \
+    #    gputil \
+    #    rl_zoo3 \
+    #    stable-baselines3[extra] \
+    #    cmake openmpi \
+    #    git+https://github.com/AI4Finance-Foundation/FinRL.git \
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - RESTARTABLE=yes
+    #      - DOCKER_STACKS_JUPYTER_CMD=notebook
+    networks:
+      - marketbroker_net
+    profiles: [all,infra,ml]
+
+
 
 networks:
   marketbroker_net:

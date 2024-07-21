@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
-private const val CREATE_QUESTDB_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS %s(timestamp TIMESTAMP,q symbol CAPACITY 2,b float,a float) TIMESTAMP(timestamp) PARTITION BY DAY WAL DEDUP UPSERT KEYS(timestamp)"
+private const val CREATE_QUESTDB_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS %s(timestamp TIMESTAMP,q symbol CAPACITY 2,b float,a float) TIMESTAMP(timestamp) PARTITION BY DAY WAL DEDUP UPSERT KEYS(timestamp,q)"
 private const val QUESTDB_TABLE_NAME_TEMPLATE = "TICKSTREAM_%d"
 
 @Service

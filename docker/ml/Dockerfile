@@ -22,8 +22,8 @@ RUN pip install TA-Lib
 
 
 # FinRL
-RUN pip install git+https://github.com/AI4Finance-Foundation/FinRL.git
-RUN pip install box2d
+RUN --mount=type=cache,target=/root/.cache/pip pip install git+https://github.com/AI4Finance-Foundation/FinRL.git
+RUN --mount=type=cache,target=/root/.cache/pip pip install box2d
 
 RUN mkdir /opt/notebooks
 
