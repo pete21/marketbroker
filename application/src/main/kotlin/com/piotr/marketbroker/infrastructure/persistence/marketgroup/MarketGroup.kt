@@ -38,7 +38,7 @@ class MarketGroup (
     }
  */
 ) {
-    override fun toString(): String {
-        return "MarketGroup(id=$id, type='$type', name='$name', isSuperGroup=$isSuperGroup, isWhiteLabelPopularMarket=$isWhiteLabelPopularMarket, hasSubscription=$hasSubscription)"
-    }
+//    override fun toString(): String {
+//        return "MarketGroup(id=$id, type='$type', name='$name', isSuperGroup=$isSuperGroup, isWhiteLabelPopularMarket=$isWhiteLabelPopularMarket, hasSubscription=$hasSubscription)"
+//    }
 }

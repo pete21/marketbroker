@@ -210,7 +210,7 @@ services:
       - "9090:9090"
     networks:
       - marketbroker_net
-    profiles: [all,infra,ml]
+    profiles: [all,infra]
 
 
   loki:
@@ -223,7 +223,7 @@ services:
       - ./docker/loki-config.yml:/etc/loki/loki-config.yml
     networks:
       - marketbroker_net
-    profiles: [all,infra,ml]
+    profiles: [all,infra]
 
 
   tempo:
@@ -308,7 +308,6 @@ services:
     networks:
       - marketbroker_net
     profiles: [all,infra,ml]
-
 
 
 networks:

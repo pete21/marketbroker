@@ -133,9 +133,9 @@ class MarketQuote (
     val superGroupID: Int=0
 
 ) {
-    override fun toString(): String {
-        return "MarketQuote(id=$id, type='$type', marketID=$marketID, quoteID=$quoteID, atQuoteAtMarket=$atQuoteAtMarket, exchangeID=$exchangeID, prcGenFractionalPrice=$prcGenFractionalPrice, prcGenDecimalPlaces=$prcGenDecimalPlaces, high=$high, low=$low, dailyChange=$dailyChange, bid=$bid, ask=$ask, betPer=$betPer, isGSLPercent=$isGSLPercent, gSLDis=$gSLDis, minCloseOrderDisTicks=$minCloseOrderDisTicks, minOpenOrderDisTicks=$minOpenOrderDisTicks, displayBetPer=$displayBetPer, isInPortfolio=$isInPortfolio, tradable=$tradable, tradeOnWeb=$tradeOnWeb, callOnly=$callOnly, marketName=$marketName, tradeStartTime=$tradeStartTime, currency=$currency, allowGtdsStops=$allowGtdsStops, forceOpen=$forceOpen, margin=$margin, marginType=$marginType, gSLCharge=$gSLCharge, isGSLChargePercent=$isGSLChargePercent, spread=$spread, tradeRateType=$tradeRateType, openTradeRate=$openTradeRate, closeTradeRate=$closeTradeRate, minOpenTradeRate=$minOpenTradeRate, minCloseTradeRate=$minCloseTradeRate, priceDecimal=$priceDecimal, subscription=$subscription, superGroupID=$superGroupID)"
-    }
+//    override fun toString(): String {
+//        return "MarketQuote(id=$id, type='$type', marketID=$marketID, quoteID=$quoteID, atQuoteAtMarket=$atQuoteAtMarket, exchangeID=$exchangeID, prcGenFractionalPrice=$prcGenFractionalPrice, prcGenDecimalPlaces=$prcGenDecimalPlaces, high=$high, low=$low, dailyChange=$dailyChange, bid=$bid, ask=$ask, betPer=$betPer, isGSLPercent=$isGSLPercent, gSLDis=$gSLDis, minCloseOrderDisTicks=$minCloseOrderDisTicks, minOpenOrderDisTicks=$minOpenOrderDisTicks, displayBetPer=$displayBetPer, isInPortfolio=$isInPortfolio, tradable=$tradable, tradeOnWeb=$tradeOnWeb, callOnly=$callOnly, marketName=$marketName, tradeStartTime=$tradeStartTime, currency=$currency, allowGtdsStops=$allowGtdsStops, forceOpen=$forceOpen, margin=$margin, marginType=$marginType, gSLCharge=$gSLCharge, isGSLChargePercent=$isGSLChargePercent, spread=$spread, tradeRateType=$tradeRateType, openTradeRate=$openTradeRate, closeTradeRate=$closeTradeRate, minOpenTradeRate=$minOpenTradeRate, minCloseTradeRate=$minCloseTradeRate, priceDecimal=$priceDecimal, subscription=$subscription, superGroupID=$superGroupID)"
+//    }
 }
 
 
