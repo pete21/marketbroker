@@ -281,7 +281,7 @@ services:
     image: anaconda3_py10_ml:1
     container_name: jupyter-lab
     volumes:
-      - ./notebooks:/root/notebooks
+      - ./notebooks:/opt/notebooks
     ports:
       - "8888:8888"
 #    command: sh -c "pip install questdb psycopg[binary] psycopg2-binary kafka-python confluent-kafka \"confluent-kafka[avro]\" fastavro requests \
