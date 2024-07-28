@@ -18,7 +18,7 @@ RUN ./configure --prefix=/usr
 RUN make && make install
 
 WORKDIR /root
-RUN --mount=type=cache,target=/root/.cache/pip pip install TA-Lib
+RUN --mount=type=cache,target=/root/.cache/pip pip install TA-Lib finta
 
 
 # FinRL
