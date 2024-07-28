@@ -29,14 +29,12 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install box2d
 #RUN python3 -mpip install -U setuptools wheel build scikit-build
 #RUN python3 -mpip install -U numpy pandas pandas-datareader
 #RUN python3 -mpip install -U scikit-learn
-RUN --mount=type=cache,target=/root/.cache/pip pip install matplotlib seaborn
+RUN --mount=type=cache,target=/root/.cache/pip pip install matplotlib seaborn prophet ipympl
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install pytest tox pyyaml
-RUN --mount=type=cache,target=/root/.cache/pip pip install dash flask flask_restful connexion requests
+RUN --mount=type=cache,target=/root/.cache/pip pip install pytest tox pyyaml dash flask flask_restful connexion requests
 RUN --mount=type=cache,target=/root/.cache/pip pip install tensorflow torch_geometric
 RUN --mount=type=cache,target=/root/.cache/pip pip install mlflow
 RUN --mount=type=cache,target=/root/.cache/pip pip install lightgbm mlxtend catboost xgboost
-RUN --mount=type=cache,target=/root/.cache/pip pip install prophet ipympl
 
 RUN --mount=type=cache,target=/root/.cache/pip pip install elegantrl tensorboardX wrds ccxt
 
