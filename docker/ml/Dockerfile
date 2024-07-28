@@ -35,10 +35,8 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install pytest tox pyyaml
 RUN --mount=type=cache,target=/root/.cache/pip pip install dash flask flask_restful connexion requests
 RUN --mount=type=cache,target=/root/.cache/pip pip install tensorflow torch_geometric
 RUN --mount=type=cache,target=/root/.cache/pip pip install mlflow
-RUN --mount=type=cache,target=/root/.cache/pip pip install lightgbm
-RUN --mount=type=cache,target=/root/.cache/pip pip install mlxtend
-RUN --mount=type=cache,target=/root/.cache/pip pip install catboost
-RUN --mount=type=cache,target=/root/.cache/pip pip install xgboost
+RUN --mount=type=cache,target=/root/.cache/pip pip install lightgbm mlxtend catboost xgboost
+RUN --mount=type=cache,target=/root/.cache/pip pip install prophet ipympl
 
 RUN --mount=type=cache,target=/root/.cache/pip pip install elegantrl tensorboardX wrds ccxt
 
@@ -46,12 +44,11 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install opentraveldata OpenTr
 RUN --mount=type=cache,target=/root/.cache/pip pip install elasticsearch kafka-python
 RUN --mount=type=cache,target=/root/.cache/pip pip install questdb psycopg[binary] psycopg2-binary confluent-kafka confluent-kafka[avro] fastavro
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install openai
-RUN --mount=type=cache,target=/root/.cache/pip pip install langchain
+RUN --mount=type=cache,target=/root/.cache/pip pip install openai langchain stockstats pyfolio-reloaded quantstats
 RUN --mount=type=cache,target=/root/.cache/pip pip install bottleneck --upgrade
-RUN --mount=type=cache,target=/root/.cache/pip pip install stockstats pyfolio-reloaded quantstats
 # RUN pip install tensorrt
 RUN --mount=type=cache,target=/root/.cache/pip pip install boto3
+
 
 RUN mkdir /root/.aws
 COPY examples/ .
