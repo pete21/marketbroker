@@ -30,57 +30,6 @@ springBoot {
 
 dependencies {
 
-
-//
-//    implementation(libs.ai.symmetrical.sym.kafka)
-//    implementation(libs.ai.symmetrical.sym.kafka.annotations)
-//
-////    implementation(libs.org.springframework.cloud.spring.cloud.starter.openfeign)
-//    implementation(libs.org.springframework.boot.spring.boot.starter.actuator)
-//    implementation(libs.org.springframework.boot.spring.boot.starter.oauth2.resource.server)
-//    implementation(libs.org.springframework.boot.spring.boot.starter.security)
-//    implementation(libs.org.springframework.security.spring.security.oauth2.client)
-//    implementation(libs.org.springframework.boot.spring.boot.starter.validation)
-//    implementation(libs.org.springframework.boot.spring.boot.starter.web)
-//    implementation(libs.org.springdoc.springdoc.openapi.starter.webmvc.ui)
-//
-//    implementation(libs.org.yaml.snakeyaml)
-//    implementation(libs.com.fasterxml.jackson.module.jackson.module.kotlin)
-//
-//    implementation(libs.io.micrometer.micrometer.tracing.bridge.brave)
-//    implementation(libs.io.zipkin.reporter2.zipkin.reporter.brave)
-//
-//    implementation(libs.jakarta.validation.api)
-//
-//    implementation(libs.org.jetbrains.kotlin.kotlin.reflect)
-//    implementation(libs.org.jetbrains.kotlinx.kotlinx.coroutines.reactor)
-//
-//    implementation(libs.io.github.microutils.kotlin.logging.jvm)
-//
-//    runtimeOnly(libs.io.micrometer.micrometer.registry.prometheus)
-//    runtimeOnly(libs.org.jetbrains.kotlin.kotlin.reflect)
-//
-//    testImplementation(libs.org.springframework.boot.spring.boot.starter.test)
-//    testImplementation(libs.org.springframework.boot.spring.boot.testcontainers)
-//    testImplementation(libs.org.springframework.security.test)
-//
-//    testImplementation(libs.org.testcontainers.kafka)
-//
-//    testImplementation(libs.com.tngtech.archunit.archunit.junit5)
-//    testImplementation(libs.com.tngtech.archunit.archunit.junit5.api)
-//    testImplementation(libs.com.tngtech.archunit.archunit.junit5.api)
-//
-//    testImplementation(libs.io.kotest.kotest.runner.junit5)
-//    testImplementation(libs.io.kotest.kotest.assertions.core)
-//    testImplementation(libs.io.kotest.kotest.property)
-//    testImplementation(libs.io.kotest.extensions.kotest.extensions.spring)
-//    testImplementation(libs.io.kotest.kotest.framework.datatest)
-//    testImplementation(libs.org.danilopianini.khttp)
-//    testImplementation(libs.net.datafaker.datafaker)
-//    testImplementation(libs.org.springframework.cloud.spring.cloud.contract.wiremock)
-//
-
-
     // spring boot libs
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -117,8 +66,8 @@ dependencies {
 //    implementation("ai.symmetrical:sym-request-response-logging:3.0.0")
 
     // database migrations
-    implementation("io.mongock:mongock-standalone:${mongockVersion}")
-    implementation("io.mongock:mongodb-sync-v4-driver:${mongockVersion}")
+//    implementation("io.mongock:mongock-standalone:${mongockVersion}")
+//    implementation("io.mongock:mongodb-sync-v4-driver:${mongockVersion}")
 
     // test libs
     testImplementation("io.kotest:kotest-runner-junit5:${kotestVersion}")
@@ -135,7 +84,7 @@ dependencies {
     // testcontainers
     testImplementation(platform("org.testcontainers:testcontainers-bom:1.19.7"))
     testImplementation("org.testcontainers:testcontainers")
-    testImplementation("org.testcontainers:mongodb")
+//    testImplementation("org.testcontainers:mongodb")
     testImplementation("org.testcontainers:kafka")
     testImplementation("org.testcontainers:junit-jupiter")
 

@@ -281,6 +281,7 @@ services:
     image: anaconda3_py10_ml:1
     build:
       dockerfile: ./docker/ml/Dockerfile
+      context: ./docker/ml
     container_name: jupyter-lab
     volumes:
       - ./notebooks:/opt/notebooks
