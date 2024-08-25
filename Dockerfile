@@ -30,4 +30,4 @@ HEALTHCHECK --interval=15s \
             --timeout=3s \
             CMD curl -f http://localhost:8090/health || exit 1
 COPY --from=BUILD --chown=$USER:$GROUP /home/gradle/src/application/build/libs/*.jar ./
-ENTRYPOINT ["java", "-jar", "./app.jar"]
+ENTRYPOINT ["java", "-jar", "./application.jar"]

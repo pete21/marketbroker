@@ -4,7 +4,7 @@ services:
   marketbroker:
     build:
       dockerfile: ./Dockerfile
-    image: marketbroker:0.1.0
+    image: marketbroker:0.2.0
     container_name: marketbroker
     hostname: marketbroker
     ports:
@@ -20,7 +20,7 @@ services:
 #      - $HOME/.m2:/root/.m2
     networks:
       - marketbroker_net
-    profiles: [all]
+    profiles: [all,sdk]
 
   kafka0:
     image: bitnami/kafka:3.7.0-debian-12-r7
@@ -54,7 +54,7 @@ services:
   #      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
     networks:
       - marketbroker_net
-    profiles: [all,infra]
+    profiles: [all,infra,sdk]
 
 
   kafka-ui:
@@ -72,7 +72,7 @@ services:
       - kafka0
     networks:
       - marketbroker_net
-    profiles: [all,infra]
+    profiles: [all,infra,sdk]
 
 
   questdb:
@@ -97,7 +97,7 @@ services:
       - questdb-data:/root/.questdb
     networks:
       - marketbroker_net
-    profiles: [all,infra,ml]
+    profiles: [all,infra,ml,sdk]
 
   kafka-connect:
 #    image: ueisele/apache-kafka-connect-standalone:3.7.0
@@ -142,7 +142,7 @@ services:
       CONNECT_PLUGIN_PATH: /etc/kafka-connect/jars
     networks:
       - marketbroker_net
-    profiles: [all,infra]
+    profiles: [all,infra,sdk]
 
 #    command:
 #      - bash
@@ -190,7 +190,7 @@ services:
       - ./docker/grafana/etc_grafana:/etc/grafana/
     networks:
       - marketbroker_net
-    profiles: [all,infra,ml]
+    profiles: [all,infra,ml,sdk]
 
   prometheus:
     image: prom/prometheus:v2.49.1
@@ -210,7 +210,7 @@ services:
       - "9090:9090"
     networks:
       - marketbroker_net
-    profiles: [all,infra]
+    profiles: [all,infra,sdk]
 
 
   loki:
@@ -223,7 +223,7 @@ services:
       - ./docker/loki-config.yml:/etc/loki/loki-config.yml
     networks:
       - marketbroker_net
-    profiles: [all,infra]
+    profiles: [all,infra,sdk]
 
 
   tempo:
@@ -242,7 +242,7 @@ services:
       - "9411:9411"   # zipkin
     networks:
       - marketbroker_net
-    profiles: [all,infra]
+    profiles: [all,infra,sdk]
 
   jupyter-notebook:
     image: quay.io/jupyter/tensorflow-notebook:tensorflow-2.16.1
@@ -279,6 +279,8 @@ services:
 
   jupyter-lab:
     image: anaconda3_py10_ml:1
+    build:
+      dockerfile: ./docker/ml/Dockerfile
     container_name: jupyter-lab
     volumes:
       - ./notebooks:/opt/notebooks
