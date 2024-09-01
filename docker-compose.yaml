@@ -190,7 +190,7 @@ services:
       - ./docker/grafana/etc_grafana:/etc/grafana/
     networks:
       - marketbroker_net
-    profiles: [all,infra,ml,sdk]
+    profiles: [all,infra,sdk]
 
   prometheus:
     image: prom/prometheus:v2.49.1
@@ -281,7 +281,7 @@ services:
     image: anaconda3_py10_ml:1
     build:
       dockerfile: ./docker/ml/Dockerfile
-      context: ./docker/ml
+      context: .
     container_name: jupyter-lab
     volumes:
       - ./notebooks:/opt/notebooks
