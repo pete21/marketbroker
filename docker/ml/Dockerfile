@@ -18,7 +18,7 @@ RUN ./configure --prefix=/usr
 RUN make && make install
 
 WORKDIR /root
-RUN --mount=type=cache,target=/root/.cache/pip pip install TA-Lib finta
+RUN --mount=type=cache,target=/root/.cache/pip pip install cmake TA-Lib finta
 
 
 # FinRL
@@ -46,7 +46,6 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install openai langchain stoc
 RUN --mount=type=cache,target=/root/.cache/pip pip install bottleneck --upgrade
 # RUN pip install tensorrt
 RUN --mount=type=cache,target=/root/.cache/pip pip install boto3
-
 
 RUN mkdir /root/.aws
 COPY examples/ .

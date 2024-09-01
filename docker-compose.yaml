@@ -97,7 +97,7 @@ services:
       - questdb-data:/root/.questdb
     networks:
       - marketbroker_net
-    profiles: [all,infra,ml,sdk]
+    profiles: [all,infra,lab,sdk]
 
   kafka-connect:
 #    image: ueisele/apache-kafka-connect-standalone:3.7.0
@@ -275,7 +275,7 @@ services:
 #      - DOCKER_STACKS_JUPYTER_CMD=notebook
     networks:
       - marketbroker_net
-    profiles: [ml_old]
+    profiles: [notebook]
 
   jupyter-lab:
     image: anaconda3_py10_ml:1
@@ -310,7 +310,7 @@ services:
       - RESTARTABLE=yes
     networks:
       - marketbroker_net
-    profiles: [all,infra,ml]
+    profiles: [all,infra,lab]
 
 
 networks:
