@@ -1,38 +1,28 @@
 package com.piotr.marketbroker.application.service
 
 import com.piotr.marketbroker.application.websocket.WebsocketService
-import com.piotr.marketbroker.common.unwrap
-import com.piotr.marketbroker.infrastructure.persistence.marketquote.SpringDataMarketQuotesRepository
-import com.piotr.marketbroker.infrastructure.persistence.subscription.SpringDataSubscriptionsRepository
-import io.micrometer.observation.annotation.Observed
 import com.piotr.marketbroker.common.logger
+import com.piotr.marketbroker.domain.marketquote.port.MarketQuoteRepository
+import com.piotr.marketbroker.domain.subscription.port.SubscriptionRepository
 import org.springframework.stereotype.Service
 
 @Service
 class SubscriptionsService(
-    private val marketQuotesRepository: SpringDataMarketQuotesRepository,
-    private val subscriptionsRepository: SpringDataSubscriptionsRepository,
+    private val marketQuotesRepository: MarketQuoteRepository,
+    private val subscriptionsRepository: SubscriptionRepository,
     private val websocketService: WebsocketService
 ) {
 
     private val log by logger()
 
-    @Observed(name = "SubscriptionsService",
-        contextualName = "getSubscriptions",
-        lowCardinalityKeyValues = ["type","GET"]
-    )
     fun getSubscriptions(): List<String> {
         val quoteIds = subscriptionsRepository.findByStatusTrue().map { s -> s.quoteId }
         return quoteIds.map { s -> marketQuotesRepository.findByQuoteID(s)?.toString()?:s.toString() }
     }
 
-    @Observed(name = "SubscriptionsService",
-        contextualName = "postSubscriptions",
-        lowCardinalityKeyValues = ["type","POST"]
-    )
     fun postSubscriptions(quoteId: Int, status: Boolean): Boolean {
         log.info("postSubscriptions request: $quoteId $status")
-        val subscription = subscriptionsRepository.findById(quoteId).unwrap()
+        val subscription = subscriptionsRepository.findById(quoteId)
         return if ((subscription==null && status) || (subscription!=null && subscription.status!=status)) {
             websocketService.subscribe(quoteId, status)
             true

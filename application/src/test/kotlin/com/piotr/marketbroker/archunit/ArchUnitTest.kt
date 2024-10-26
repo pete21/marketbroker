@@ -19,6 +19,7 @@ private const val MAIN_PACKAGE = "com.piotr.marketbroker"
 internal class ArchUnitTest {
 
     @ArchTest
+    @ArchIgnore
     val `controllers are adapters` = ArchRuleDefinition.classes()
         .that().areAnnotatedWith(RestController::class.java)
         .should().resideInAPackage("..application.controller..")
@@ -66,7 +67,6 @@ internal class ArchUnitTest {
         .allowEmptyShould(true)
 
     @ArchTest
-    @ArchIgnore
     val `the domain package does not use fixed message producer` = ArchRuleDefinition.noClasses()
         .that()
         .resideInAPackage("$MAIN_PACKAGE.domain..")

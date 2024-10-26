@@ -1,0 +1,28 @@
+package com.piotr.marketbroker.domain.tick.event
+
+class TicksEvent (val ticks: List<TickData>)
+
+class TickData(q: Int, b: Float, a: Float, m: Float, t: Long, k: String) {
+
+    val quoteId: Int
+    val bid: Float
+    val ask: Float
+    val mid: Float
+    val time: Int
+    val millis: Int
+    val longtime: Long
+    val key: String
+
+    init {
+        var tt: Long = t
+        quoteId = q
+        bid = b
+        ask = a
+        mid = m
+        tt /= 10000
+        longtime = t
+        (tt % 1000).toInt().also { millis = it }
+        (tt / 1000 - 62135596800L).toInt().also { time = it } //convert TD365 timestamp to unix timestamp
+        key = k
+    }
+}

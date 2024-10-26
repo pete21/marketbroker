@@ -5,12 +5,13 @@ import com.piotr.marketbroker.configuration.kafka.KafkaTopics.TOPIC_TICKSTREAM_T
 import com.piotr.marketbroker.infrastructure.http.ApacheHttpAdapter
 import com.piotr.marketbroker.infrastructure.http.RequestHeaders
 import com.piotr.marketbroker.infrastructure.questdb.QuestDbAdapter
-import io.micrometer.observation.annotation.Observed
 import com.piotr.marketbroker.common.logger
+import com.piotr.marketbroker.configuration.kafkaconnect.KafkaConnectConfigurationProperties
+import com.piotr.marketbroker.domain.subscription.port.KafkaConnectPort
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Async
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 
 
 private const val CREATE_CONNECTOR_DTO = "{\"name\":\"%s\",\"config\":{\"topics\":\"%s\",\"table\":\"%s\",\"connector.class\":\"io.questdb.kafka.QuestDBSinkConnector\",\"tasks.max\":\"1\",\"key.converter\":\"org.apache.kafka.connect.storage.StringConverter\",\"value.converter\":\"org.apache.kafka.connect.json.JsonConverter\",\"value.converter.schemas.enable\":\"false\",\"client.conf.string\":\"http::addr=%s;\",\"allowed.lag\":100,\"include.key\":false,\"symbols\":\"q\",\"doubles\":\"b,a\",\"timestamp.field.name\":\"t\",\"timestamp.units\":\"millis\"}}"
@@ -20,11 +21,12 @@ private const val CONNECTOR_NAME_TEMPLATE = "TICKSTREAM_%d"
 private const val TOPIC_NAME = "%s.%s.%s"
 
 
-@Service
+@Component
 class KafkaConnectAdapter(
     private val httpAdapter: ApacheHttpAdapter,
-    private val questDbAdapter: QuestDbAdapter
-) {
+    private val questDbAdapter: QuestDbAdapter,
+    private val kafkaConnectConfigurationProperties: KafkaConnectConfigurationProperties
+) : KafkaConnectPort {
 
     private val log by logger()
 
@@ -32,18 +34,11 @@ class KafkaConnectAdapter(
     lateinit var appName: String
     @Value("\${ai.symmetrical.kafka.env}")
     lateinit var env: String
-    @Value("\${com.piotr.kafka-connect.url}")
-    lateinit var kafkaConnectUrl: String
-    @Value("\${com.piotr.kafka-connect.questdb-host}")
-    lateinit var questDbHost: String
+
 
     private val connectors = mutableMapOf<Int, ConnectorStatus>()
 
-    @Observed(name = "KafkaConnectAdapter",
-        contextualName = "manageConnector",
-        lowCardinalityKeyValues = ["type","kafka-connect"]
-    )
-    fun manageConnector(quoteId: Int, status: Boolean) {
+    override fun manageConnector(quoteId: Int, status: Boolean) {
         val connectorStatus = connectors[quoteId]
         if (status) {
             when (connectorStatus) {
@@ -67,40 +62,42 @@ class KafkaConnectAdapter(
         }
     }
 
-    @Observed(name = "KafkaConnectAdapter",
-        contextualName = "deleteConnectors",
-        lowCardinalityKeyValues = ["type","kafka-connect"]
-    )
     fun deleteConnectors() {
         val keys = connectors.keys
         keys.forEach { deleteConnector(it) }
     }
 
-    fun deleteAllConnectors() {
-        listConnectors()
-    }
-
     private fun connectorStatus(quoteId: Int): ConnectorStatus? {
         val name = String.format(CONNECTOR_NAME_TEMPLATE, quoteId)
-        val response = httpAdapter.getRequest("$kafkaConnectUrl/connectors/$name/status", RequestHeaders.jsonRequestHeaders)
+        val response = httpAdapter.getRequest("${kafkaConnectConfigurationProperties.url}/connectors/$name/status", RequestHeaders.jsonRequestHeaders)
         return null
     }
 
     private fun listConnectors(): List<String>? {
-        val response = httpAdapter.getRequest("$kafkaConnectUrl/connectors", RequestHeaders.jsonRequestHeaders)
+        val response = httpAdapter.getRequest("${kafkaConnectConfigurationProperties.url}/connectors", RequestHeaders.jsonRequestHeaders)
         return null
     }
 
 
     private fun createConnector(quoteId: Int): Boolean {
         val name = String.format(CONNECTOR_NAME_TEMPLATE, quoteId)
-        val topicName = String.format(TOPIC_NAME, appName, env,
-            String.format(TOPIC_TICKSTREAM_TICKER_TEMPLATE, quoteId)).uppercase()
+        val topicName = String.format(
+            TOPIC_NAME, appName, env,
+            String.format(TOPIC_TICKSTREAM_TICKER_TEMPLATE, quoteId)
+        ).uppercase()
         log.info("Creating QuestDBSinkConnector: $name, Topic: $topicName")
         val response = httpAdapter.postRequest(
-            "$kafkaConnectUrl/connectors", String.format(CREATE_CONNECTOR_DTO_NO_TYPES, name, topicName, name, questDbHost),
-            RequestHeaders.jsonRequestHeaders)
-        if (response.statusCode / 100==2 || response.statusCode==409) {
+            "${kafkaConnectConfigurationProperties.url}/connectors",
+            String.format(
+                CREATE_CONNECTOR_DTO_NO_TYPES,
+                name,
+                topicName,
+                name,
+                kafkaConnectConfigurationProperties.questdbHost
+            ),
+            RequestHeaders.jsonRequestHeaders
+        )
+        if (response.statusCode / 100 == 2 || response.statusCode == 409) {
             connectors[quoteId] = ConnectorStatus.RUNNING
             return true
         }
@@ -110,7 +107,7 @@ class KafkaConnectAdapter(
     private fun deleteConnector(quoteId: Int): Boolean {
         val name = String.format(CONNECTOR_NAME_TEMPLATE, quoteId)
         log.info("Removing QuestDBSinkConnector: $name")
-        val response = httpAdapter.deleteRequest("$kafkaConnectUrl/connectors/$name",
+        val response = httpAdapter.deleteRequest("${kafkaConnectConfigurationProperties.url}/connectors/$name",
             RequestHeaders.jsonRequestHeaders)
         if (response.statusCode / 100==2) {
             connectors.remove(quoteId)
@@ -122,9 +119,9 @@ class KafkaConnectAdapter(
     private fun pauseConnector(quoteId: Int): Boolean {
         val name = String.format(CONNECTOR_NAME_TEMPLATE, quoteId)
         log.info("Pausing QuestDBSinkConnector: $name")
-        val response = httpAdapter.putRequest("$kafkaConnectUrl/connectors/$name/pause", "",
+        val response = httpAdapter.putRequest("${kafkaConnectConfigurationProperties.url}/connectors/$name/pause", "",
             RequestHeaders.jsonRequestHeaders)
-        if (response.statusCode / 100==2) {
+        if (response.statusCode / 100 == 2) {
             connectors[quoteId] = ConnectorStatus.PAUSED
             return true
         }
@@ -134,7 +131,7 @@ class KafkaConnectAdapter(
     private fun resumeConnector(quoteId: Int): Boolean {
         val name = String.format(CONNECTOR_NAME_TEMPLATE, quoteId)
         log.info("Resuming QuestDBSinkConnector: $name")
-        val response = httpAdapter.putRequest("$kafkaConnectUrl/connectors/$name/resume", "",
+        val response = httpAdapter.putRequest("${kafkaConnectConfigurationProperties.url}/connectors/$name/resume", "",
             RequestHeaders.jsonRequestHeaders)
         if (response.statusCode / 100==2) {
             connectors[quoteId] = ConnectorStatus.RUNNING
@@ -146,7 +143,7 @@ class KafkaConnectAdapter(
     private fun restartConnector(quoteId: Int): Boolean {
         val name = String.format(CONNECTOR_NAME_TEMPLATE, quoteId)
         log.info("Restarting QuestDBSinkConnector: $name")
-        val response = httpAdapter.postRequest("$kafkaConnectUrl/connectors/$name/restart", "",
+        val response = httpAdapter.postRequest("${kafkaConnectConfigurationProperties.url}/connectors/$name/restart", "",
             RequestHeaders.jsonRequestHeaders)
         if (response.statusCode / 100==2) {
             connectors[quoteId] = ConnectorStatus.RUNNING
@@ -157,14 +154,14 @@ class KafkaConnectAdapter(
 
     private fun getConnectors(): String {
         val response = httpAdapter.getRequest(
-            "$kafkaConnectUrl/connectors?expand=info",
+            "${kafkaConnectConfigurationProperties.url}/connectors?expand=info",
             RequestHeaders.jsonRequestHeaders)
         return response.body
     }
 
     @Async
     @EventListener
-    fun deleteAtSessionClosed(event: SessionClosedEvent) {
+    override fun deleteAtSessionClosed(event: SessionClosedEvent) {
         deleteConnectors()
     }
 }

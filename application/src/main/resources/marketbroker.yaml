@@ -7,7 +7,7 @@ info:
   contact:
     name: piotr.nazarewicz@gmail.com
 servers:
-  - url: 'http://localhost:3000'
+  - url: 'http://localhost:8080'
 paths:
   /users/{userId}:
     parameters:
@@ -597,8 +597,7 @@ components:
         type:
           type: string
         trailingPoint:
-          type: integer
-          format: int32
+          type: boolean
         isGuarantee:
           type: boolean
         isForceOpen:
@@ -727,14 +726,14 @@ components:
           type: number
           format: float
         trailingPoint:
-          type: integer
-          format: float
-        createdAt:
+          type: boolean
+        message:
           type: string
-          format: date-time
         positionId:
           type: integer
           format: int32
+        active:
+          type: boolean
       required:
         - orderId
         - marketId
@@ -745,8 +744,9 @@ components:
         - limitOrderPrice
         - stopOrderPrice
         - trailingPoint
-        - createdAt
+        - message
         - positionId
+        - active
     SessionDTO:
       title: SessionDTO
       type: object
@@ -825,7 +825,7 @@ components:
         orderMode:
           type: integer
           format: int32
-          description: '0 - market order, 1 - limit order, 2 - stop order, 4 - close position'
+          description: '0 - Market order, 1 - Open order (limit), OO+SL, OO+TP, OO+SL+TP, 2 - Open order stop + SL + TP, 4 - Close position'
         limitOrderPrice:
           type: number
           format: float
@@ -833,7 +833,7 @@ components:
           type: number
           format: float
         trailingPoint:
-          type: integer
+          type: boolean
         positionId:
           type: integer
           description: for InsertCloseOrder (orderMode==4)
@@ -847,7 +847,6 @@ components:
         - limitOrderPrice
         - stopOrderPrice
         - trailingPoint
-        - positionId
     LoginDTO:
       title: LoginDTO
       type: object

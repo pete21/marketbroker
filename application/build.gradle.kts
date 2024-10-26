@@ -31,7 +31,7 @@ springBoot {
 dependencies {
 
     // spring boot libs
-    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+//    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
@@ -51,10 +51,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     // tracing
-    implementation("io.micrometer:micrometer-tracing")
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("io.micrometer:micrometer-tracing-bridge-otel")
-    implementation("io.micrometer:context-propagation")
     implementation("io.github.openfeign:feign-micrometer")
     implementation("io.opentelemetry:opentelemetry-exporter-zipkin")
 

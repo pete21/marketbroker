@@ -1,6 +1,5 @@
 package com.piotr.marketbroker.infrastructure.http
 
-import io.micrometer.observation.annotation.Observed
 import com.piotr.marketbroker.common.logger
 import org.apache.hc.client5.http.classic.methods.HttpDelete
 import org.apache.hc.client5.http.classic.methods.HttpGet
@@ -34,18 +33,13 @@ class ApacheHttpAdapter {
         httpClientContext.cookieStore = cookieStore
         client = HttpClients                            //HttpClients.createDefault()
             .custom()
-            .addRequestInterceptorFirst(LoggingRequestInterceptor())
-            .addResponseInterceptorLast(LoggingResponseInterceptor())
             .setDefaultCookieStore(cookieStore)
 //        .setDefaultHeaders(mutableListOf(BasicHeader(HttpHeaders.CONTENT_LENGTH, "0")))
 //        .setDefaultHeaders(mutableListOf(BasicHeader(
 //            HttpHeaders.USER_AGENT,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")))
             .build()
     }
-    @Observed(name = "ApacheHttpAdapter",
-        contextualName = "postRequest",
-        lowCardinalityKeyValues = ["type","POST"]
-    )
+
     fun postRequest(url: String, body: String, headers: RequestHeaders?): HttpAdapterResponse {
         val targetUrl = if (url.length>20) { url } else { baseUrl + url }
         log.info("postRequest: $targetUrl")

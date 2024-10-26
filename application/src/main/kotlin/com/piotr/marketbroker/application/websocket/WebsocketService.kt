@@ -1,7 +1,7 @@
 package com.piotr.marketbroker.application.websocket
 
 import com.piotr.marketbroker.application.event.WebsocketDisconnectedEvent
-import com.piotr.marketbroker.infrastructure.websocket.WebsocketSessionHandler
+import com.piotr.marketbroker.infrastructure.websocket.WebsocketHandler
 import com.piotr.marketbroker.common.logger
 import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Async
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class WebsocketService(
-    private val websocketSessionHandler: WebsocketSessionHandler
+    private val websocketHandler: WebsocketHandler
 ) {
 
     private val log by logger()
@@ -29,7 +29,7 @@ class WebsocketService(
 //        ex.schedule(() -> login(login, password, token), 1, TimeUnit.SECONDS);
         try {
             Thread.sleep(400)
-            websocketSessionHandler.connect(websocketServer)
+            websocketHandler.connect(websocketServer)
             Thread.sleep(400)
             login(login, token)
             Thread.sleep(1000)
@@ -46,19 +46,19 @@ class WebsocketService(
 
     fun disconnect() {
         sessionState = false
-        websocketSessionHandler.disconnect()
+        websocketHandler.disconnect()
         subscribed.clear()
     }
 
     fun subscribe(quoteId: Int, status: Boolean) {
         if (status) {
             val msg = String.format(SUBSCRIBE, quoteId)
-            websocketSessionHandler.sendMsg(msg)
+            websocketHandler.sendMsg(msg)
             subscribed.add(quoteId)
             log.info("Subscribe: $msg")
         } else {
             val msg = String.format(UNSUBSCRIBE, quoteId)
-            websocketSessionHandler.sendMsg(msg)
+            websocketHandler.sendMsg(msg)
             subscribed.remove(quoteId)
             log.info("Unsubscribe: $msg")
         }
@@ -67,19 +67,19 @@ class WebsocketService(
 
     private fun login(login: String, token: String) {
         val msg = String.format(LOGIN, login, token)
-        websocketSessionHandler.sendMsg(msg)
+        websocketHandler.sendMsg(msg)
         log.info("Login: $msg")
     }
 
     private fun accountSummary() {
-        websocketSessionHandler.sendMsg(ACCOUNT_SUMMARY)
+        websocketHandler.sendMsg(ACCOUNT_SUMMARY)
         log.info("Account summary: $ACCOUNT_SUMMARY")
     }
 
     @Async
     @EventListener
     fun handleDisconnect(event: WebsocketDisconnectedEvent) {
-        log.info("handle WebsocketDisconnectedEvent")
+        log.info("Handling WebsocketDisconnectedEvent")
         if (sessionState) {
             connect(login!!, token!!, websocketServer!!)
             subscribed.forEach { subscribe(it, true) }

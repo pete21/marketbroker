@@ -32,11 +32,9 @@ management:
     tracing:
       endpoint: http://localhost:9411
 
-
   observations:
     key-values:
       application: marketbroker
-
 
 server:
   http2.enabled: true
@@ -44,6 +42,8 @@ server:
 spring:
   application:
     name: marketbroker
+  config:
+    import: classpath:td365config.properties
   profiles:
     active: default
 #    active: request-response-logging
@@ -107,8 +107,8 @@ logging:
   level:
     ROOT: INFO
     com.piotr.marketbroker: DEBUG
-    ai.symmetrical.kafka.common.logging: INFO
-    org.apache.http: DEBUG
+    ai.symmetrical.kafka.common.logging: OFF
+    org.apache.http: INFO
     org.springframework:
       web: DEBUG
       security: INFO
@@ -117,25 +117,25 @@ logging:
     correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 
 
-
-com.piotr.marketbroker:
-  security:
-    openid-connect-configuration-url: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/.well-known/openid-configuration
-    enabled: false
-    ignored-urls: [ /openapi.yaml,
-                    /health/**, /info/**, /prometheus/**,
-                    /v3/**,
-                    /v3/api-docs/**,
-                    /configuration/ui, /configuration/security,
-                    /swagger-resources/**, /swagger-ui/**,
-                    /webjars/**,
-                    /favicon.ico,
-                    /h2-console/**,
-                    /*/*.png, /*/*.gif, /*/*.svg, /*/*.jpg, /*/*.css, /*/*.js ]
-  openapi:
-    dev-url: http://localhost:8080
-    prod-url: http://localhost:8080
 com.piotr:
+  marketbroker:
+    security:
+      openid-connect-configuration-url: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/.well-known/openid-configuration
+      enabled: false
+      ignored-urls: [ /openapi.yaml,
+                      /health/**, /info/**, /prometheus/**,
+                      /v3/**,
+                      /v3/api-docs/**,
+                      /configuration/ui, /configuration/security,
+                      /swagger-resources/**, /swagger-ui/**,
+                      /webjars/**,
+                      /favicon.ico,
+                      /h2-console/**,
+                      /*/*.png, /*/*.gif, /*/*.svg, /*/*.jpg, /*/*.css, /*/*.js ]
+    openapi:
+      dev-url: http://localhost:8080
+      prod-url: http://localhost:8080
+
   cors:
     enabled: false
     headers: "*"
@@ -144,9 +144,9 @@ com.piotr:
   testcontainers:
     kafka:
       enabled: false
-  kafka-connect:
+  kafkaconnect:
     url: http://localhost:8083
-    questdb-host: questdb:9000
+    questdbHost: questdb:9000
   questdb:
     url: http://localhost:9000
   loki:
@@ -162,13 +162,13 @@ ai.symmetrical:
       enabled: false
       listener:
         concurrency: 1
-      scan-package: com.piotr.marketbroker.application.event
+      scan-package: com.piotr.marketbroker
       backoff:
         interval: 1000
         max-attempts: 1
     producer:
       enabled: true
-      scan-package: com.piotr.marketbroker.application.event
+      scan-package: com.piotr.marketbroker
 
 
 #java:

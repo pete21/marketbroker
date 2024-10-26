@@ -9,7 +9,6 @@ import org.springframework.context.event.ContextRefreshedEvent
 import org.springframework.kafka.core.KafkaAdmin
 import org.springframework.stereotype.Component
 
-
 @Component
 @ConditionalOnProperty(
     prefix = "com.piotr.kafka.producer",

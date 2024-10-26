@@ -6,17 +6,17 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.piotr.marketbroker.application.event.AccountDetailsEvent
-import com.piotr.marketbroker.application.event.AccountSummaryEvent
-import com.piotr.marketbroker.application.event.SubscriptionEvent
-import com.piotr.marketbroker.application.event.TickData
-import com.piotr.marketbroker.application.event.TickEvent
+import com.piotr.marketbroker.domain.accountdetails.event.AccountDetailsEvent
+import com.piotr.marketbroker.domain.accountsummary.event.AccountSummaryEvent
+import com.piotr.marketbroker.domain.subscription.event.SubscriptionEvent
+import com.piotr.marketbroker.domain.tick.event.TickData
+import com.piotr.marketbroker.domain.tick.event.TicksEvent
 import com.piotr.marketbroker.application.event.WebsocketMessageEvent
-import com.piotr.marketbroker.application.websocket.message.AccountDetailsDto
-import com.piotr.marketbroker.application.websocket.message.AccountSummaryDto
-import com.piotr.marketbroker.application.websocket.message.QuotesDto
-import com.piotr.marketbroker.application.websocket.message.SubscribeResponseDto
-import com.piotr.marketbroker.infrastructure.websocket.WebsocketSessionHandler
+import com.piotr.marketbroker.domain.accountdetails.AccountDetailsDto
+import com.piotr.marketbroker.domain.accountsummary.AccountSummaryDto
+import com.piotr.marketbroker.application.websocket.message.WebsocketTicks
+import com.piotr.marketbroker.application.websocket.message.WebsocketSubscribeResponse
+import com.piotr.marketbroker.infrastructure.websocket.WebsocketHandler
 import com.piotr.marketbroker.common.logger
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener
@@ -28,7 +28,7 @@ import java.time.temporal.ChronoUnit
 
 @Service
 class WebsocketMessageEventHandler(
-    private val websocketSessionHandler: WebsocketSessionHandler,
+    private val websocketHandler: WebsocketHandler,
     private val applicationEventPublisher: ApplicationEventPublisher
 ) {
 
@@ -60,7 +60,7 @@ class WebsocketMessageEventHandler(
                 stringBuilder.append(SENT_BY_CLIENT)
                 stringBuilder.append(timestamp)
                 stringBuilder.append(HEARTBEAT)
-                websocketSessionHandler.sendMsg(stringBuilder.toString())
+                websocketHandler.sendMsg(stringBuilder.toString())
             }
 
             "connectResponse" -> log.info(msg.t + ": " + msg.d)
@@ -68,18 +68,16 @@ class WebsocketMessageEventHandler(
             "authenticationResponse" -> log.info(msg.t + ": " + msg.d)
 
             "subscribeResponse", "unsubscribeResponse" -> try {
-                val m: SubscribeResponseDto = mapper.readValue(msg.d!!)
+                val m: WebsocketSubscribeResponse = mapper.readValue(msg.d!!)
                 log.info("${msg.t} : $m")
-                if (m.result) {
-                    applicationEventPublisher.publishEvent(SubscriptionEvent(m.quoteId, m.action, m.result))
-                }
+                applicationEventPublisher.publishEvent(SubscriptionEvent(m.quoteId, m.action, m.result))
             } catch (e: Exception) {
                 log.error(e.toString())
                 log.error(msg.t + ": " + msg.d)
             }
 
             "p" -> try {
-                val m: QuotesDto = mapper.readValue(msg.d!!)
+                val m: WebsocketTicks = mapper.readValue(msg.d!!)
 
                 val tickList: List<TickData> = m.sp.map { s ->
                     val values = s.split(",")
@@ -92,7 +90,7 @@ class WebsocketMessageEventHandler(
                         values[8]
                     )
                 }
-                applicationEventPublisher.publishEvent(TickEvent(tickList))
+                applicationEventPublisher.publishEvent(TicksEvent(tickList))
             } catch (e: Exception) {
                 log.error(e.toString())
                 log.error(msg.t + ": " + msg.d)

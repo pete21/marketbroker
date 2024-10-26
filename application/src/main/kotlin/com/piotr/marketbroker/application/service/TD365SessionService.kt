@@ -16,8 +16,8 @@ import com.piotr.marketbroker.infrastructure.http.RequestHeaders.Companion.authH
 import com.piotr.marketbroker.infrastructure.http.RequestHeaders.Companion.loginHeaders
 import com.piotr.marketbroker.infrastructure.http.RequestHeaders.Companion.postHeaders
 import com.piotr.marketbroker.infrastructure.http.RequestHeaders.Companion.redirectHeaders
-import io.micrometer.observation.annotation.Observed
 import com.piotr.marketbroker.common.logger
+import com.piotr.marketbroker.domain.accounts.LiveAccounts
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpHeaders
 import org.springframework.scheduling.annotation.Scheduled
@@ -55,10 +55,6 @@ class TD365SessionService(
     private var jwt : Jwt? = null
     private var liveAccounts: LiveAccounts? = null
 
-    @Observed(name = "TD365SessionService",
-        contextualName = "getTD365ConfigurationProperties",
-        lowCardinalityKeyValues = ["type","config"]
-    )
     fun getTD365ConfigurationProperties(): String {
         log.info(td365ConfigurationProperties.toString())
         return td365ConfigurationProperties.toString()
@@ -74,10 +70,7 @@ class TD365SessionService(
     // <demoSessionStart> will be used as a metric name
     // <getting-user-name> will be used as a span  name
     // <userType=userType2> will be set as a tag for both metric & span
-    @Observed(name = "TD365SessionService",
-        contextualName = "demoSessionStart",
-        lowCardinalityKeyValues = ["type","demo"]
-    )
+
     fun demoSessionStart(): Boolean {
         if (liveLogin) {
             log.warn("Logged in to live account, log out first before starting demo session")
@@ -94,7 +87,7 @@ class TD365SessionService(
             httpAdapter.getRequestRedirects(td365ConfigurationProperties.demolink, redirectHeaders)
         setValues(pair)
 
-        var queryParams = pair.first[0].split("?")[1].split("&")
+        val queryParams = pair.first[0].split("?")[1].split("&")
         log.info("queryParams: $queryParams")
         login = queryParams[0].split("=")[1]
         log.info("login: $login")
@@ -106,10 +99,6 @@ class TD365SessionService(
         return false
     }
 
-    @Observed(name = "TD365SessionService",
-        contextualName = "liveLogin",
-        lowCardinalityKeyValues = ["type","live"]
-    )
     fun liveLogin(): Boolean {
         if (sessionState==1) {
             log.warn("liveLogin: Session already started")
@@ -127,10 +116,6 @@ class TD365SessionService(
         return liveLogin
     }
 
-    @Observed(name = "TD365SessionService",
-        contextualName = "liveSessionStart",
-        lowCardinalityKeyValues = ["type","live"]
-    )
     fun liveSessionStart(accountId: Int) : Boolean {
         if (!liveLogin) {
             log.error("liveSessionStart: Login required")
@@ -143,11 +128,13 @@ class TD365SessionService(
             val account = liveAccounts!!.results.first {it.id==accountId}
         val launchUrl = getUrl(accountId)
 
-        var websocketServer: String
+        val websocketServer: String
         if (account.accountType=="DEMO") {
+            httpAdapter.baseUrl = td365ConfigurationProperties.demobaseurl
             httpAdapter.defaultHeaders = RequestHeaders(td365ConfigurationProperties.demoHeaders)
             websocketServer = td365ConfigurationProperties.demowebsocketserver
         } else {
+            httpAdapter.baseUrl = td365ConfigurationProperties.prodbaseurl
             httpAdapter.defaultHeaders = RequestHeaders(td365ConfigurationProperties.prodHeaders)
             websocketServer = td365ConfigurationProperties.prodwebsocketserver
         }
@@ -165,7 +152,7 @@ class TD365SessionService(
 
     private fun getUrl(accountId: Int): String {
         val accountLink = String.format(td365ConfigurationProperties.prodlink, accountId)
-        val optionsResponseDto = httpAdapter.optionsRequest(accountLink, RequestHeaders(
+        httpAdapter.optionsRequest(accountLink, RequestHeaders(
                 loginHeaders, mapOf(
                     ACCESS_CONTROL_REQUEST_METHOD to "GET",
                     ACCESS_CONTROL_REQUEST_HEADERS to "authorization",
@@ -196,10 +183,6 @@ class TD365SessionService(
         httpAdapter.defaultHeaders!!.setHeader(HttpHeaders.REFERER, refererUrl)
     }
 
-    @Observed(name = "TD365SessionService",
-        contextualName = "sessionStop",
-        lowCardinalityKeyValues = ["type","all"]
-    )
     fun sessionStop() {
         if (sessionState==1) {
             httpAdapter.postRequest("ClientLogout", "{}", postHeaders)
@@ -211,10 +194,6 @@ class TD365SessionService(
         }
     }
 
-    @Observed(name = "TD365SessionService",
-        contextualName = "liveLogout",
-        lowCardinalityKeyValues = ["type","live"]
-    )
     fun liveLogout() {
         if (sessionState==0 && liveLogin) {
             liveLogin = false
@@ -229,7 +208,7 @@ class TD365SessionService(
     }
 
     private fun tokenAuthentication(): Boolean {
-        val optionsResponseDto = httpAdapter.optionsRequest(td365ConfigurationProperties.authlink,
+        httpAdapter.optionsRequest(td365ConfigurationProperties.authlink,
                 RequestHeaders(authHeaders, mapOf(
                     ACCESS_CONTROL_REQUEST_METHOD to "POST",
                     ACCESS_CONTROL_REQUEST_HEADERS to "content-type",
