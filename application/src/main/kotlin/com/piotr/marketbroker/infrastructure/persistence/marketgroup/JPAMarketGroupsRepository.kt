@@ -5,7 +5,7 @@ import com.piotr.marketbroker.domain.marketgroup.port.MarketGroupRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-class H2MarketGroupsRepository(
+class JPAMarketGroupsRepository(
     private val springDataMarketGroupsRepository: SpringDataMarketGroupsRepository
 ) : MarketGroupRepository {
     override fun findAll(): List<MarketGroup> {

@@ -10,7 +10,7 @@ import jakarta.persistence.Table
 data class MarketGroup (
     @Id
     @JsonProperty("ID")
-    val id: Int=0,
+    val groupId: Int=0,
 
     @JsonProperty("__type")
     val type: String="",

@@ -1,6 +1,8 @@
 spring:
   kafka:
     bootstrap-servers: kafka0:29092
+  datasource:
+    url: jdbc:mysql://mysql8:3306/marketbroker
 com.piotr:
   kafka-connect:
     url: http://kafka-connect:8083

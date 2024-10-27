@@ -75,16 +75,19 @@ spring:
 
   datasource:
 #    url: jdbc:h2:mem:testdb           #jdbc:h2:file:/data/demo
-    driverClassName: org.h2.Driver
-    username: sa
-    password:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE;DATABASE_TO_UPPER=false;
+#    driverClassName: org.h2.Driver
+    username: user
+    password: password
+#    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE;DATABASE_TO_UPPER=false;
 
+    url: jdbc:mysql://localhost:3306/marketbroker
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     generate-ddl: true
-    database: h2
+#    database: h2
 #    database-platform: org.hibernate.dialect.H2Dialect
+#    database-platform: org.hibernate.dialect.MySQLDialect
     defer-datasource-initialization: true
     hibernate:
       ddl-auto: update
@@ -93,11 +96,12 @@ spring:
       hibernate:
         format_sql: true
 
-  h2:
-    console:
-      enabled: true
-      settings:
-        web-allow-others: true
+#  h2:
+#    console:
+#      enabled: true
+#      settings:
+#        web-allow-others: true
+
 
 #  main:
 #    banner-mode: off
@@ -107,10 +111,12 @@ logging:
   level:
     ROOT: INFO
     com.piotr.marketbroker: DEBUG
-    ai.symmetrical.kafka.common.logging: OFF
+    com.piotr.marketbroker.infrastructure.websocket: INFO
+    ai.symmetrical.kafka.common.logging: INFO
+    ai.symmetrical.kafka.producer: OFF
     org.apache.http: INFO
     org.springframework:
-      web: DEBUG
+      web: INFO
       security: INFO
   pattern:
     level: "%5p [%X{traceId:-},%X{spanId:-}]"

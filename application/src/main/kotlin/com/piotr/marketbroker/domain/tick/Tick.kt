@@ -2,6 +2,7 @@ package com.piotr.marketbroker.domain.tick
 
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.persistence.Transient
@@ -10,7 +11,9 @@ import jakarta.persistence.Transient
 @Table(name="ticks")
 data class Tick(
 
-    @Id @GeneratedValue val id: Int=0,
+    @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    val id: Int? = null,
     val quoteId: Int=0,
     val bid: Float=0f,
     val ask: Float=0f,
@@ -23,7 +26,29 @@ data class Tick(
 
     @Transient
     val key: String=""
-)
+) {
+    companion object {
+        fun new (
+        quoteId: Int,
+        bid: Float,
+        ask: Float,
+        mid: Float,
+        time: Int,
+        millis: Int,
+        longtime: Long,
+        key: String=""
+        ) = Tick(
+            quoteId=quoteId,
+            bid=bid,
+            ask=ask,
+            mid=mid,
+            time=time,
+            millis=millis,
+            longtime=longtime,
+            key=key
+        )
+    }
+}
 /*
     init {
         var t = t

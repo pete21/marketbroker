@@ -37,7 +37,7 @@ class MarketGroupService(
         saveMarketGroups(response.body.substring(5, response.body.length - 1))
         val groupIDs = marketGroupRepository.findAll()
             .filter { m -> !m.isWhiteLabelPopularMarket }
-            .map { m -> m.id }
+            .map { m -> m.groupId }
         groupIDs.forEach { g-> httpClientGetMarketGroup(g) }
     }
 

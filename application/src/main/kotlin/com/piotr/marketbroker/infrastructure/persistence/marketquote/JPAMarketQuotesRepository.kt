@@ -5,7 +5,7 @@ import com.piotr.marketbroker.domain.marketquote.port.MarketQuoteRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-class H2MarketQuotesRepository(
+class JPAMarketQuotesRepository(
     private val springDataMarketQuotesRepository: SpringDataMarketQuotesRepository
 ) : MarketQuoteRepository {
     override fun findAll(): List<MarketQuote> {

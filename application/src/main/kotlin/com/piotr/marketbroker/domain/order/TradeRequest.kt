@@ -15,9 +15,9 @@ import jakarta.persistence.Table
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class TradeRequest (
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    val id: Int=0,
+    val id: Int? = null,
 
     @JsonProperty("__type")
     val type: String="",

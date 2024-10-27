@@ -10,7 +10,7 @@ import com.piotr.marketbroker.domain.tick.Tick
 object OrderMapper {
 
     fun mapOrderToOrderResponseDto(order: Order) = OrderResponseDTO(
-        orderId = 0,
+        orderId = order.orderId,
         marketId = order.marketId,
         quoteId = order.quoteId,
         price = order.price,
@@ -43,7 +43,7 @@ object OrderMapper {
         orderId = openOrderResponse.orderId.toInt(),
         marketId = if (openOrderResponse.marketId != null) openOrderResponse.marketId.toInt() else 0,
         quoteId = if (openOrderResponse.quoteId != null) openOrderResponse.quoteId.toInt() else 0,
-        price = openOrderResponse.limitOrderPrice.toFloat(),
+        price = if (openOrderResponse.orderMode=="Stop") openOrderResponse.stopOrderPrice.toFloat() else openOrderResponse.limitOrderPrice.toFloat(),
         stake = openOrderResponse.stake.toFloat().toInt(),
         direction = if (openOrderResponse.tradeMode == "Sell") -1 else 1,
         limitOrderPrice = openOrderResponse.iDOLimitOrderPrice?.toFloat() ?: 0f,

@@ -14,7 +14,7 @@ class AccountDetailsHandler(
     private val ordersRepository: OrdersRepository
 ) {
     private var positions: Map<Int, PositionsRecord> = mapOf()
-    private var openingOrders: MutableMap<Int, OpeningOrdersRecord> = mutableMapOf()
+    private var openingOrders: Map<Int, OpeningOrdersRecord> = mapOf()
 
     @Async
     @EventListener
@@ -28,8 +28,7 @@ class AccountDetailsHandler(
                     ordersRepository.save(it)
                 }
             }
-        openingOrders.putAll(event.openingOrders.associateBy { it.orderId })
-
+        openingOrders = event.openingOrders.associateBy { it.orderId }
     }
 
     @Async

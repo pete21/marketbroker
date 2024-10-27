@@ -42,7 +42,7 @@ class MarketQuoteService(
 
     fun postInstrumentQuotes() {
         val marketGroups = marketGroupRepository.findAll()
-        marketGroups.forEach { m -> if (!m.isSuperGroup) httpClientGetMarketQuote(m.id) }
+        marketGroups.forEach { m -> if (!m.isSuperGroup) httpClientGetMarketQuote(m.groupId) }
     }
 
     private fun httpClientGetMarketQuote(groupId: Int) {

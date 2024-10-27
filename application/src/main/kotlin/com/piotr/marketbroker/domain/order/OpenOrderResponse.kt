@@ -14,9 +14,9 @@ import jakarta.persistence.Table
 data class OpenOrderResponse (
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    val id: Int=0,
+    val id: Int? = null,
 
     @JsonProperty("__type")
     val type: String="",

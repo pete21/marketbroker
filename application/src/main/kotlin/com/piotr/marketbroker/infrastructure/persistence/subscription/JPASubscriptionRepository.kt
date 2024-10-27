@@ -5,7 +5,7 @@ import com.piotr.marketbroker.domain.subscription.port.SubscriptionRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-class H2SubscriptionRepository(
+class JPASubscriptionRepository(
     private val springDataSubscriptionRepository: SpringDataSubscriptionRepository
 ) : SubscriptionRepository {
     override fun save(s: Subscription): Subscription {

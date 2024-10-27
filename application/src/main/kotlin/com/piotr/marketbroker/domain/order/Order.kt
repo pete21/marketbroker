@@ -4,6 +4,7 @@ import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToOne
@@ -14,7 +15,9 @@ import java.time.LocalDateTime
 @Table(name = "orders")
 data class Order(
 
-    @Id @GeneratedValue val id: Int=0,
+    @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    val id:  Int? = null,
     @Column(unique=true)
     var orderId: Int=0,
     val marketId: Int=0,

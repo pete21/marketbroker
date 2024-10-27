@@ -86,13 +86,16 @@ dependencies {
     testImplementation("org.testcontainers:kafka")
     testImplementation("org.testcontainers:junit-jupiter")
 
+// https://mvnrepository.com/artifact/com.mysql/mysql-connector-j
+    implementation("com.mysql:mysql-connector-j:9.1.0")
+
 
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools
 //    runtimeOnly("org.springframework.boot:spring-boot-devtools:3.2.3")
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa
 //    implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.2.3")
     // https://mvnrepository.com/artifact/com.h2database/h2
-    runtimeOnly("com.h2database:h2:2.2.224")
+//    runtimeOnly("com.h2database:h2:2.2.224")
     // https://mvnrepository.com/artifact/org.springframework/spring-websocket
     implementation("org.springframework:spring-websocket:6.1.2")
 

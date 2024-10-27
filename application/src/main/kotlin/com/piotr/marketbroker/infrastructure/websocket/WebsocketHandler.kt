@@ -84,13 +84,13 @@ class WebsocketHandler(val applicationEventPublisher: ApplicationEventPublisher)
 
             val holder = sessions[clientSession!!.id]
             if (holder == null) {
-                log.debug("No Websocket session")
+                log.error("No Websocket session")
                 return
             }
-            holder.getSession()?.sendMessage(TextMessage(message)) ?: error("Websocket sendMsg failed!")
+            holder.getSession()?.sendMessage(TextMessage(message)) ?: error("Websocket getSession failed!")
         } catch (e: IOException) {
             // TODO Auto-generated catch block
-            log.error("Websocket sendMsg failed: ${e.message}")
+            log.error(e.message)
         }
 
         //TODO: The remote endpoint was in state [TEXT_PARTIAL_WRITING] which is an invalid state for called method

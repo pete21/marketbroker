@@ -5,7 +5,7 @@ import com.piotr.marketbroker.domain.order.port.OrdersRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-class H2OrderRepository(
+class JPAOrderRepository(
     private val springDataOrdersRepository: SpringDataOrdersRepository
 ) : OrdersRepository {
 

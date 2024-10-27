@@ -5,7 +5,7 @@ import com.piotr.marketbroker.domain.tick.port.TickRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-class H2TickRepository(
+class JPATickRepository(
     private val springDataTickRepository: SpringDataTickRepository
 ) : TickRepository {
 
