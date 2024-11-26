@@ -4,7 +4,8 @@ FROM continuumio/anaconda3:2023.03-1
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 
-RUN apt update && apt install -y build-essential zip python-dev libsdl2-dev && rm -rf /var/lib/apt/lists/*
+RUN apt update && apt install -y build-essential zip python-dev libsdl2-dev
+RUN apt install -y cmake libopenmpi-dev python3-dev zlib1g-dev libgl1-mesa-glx swig && rm -rf /var/lib/apt/lists/*
 
 #USER root
 WORKDIR /root
@@ -18,13 +19,14 @@ RUN ./configure --prefix=/usr
 RUN make && make install
 
 WORKDIR /root
-RUN --mount=type=cache,target=/root/.cache/pip pip install cmake TA-Lib finta
+RUN --mount=type=cache,target=/root/.cache/pip pip install TA-Lib finta
 
 
 # FinRL
 RUN --mount=type=cache,target=/root/.cache/pip pip install git+https://github.com/AI4Finance-Foundation/FinRL.git
 RUN --mount=type=cache,target=/root/.cache/pip pip install box2d
 
+RUN --mount=type=cache,target=/root/.cache/pip pip install stable-baselines[mpi] mpi4py
 #RUN python3 -mpip install -U psutil dill joblib
 #RUN python3 -mpip install -U setuptools wheel build scikit-build
 #RUN python3 -mpip install -U numpy pandas pandas-datareader
@@ -42,7 +44,7 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install opentraveldata OpenTr
 RUN --mount=type=cache,target=/root/.cache/pip pip install elasticsearch kafka-python
 RUN --mount=type=cache,target=/root/.cache/pip pip install questdb psycopg[binary] psycopg2-binary confluent-kafka confluent-kafka[avro] fastavro
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install openai langchain stockstats pyfolio-reloaded quantstats
+RUN --mount=type=cache,target=/root/.cache/pip pip install openai langchain stockstats pyfolio-reloaded quantstats wrds pyportfolioopt
 RUN --mount=type=cache,target=/root/.cache/pip pip install bottleneck --upgrade
 # RUN pip install tensorrt
 RUN --mount=type=cache,target=/root/.cache/pip pip install boto3
