@@ -24,9 +24,13 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install TA-Lib finta
 
 # FinRL
 RUN --mount=type=cache,target=/root/.cache/pip pip install git+https://github.com/AI4Finance-Foundation/FinRL.git
-RUN --mount=type=cache,target=/root/.cache/pip pip install box2d
+#RUN --mount=type=cache,target=/root/.cache/pip pip install git+https://github.com/AI4Finance-LLC/FinRL-Library.git
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install stable-baselines[mpi] mpi4py
+RUN --mount=type=cache,target=/root/.cache/pip pip install box2d stable-baselines3[extra] ray[default] elegantrl
+
+# RUN --mount=type=cache,target=/root/.cache/pip pip install mpi4py
+RUN --mount=type=cache,target=/root/.cache/pip pip install gymnasium yfinance gym
+
 #RUN python3 -mpip install -U psutil dill joblib
 #RUN python3 -mpip install -U setuptools wheel build scikit-build
 #RUN python3 -mpip install -U numpy pandas pandas-datareader
@@ -34,7 +38,7 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install stable-baselines[mpi]
 RUN --mount=type=cache,target=/root/.cache/pip pip install matplotlib seaborn prophet ipympl
 
 RUN --mount=type=cache,target=/root/.cache/pip pip install pytest tox pyyaml dash flask flask_restful connexion requests
-RUN --mount=type=cache,target=/root/.cache/pip pip install tensorflow torch_geometric
+RUN --mount=type=cache,target=/root/.cache/pip pip install tensorflow torch torch_geometric
 RUN --mount=type=cache,target=/root/.cache/pip pip install mlflow
 RUN --mount=type=cache,target=/root/.cache/pip pip install lightgbm mlxtend catboost xgboost
 
@@ -47,6 +51,7 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install questdb psycopg[binar
 RUN --mount=type=cache,target=/root/.cache/pip pip install openai langchain stockstats pyfolio-reloaded quantstats wrds pyportfolioopt
 RUN --mount=type=cache,target=/root/.cache/pip pip install bottleneck --upgrade
 # RUN pip install tensorrt
+
 RUN --mount=type=cache,target=/root/.cache/pip pip install boto3
 
 RUN mkdir /root/.aws
