@@ -58,8 +58,14 @@ RUN mkdir /root/.aws
 COPY examples/ .
 COPY credentials ./.aws/
 
+RUN rm /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+RUN cp /opt/conda/lib/libstdc++.so.6.0.29 /usr/lib/x86_64-linux-gnu/
+RUN ln -s /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.29 /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+
 ENV MLFLOW_TRACKING_URI=http://host.docker.internal:5000
 ENV MLFLOW_S3_ENDPOINT_URL=http://host.docker.internal:9900
+
+ENV LD_LIBRARY=/usr/lib/x86_64-linux-gnu/
 
 EXPOSE 8888
 EXPOSE 2000-2010
