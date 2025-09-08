@@ -44,7 +44,7 @@ object OrderMapper {
         marketId = if (openOrderResponse.marketId != null) openOrderResponse.marketId.toInt() else 0,
         quoteId = if (openOrderResponse.quoteId != null) openOrderResponse.quoteId.toInt() else 0,
         price = if (openOrderResponse.orderMode=="Stop") openOrderResponse.stopOrderPrice.toFloat() else openOrderResponse.limitOrderPrice.toFloat(),
-        stake = openOrderResponse.stake.toFloat().toInt(),
+        stake = openOrderResponse.stake.toFloat(),
         direction = if (openOrderResponse.tradeMode == "Sell") -1 else 1,
         limitOrderPrice = openOrderResponse.iDOLimitOrderPrice?.toFloat() ?: 0f,
         stopOrderPrice = openOrderResponse.iDOStopOrderPrice?.toFloat() ?: 0f,

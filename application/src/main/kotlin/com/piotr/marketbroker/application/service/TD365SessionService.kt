@@ -67,10 +67,6 @@ class TD365SessionService(
         }
     }
 
-    // <demoSessionStart> will be used as a metric name
-    // <getting-user-name> will be used as a span  name
-    // <userType=userType2> will be set as a tag for both metric & span
-
     fun demoSessionStart(): Boolean {
         if (liveLogin) {
             log.warn("Logged in to live account, log out first before starting demo session")

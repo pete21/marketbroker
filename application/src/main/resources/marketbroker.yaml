@@ -493,8 +493,8 @@ components:
           type: string
           format: date-time
         stake:
-          type: integer
-          format: int32
+          type: number
+          format: float
         openingPriceDecimal:
           type: number
           format: float
@@ -586,8 +586,8 @@ components:
         quoteMode:
           type: string
         stake:
-          type: integer
-          format: int32
+          type: number
+          format: float
         status:
           type: integer
           format: int32
@@ -714,8 +714,8 @@ components:
           type: number
           format: float
         stake:
-          type: integer
-          format: int32
+          type: number
+          format: float
         direction:
           type: integer
           format: int32
@@ -817,8 +817,8 @@ components:
           type: number
           format: float
         stake:
-          type: integer
-          format: int32
+          type: number
+          format: float
         direction:
           type: integer
           format: int32
@@ -847,6 +847,47 @@ components:
         - limitOrderPrice
         - stopOrderPrice
         - trailingPoint
+
+    OpenOrderCopyDTO:
+      title: OpenOrderCopyDTO
+      type: object
+      properties:
+        orderId:
+          type: integer
+          format: int32
+        ticker:
+          type: string
+        price:
+          type: number
+          format: float
+        size:
+          type: number
+          format: float
+        type:
+          type: integer
+          format: int32
+        sl:
+          type: number
+          format: float
+        tp:
+          type: number
+          format: float
+        openTime:
+          type: integer
+          format: int32
+        comment:
+          type: string
+      required:
+        - orderId
+        - ticker
+        - price
+        - size
+        - type
+        - sl
+        - tp
+        - openTime
+        - comment
+
     LoginDTO:
       title: LoginDTO
       type: object
@@ -903,3 +944,4 @@ tags:
   - name: orders
   - name: subscriptions
   - name: users
+  - name: orderscopy

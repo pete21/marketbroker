@@ -232,14 +232,14 @@ internal class InsertClosePositionRequestDTO (
     private val positionID: Int,
     private val quoteID: Int,
     private val price: String,
-    private val stake: Int,
+    private val stake: Float,
     private val tradeMode: Boolean,
     @JsonProperty("isKaazingFeed")
     private val isKaazingFeed: Boolean = true,
     private val userAgent: String = userAgentValue,
     private val key: String
 ) {
-    internal constructor(m: Int, p: Int, q: Int, price: String, s: Int, t: Boolean, k: String)
+    internal constructor(m: Int, p: Int, q: Int, price: String, s: Float, t: Boolean, k: String)
             : this (m, p, q, price, s, t, true, userAgentValue, k)
 }
 

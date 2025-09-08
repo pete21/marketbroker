@@ -23,7 +23,7 @@ data class Order(
     val marketId: Int=0,
     val quoteId: Int=0,
     val price: Float=0f,
-    val stake: Int=0,                //orderStake
+    val stake: Float=0f,                //orderStake
     val direction: Int=0,             //-1 - sell; 1-buy      -> "tradeModeID" false-buy true-sell
     val orderModeID: Int=0,           //orderModeID: 0 - market order, 1 - limit order, 2 - stop order
     val limitOrderPrice: Float=0f,
@@ -54,7 +54,7 @@ data class Order(
             marketId: Int,
             quoteId: Int,
             price: Float,
-            stake: Int,
+            stake: Float,
             direction: Int,
             orderModeID: Int,
             limitOrderPrice: Float,

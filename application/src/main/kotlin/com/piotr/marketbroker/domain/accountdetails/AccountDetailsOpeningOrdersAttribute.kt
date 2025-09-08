@@ -78,7 +78,7 @@ data class OpeningOrdersRecord (
     val quoteMode: String,
 
     @JsonProperty("Stake")
-    val stake: Int,
+    val stake: Float,
 
     @JsonProperty("Status")
     val status: Int,

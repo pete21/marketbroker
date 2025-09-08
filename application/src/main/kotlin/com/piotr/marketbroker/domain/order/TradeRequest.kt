@@ -38,7 +38,7 @@ data class TradeRequest (
     val price: Float=0f,
 
     @JsonProperty("Stake")
-    val stake: Int=0,
+    val stake: Float=0f,
 
     @JsonProperty("TradeStatus")
     val tradeStatus: String? = null,

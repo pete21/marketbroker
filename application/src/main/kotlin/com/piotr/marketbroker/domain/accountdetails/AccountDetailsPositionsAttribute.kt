@@ -48,7 +48,7 @@ data class PositionsRecord (
     val creationTimeUTC: LocalDateTime,
 
     @JsonProperty("Stake")
-    val stake: Int,
+    val stake: Float,
 
     //    @JsonProperty("OpeningPrice")
     //    @JsonIgnore

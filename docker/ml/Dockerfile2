@@ -1,0 +1,86 @@
+FROM continuumio/anaconda3:2023.09-0
+
+# Use C.UTF-8 locale to avoid issues with ASCII encoding
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+
+RUN apt update && apt install -y build-essential zip python-dev libsdl2-dev && rm -rf /var/lib/apt/lists/*
+
+#USER root
+WORKDIR /root
+
+# TA-lib
+COPY ta-lib-0.4.0-src.tar.gz .
+RUN tar xvf ./ta-lib-0.4.0-src.tar.gz
+RUN rm ./ta-lib-0.4.0-src.tar.gz
+WORKDIR /root/ta-lib
+RUN ./configure --prefix=/usr
+RUN make && make install
+
+WORKDIR /root
+RUN pip install TA-Lib
+
+#RUN apt install -y libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
+#RUN apt install -y libportmidi-dev 
+
+
+#RUN git clone https://github.com/libsdl-org/SDL.git -b SDL2
+#WORKDIR /root/SDL
+#RUN mkdir build
+#RUN ./configure
+#RUN make
+#RUN make install
+#WORKDIR /root
+
+RUN apt update && apt install -y libfreetype6-dev
+RUN apt install -y libsdl2-2.0-0
+# FinRL
+#RUN pip install git+https://github.com/AI4Finance-Foundation/FinRL.git
+COPY FinRL FinRL/
+WORKDIR /root/FinRL
+RUN pip install -e .
+WORKDIR /root
+RUN rm -r FinRL/
+RUN pip install box2d
+
+#RUN python3 -mpip install -U psutil dill joblib
+#RUN python3 -mpip install -U setuptools wheel build scikit-build
+#RUN python3 -mpip install -U numpy pandas pandas-datareader
+#RUN python3 -mpip install -U scikit-learn
+RUN pip install matplotlib seaborn
+
+RUN pip install pytest tox pyyaml
+RUN pip install dash flask flask_restful connexion requests
+RUN pip install tensorflow torch_geometric
+RUN pip install mlflow
+RUN pip install lightgbm
+RUN pip install mlxtend
+RUN pip install catboost
+RUN pip install xgboost
+
+RUN pip install elegantrl tensorboardX wrds ccxt
+
+RUN pip install opentraveldata OpenTrepWrapper Neobase
+RUN pip install elasticsearch kafka-python
+RUN pip install questdb psycopg[binary] psycopg2-binary confluent-kafka confluent-kafka[avro] fastavro
+
+RUN pip install openai
+RUN pip install langchain
+RUN pip install bottleneck --upgrade
+RUN pip install stockstats pyfolio quantstats
+# RUN pip install tensorrt
+RUN pip install boto3
+
+RUN mkdir /root/.aws
+COPY examples/ .
+COPY credentials ./.aws/
+
+ENV MLFLOW_TRACKING_URI=http://host.docker.internal:5000
+ENV MLFLOW_S3_ENDPOINT_URL=http://host.docker.internal:9000
+
+EXPOSE 8888
+EXPOSE 2000-2010
+
+CMD ["bash", "-c", "jupyter lab \
+    --notebook-dir=/opt/notebooks --ip=0.0.0.0 --port=8888 \
+    --no-browser --allow-root"]

@@ -1,0 +1,11 @@
+.venv
+
+data/*
+
+experiments/*
+
+**/__pycache__/
+
+agents_bak/*
+
+old_files
