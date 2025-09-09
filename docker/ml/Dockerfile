@@ -1,4 +1,4 @@
-FROM continuumio/anaconda3:2023.09-0
+FROM continuumio/anaconda3:2024.02-1
 
 # Use C.UTF-8 locale to avoid issues with ASCII encoding
 ENV LC_ALL=C.UTF-8
@@ -13,13 +13,6 @@ RUN conda install -y conda-forge::xvfbwrapper
 WORKDIR /root
 
 # TA-lib
-#COPY ta-lib-0.4.0-src.tar.gz .
-#RUN tar xvf ./ta-lib-0.4.0-src.tar.gz
-#RUN rm ./ta-lib-0.4.0-src.tar.gz
-#WORKDIR /root/ta-lib
-#RUN ./configure --prefix=/usr
-#RUN make && make install
-
 RUN wget https://github.com/ta-lib/ta-lib/releases/download/v0.6.3/ta-lib-0.6.3-src.tar.gz
 RUN tar -xvf ./ta-lib-0.6.3-src.tar.gz
 WORKDIR /root/ta-lib-0.6.3
@@ -29,6 +22,8 @@ RUN make install
 
 
 WORKDIR /root
+
+RUN --mount=type=cache,target=/root/.cache/pip pip install setuptools
 
 RUN --mount=type=cache,target=/root/.cache/pip pip install TA-Lib finta
 
@@ -40,7 +35,7 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install git+https://github.co
 
 RUN --mount=type=cache,target=/root/.cache/pip pip install git+https://github.com/AI4Finance-LLC/ElegantRL.git
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install box2d stable-baselines3[extra] sb3-contrib ray[rllib] ray[default] rl_zoo3 finrl-meta dm-tree
+RUN --mount=type=cache,target=/root/.cache/pip pip install box2d stable-baselines3[extra] sb3-contrib ray[rllib] ray[default] rl_zoo3 dm-tree
 
 # RUN --mount=type=cache,target=/root/.cache/pip pip install mpi4py
 RUN --mount=type=cache,target=/root/.cache/pip pip install gymnasium gymnasium[box2d] yfinance gym shimmy pygame panda_gym pandas_market_calendars
@@ -74,7 +69,7 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install bottleneck --upgrade
 
 RUN --mount=type=cache,target=/root/.cache/pip pip install boto3
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install pandas-market-calendars IProgress
+RUN --mount=type=cache,target=/root/.cache/pip pip install pandas-market-calendars IProgress empyrical-reloaded
 
 RUN mkdir /root/.aws
 COPY credentials ./.aws/
