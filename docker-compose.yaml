@@ -107,7 +107,7 @@ services:
     profiles: [all,infra,sdk]
 
   questdb:
-    image: questdb/questdb:8.1.0
+    image: questdb/questdb:9.0.3
     container_name: questdb
     ports:
       - "8812:8812"
@@ -125,7 +125,7 @@ services:
     volumes:
 #      - ./docker/questdb-data:/root/.questdb
       - ./docker/questdb-import:/var/lib/questdb/questdb_import
-      - questdb-data:/root/.questdb
+      - questdb-data:/var/lib/questdb
     networks:
       - marketbroker_net
     profiles: [all,infra,lab,sdk]

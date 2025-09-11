@@ -1,6 +1,5 @@
 # marketbroker
 
-
 ### Run
 
-docker compose up --profile infra
+docker compose --profile infra up
