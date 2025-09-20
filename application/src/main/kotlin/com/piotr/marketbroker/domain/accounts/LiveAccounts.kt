@@ -34,7 +34,9 @@ data class LiveAccounts (
     "button",
     "paymentsLink",
     "ct_login_id",
-    "ct_login_password"
+    "ct_login_password",
+    "is_allowed_deposit",
+    "is_allowed_withdrawal"
 )
 class Result (
     @JsonProperty("id")
@@ -74,10 +76,16 @@ class Result (
     var paymentsLink: String,
 
     @JsonProperty("ct_login_id")
-    var ctLoginId: String,
+    var ctLoginId: String?,
 
     @JsonProperty("ct_login_password")
-    var ctLoginPassword: String,
+    var ctLoginPassword: String?,
+
+    @JsonProperty("is_allowed_deposit")
+    var isAllowedDeposit: Boolean,
+
+    @JsonProperty("is_allowed_withdrawal")
+    var isAllowedWithdrawal: Boolean
 )
 
 

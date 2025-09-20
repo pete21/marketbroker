@@ -139,7 +139,8 @@ class TD365SessionService(
             httpAdapter.getRequestRedirects(launchUrl, redirectHeaders)
         setValues(pair)
 
-        if (websocketService.connect(account.ctLoginId, token, websocketServer)) {
+        checkNotNull(account.ctLoginId) {"ctLoginId is null, check if account is active and can be logged in"}
+        if (websocketService.connect(account.ctLoginId!!, token, websocketServer)) {
             sessionState = 1
             return true
         }
@@ -258,7 +259,7 @@ class TD365SessionService(
         try {
             liveAccounts = mapper.readValue(httpResponse.body)
         } catch (e: JsonProcessingException) {
-            log.error("Accounts mapping failed: %s", httpResponse)
+            log.error("Accounts mapping failed: ${e.message}")
             return false
         }
         return true

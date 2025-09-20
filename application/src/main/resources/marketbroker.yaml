@@ -932,8 +932,6 @@ components:
         - currency
         - balance
         - equity
-        - ct_login_id
-        - ct_login_password
 x-internal: true
 tags:
   - name: account

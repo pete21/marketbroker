@@ -83,6 +83,8 @@ services:
       - MYSQL_PASSWORD=password
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_USER=user
+    cap_add:
+      - SYS_NICE  # CAP_SYS_NICE
     ports:
       - "3306:3306"
     volumes:
@@ -309,9 +311,9 @@ services:
     profiles: [notebook]
 
   jupyter-lab:
-    image: anaconda3_py10_ml:1
+    image: ml_11:v1.8_cuda-12.5_ubuntu-22.04_extra
     build:
-      dockerfile: ./docker/ml/Dockerfile
+      dockerfile: ./docker/ml/Dockerfile3
       context: .
     container_name: jupyter-lab
     volumes:
