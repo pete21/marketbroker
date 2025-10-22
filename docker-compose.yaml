@@ -53,9 +53,8 @@ services:
     profiles: [all,infra,sdk]
 
   console:
-    image: docker.redpanda.com/redpandadata/console:latest
+    image: docker.redpanda.com/redpandadata/console:v3.2.2
     container_name: kafka-console
-    restart: on-failure
     entrypoint: /bin/sh
     command: -c "echo \"$$CONSOLE_CONFIG_FILE\" > /tmp/config.yml; /app/console"
     environment:
@@ -63,9 +62,9 @@ services:
       CONSOLE_CONFIG_FILE: |
         kafka:
           brokers: ["kafka0:29092"]
-          schemaRegistry:
-            enabled: false
-        connect:
+        schemaRegistry:
+          enabled: false
+        kafkaConnect:
           enabled: false
     ports:
       - "8081:8080"
