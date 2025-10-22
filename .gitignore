@@ -23,7 +23,6 @@ dist/
 
 # Maven
 target/
-dist/
 
 # JetBrains IDE
 .idea/
@@ -87,3 +86,4 @@ out/
 
 ### VS Code ###
 .vscode/
+/docker/questdb-import/*.csv

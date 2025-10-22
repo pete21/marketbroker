@@ -36,11 +36,13 @@ SELECT * from test_table
 *** Import dukascopy 1 second data
 
 Input file structure:
-timestamp,open,high,low,close
+timestamp,b,a,q
 
-CREATE TABLE IF NOT EXISTS DUKASCOPY_16917_OHLC(timestamp long,open float,high float,low float,close float)
+CREATE TABLE IF NOT EXISTS DUKASCOPY_16917_OHLC(timestamp long,b float,a float,q symbol CAPACITY 2)
+
 ```bash
 curl -F data=@<file>.csv 'http://localhost:9000/imp?name=DUKASCOPY_16917_OHLC'
+
 ```
 
 CREATE TABLE IF NOT EXISTS DUKASCOPY_16917_OHLC_1S(timestamp TIMESTAMP,open float,high float,low float,close float) TIMESTAMP(timestamp) PARTITION BY DAY WAL DEDUP UPSERT KEYS(timestamp)
