@@ -1,6 +1,7 @@
 package com.piotr.marketbroker.domain.marketquote
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -22,6 +23,7 @@ data class MarketQuote (
     val marketID: Int=0,
 
     @JsonProperty("QuoteID")
+    @Column(unique=true)
     val quoteID: Int=0,
 
     @JsonProperty("AtQuoteAtMarket")

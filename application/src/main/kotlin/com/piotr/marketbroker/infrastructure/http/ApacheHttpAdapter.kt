@@ -41,7 +41,7 @@ class ApacheHttpAdapter {
     }
 
     fun postRequest(url: String, body: String, headers: RequestHeaders?): HttpAdapterResponse {
-        val targetUrl = if (url.length>20) { url } else { baseUrl + url }
+        val targetUrl = if (url.startsWith("http")) { url } else { baseUrl + url }
         log.info("postRequest: $targetUrl")
         val response = execute(HttpPost(targetUrl), body, headers)          //.ifEmpty { "{}" }
 
@@ -51,7 +51,7 @@ class ApacheHttpAdapter {
     }
 
     fun putRequest(url: String, body: String, headers: RequestHeaders?): HttpAdapterResponse {
-        val targetUrl = if (url.length>20) { url } else { baseUrl + url }
+        val targetUrl = if (url.startsWith("http")) { url } else { baseUrl + url }
         log.info("putRequest: $targetUrl")
         val response = execute(HttpPut(targetUrl), body, headers)          //.ifEmpty { "{}" }
 

@@ -12,6 +12,7 @@ object KafkaTopics {
     const val TOPIC_TEXT_DATA = "TEXT_DATA_TOPIC"
 
     const val TOPIC_TICKSTREAM_TICKER_TEMPLATE = "TICKSTREAM_%d_TOPIC"
+    const val TOPIC_TRANSACTIONS = "TRANSACTIONS_TOPIC"
 
     fun getAllTopics(): List<String> {
         val fields = KafkaTopics::class.declaredMemberProperties

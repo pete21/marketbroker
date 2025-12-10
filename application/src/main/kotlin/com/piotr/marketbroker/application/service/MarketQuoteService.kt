@@ -42,6 +42,11 @@ class MarketQuoteService(
 
     fun postInstrumentQuotes() {
         val marketGroups = marketGroupRepository.findAll()
+        if (marketGroups.isEmpty()) {
+            log.error("Market groups not found")
+            return
+        }
+        marketQuoteRepository.deleteAll()
         marketGroups.forEach { m -> if (!m.isSuperGroup) httpClientGetMarketQuote(m.groupId) }
     }
 
@@ -52,6 +57,7 @@ class MarketQuoteService(
         try {
             val quotesList: List<MarketQuote> =
                 mapper.readValue(response.body.substring(5, response.body.length-1))
+            //TODO: save groupId with every MarketQuote, requires additional groupId attribute
             marketQuoteRepository.saveAll(quotesList)
             log.info("Market quotes saved: {}", quotesList.map { m -> m.marketName })
         } catch (e: IllegalArgumentException) {

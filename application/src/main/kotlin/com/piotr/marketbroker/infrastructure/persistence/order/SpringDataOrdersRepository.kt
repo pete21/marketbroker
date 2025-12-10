@@ -9,4 +9,9 @@ interface SpringDataOrdersRepository: CrudRepository<Order, Int> {
 
     fun findByOrderId(orderId: Int): List<Order>
 
+    fun findOrdersByOrderIdIn(orderIds: List<Int>): List<Order>
+
+    fun findOrdersByPositionIdIn(positionIds: List<Int>): List<Order>
+
+    fun findOrdersByActiveTrue(): List<Order>
 }

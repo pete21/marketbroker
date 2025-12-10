@@ -1,7 +1,7 @@
 package com.piotr.marketbroker.infrastructure.rest.controller
 
 import com.piotr.marketbroker.application.controller.AccountApi
-import com.piotr.marketbroker.domain.accountdetails.handler.AccountDetailsHandler
+import com.piotr.marketbroker.application.handler.AccountDetailsHandler
 import com.piotr.marketbroker.domain.accountsummary.handler.AccountSummaryHandler
 import com.piotr.marketbroker.application.model.AccountSummaryResponseDTO
 import com.piotr.marketbroker.application.model.OpeningOrderResponseDTO

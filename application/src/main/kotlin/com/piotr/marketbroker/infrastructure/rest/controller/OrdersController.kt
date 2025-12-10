@@ -65,22 +65,24 @@ class OrdersController(
         log.info("createOrder: $orderRequestDTO")
         val orderResponseDto: OrderResponseDTO?
 
-        val order = OrderMapper.mapOrderRequestDTOToOrder(orderRequestDTO, lastTick)
+        val order = OrderMapper.mapOrderRequestDTOToOrder(orderRequestDTO, lastTick)                //orderMode=5 requires order update
         when (order?.orderModeID) {
             0 ->                                          //Market order, +SL, +TP, +SL+TP
-                orderResponseDto = ordersService.requestTrade(order)?.let { OrderMapper.mapTradeRequestToOrderResponseDTO(it) }
+                orderResponseDto = ordersService.requestTrade(order).let { OrderMapper.mapTradeRequestToOrderResponseDTO(it) }
             1 ->                                          //Open order, OO+SL, OO+TP, OO+SL+TP
-                orderResponseDto = ordersService.insertOpenOrder(order)?.let { OrderMapper.mapOpenOrderResponseToOrderResponseDTO(it) }
+                orderResponseDto = ordersService.insertOpenOrder(order).let { OrderMapper.mapOpenOrderResponseToOrderResponseDTO(it) }
             2 ->                                          //Open order stop + SL + TP
-                orderResponseDto = ordersService.insertOpenOrder(order)?.let { OrderMapper.mapOpenOrderResponseToOrderResponseDTO(it) }
-            4 ->                                          //Close open position
-                orderResponseDto = ordersService.insertClosePosition(order)?.let { OrderMapper.mapTradeRequestToOrderResponseDTO(it) }
+                orderResponseDto = ordersService.insertOpenOrder(order).let { OrderMapper.mapOpenOrderResponseToOrderResponseDTO(it) }
+            4 ->                                          //Close open position by positionId
+                orderResponseDto = ordersService.insertClosePosition(order).let { OrderMapper.mapTradeRequestToOrderResponseDTO(it) }
+            5 ->                                          //Full close of open position by orderId
+                orderResponseDto = ordersService.insertClosePosition(order).let { OrderMapper.mapTradeRequestToOrderResponseDTO(it) }
             else -> {
                 log.error("Order failed. Bad orderMode: ${orderRequestDTO.orderMode}")
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
             }
         }
-        return ResponseEntity(orderResponseDto, HttpStatus.OK)
+        return ResponseEntity(orderResponseDto, if (orderResponseDto.status==0) HttpStatus.OK else HttpStatus.BAD_REQUEST)
 
     }
 }

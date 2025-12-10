@@ -16,7 +16,8 @@ data class TD365ConfigurationProperties(
     val prodwebsocketserver: String,
     val authlink: String,
     val accountlink: String,
-    val sessionupdateinterval: Int = 120000,
+    val sessionupdateinterval: Int = 90000,
+    val accesstokenupdateinterval: Int = 36000000,            //86400
     val username: String,
     val password: String
 //    override fun toString(): String {

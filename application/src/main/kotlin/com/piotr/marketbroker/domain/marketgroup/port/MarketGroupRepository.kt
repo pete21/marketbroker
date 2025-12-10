@@ -10,4 +10,6 @@ interface MarketGroupRepository {
 
     fun findById(id: Int): MarketGroup?
 
+    fun deleteAll()
+
 }

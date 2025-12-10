@@ -66,10 +66,10 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install questdb psycopg[binar
 RUN --mount=type=cache,target=/root/.cache/pip pip install openai langchain stockstats pyfolio-reloaded quantstats wrds pyportfolioopt
 RUN --mount=type=cache,target=/root/.cache/pip pip install bottleneck --upgrade
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install boto3 missingno finplot statsmodels graphviz stldecompose smartmoneyconcepts hurst quantreo mplfinance functools backtesting
-RUN --mount=type=cache,target=/root/.cache/pip pip install pandas-market-calendars IProgress empyrical-reloaded ipyparallel jupyter-ai langchain-ollama backtesting
+RUN --mount=type=cache,target=/root/.cache/pip pip install boto3 missingno finplot statsmodels graphviz stldecompose smartmoneyconcepts hurst quantreo mplfinance functools backtesting oipd
+RUN --mount=type=cache,target=/root/.cache/pip pip install pandas-market-calendars IProgress empyrical-reloaded ipyparallel jupyter-ai langchain-ollama
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install einops pywavelets sympy scipy
+RUN --mount=type=cache,target=/root/.cache/pip pip install einops pywavelets sympy scipy cupy-cuda12x
 
 RUN mkdir /home/jovyan/.aws
 COPY credentials ./.aws/

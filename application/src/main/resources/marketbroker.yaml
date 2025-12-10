@@ -734,6 +734,27 @@ components:
           format: int32
         active:
           type: boolean
+        status:
+          type: integer
+          format: int32
+        openPrice:
+          type: number
+          format: float
+        closePrice:
+          type: number
+          format: float
+        openDate:
+          type: string
+          format: date-time
+        closeDate:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
       required:
         - orderId
         - marketId
@@ -747,6 +768,7 @@ components:
         - message
         - positionId
         - active
+        - status
     SessionDTO:
       title: SessionDTO
       type: object
@@ -825,7 +847,7 @@ components:
         orderMode:
           type: integer
           format: int32
-          description: '0 - Market order, 1 - Open order (limit), OO+SL, OO+TP, OO+SL+TP, 2 - Open order stop + SL + TP, 4 - Close position'
+          description: '0 - Market order, 1 - Open order (limit), OO+SL, OO+TP, OO+SL+TP, 2 - Open order stop + SL + TP, 4 - Close position by positionId, 5 - Full close by orderId'
         limitOrderPrice:
           type: number
           format: float
@@ -836,7 +858,7 @@ components:
           type: boolean
         positionId:
           type: integer
-          description: for InsertCloseOrder (orderMode==4)
+          description: for InsertCloseOrder (orderMode==4 or orderMode==5)
       required:
         - marketId
         - quoteId

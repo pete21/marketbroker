@@ -17,8 +17,24 @@ class JPAOrderRepository(
         return springDataOrdersRepository.findAll().toList()
     }
 
+    override fun findOrdersByOrderIdIn(orderIds: List<Int>): List<Order> {
+        return springDataOrdersRepository.findOrdersByOrderIdIn(orderIds)
+    }
+
     override fun findByOrderId(orderId: Int): Order? {
         return springDataOrdersRepository.findByOrderId(orderId).first()
+    }
+
+    override fun findByPositionId(positionId: Int): List<Order> {
+        return springDataOrdersRepository.findByPositionId(positionId)
+    }
+
+    override fun findOrdersByPositionIdIn(positionIds: List<Int>): List<Order> {
+        return springDataOrdersRepository.findOrdersByPositionIdIn(positionIds)
+    }
+
+    override fun findOrdersByActiveTrue(): List<Order> {
+        return springDataOrdersRepository.findOrdersByActiveTrue()
     }
 
 }

@@ -1,10 +1,7 @@
 package com.piotr.marketbroker.application.websocket
 
-import com.piotr.marketbroker.application.event.WebsocketDisconnectedEvent
 import com.piotr.marketbroker.infrastructure.websocket.WebsocketHandler
 import com.piotr.marketbroker.common.logger
-import org.springframework.context.event.EventListener
-import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 
 
@@ -19,7 +16,7 @@ class WebsocketService(
     private var token: String? = null
     private var websocketServer: String? = null
     private var sessionState: Boolean = false
-    private val subscribed = mutableSetOf<Int>()
+//    private val subscribed = mutableSetOf<Int>()
 
     fun connect(login: String, token: String, websocketServer: String): Boolean {
         this.login = login
@@ -47,19 +44,19 @@ class WebsocketService(
     fun disconnect() {
         sessionState = false
         websocketHandler.disconnect()
-        subscribed.clear()
+//        subscribed.clear()
     }
 
     fun subscribe(quoteId: Int, status: Boolean) {
         if (status) {
             val msg = String.format(SUBSCRIBE, quoteId)
             websocketHandler.sendMsg(msg)
-            subscribed.add(quoteId)
+//            subscribed.add(quoteId)
             log.info("Subscribe: $msg")
         } else {
             val msg = String.format(UNSUBSCRIBE, quoteId)
             websocketHandler.sendMsg(msg)
-            subscribed.remove(quoteId)
+//            subscribed.remove(quoteId)
             log.info("Unsubscribe: $msg")
         }
     }
@@ -76,15 +73,15 @@ class WebsocketService(
         log.info("Account summary: $ACCOUNT_SUMMARY")
     }
 
-    @Async
-    @EventListener
-    fun handleDisconnect(event: WebsocketDisconnectedEvent) {
-        log.info("Handling WebsocketDisconnectedEvent")
-        if (sessionState) {
-            connect(login!!, token!!, websocketServer!!)
-            subscribed.forEach { subscribe(it, true) }
-        }
-    }
+//    @Async
+//    @EventListener
+//    fun handleDisconnect(event: WebsocketDisconnectedEvent) {
+//        log.info("Handling WebsocketDisconnectedEvent")
+//        if (sessionState) {
+//            connect(login!!, token!!, websocketServer!!)
+//            subscribed.forEach { subscribe(it, true) }
+//        }
+//    }
 
     private companion object {
         private const val SUBSCRIBE = "{\"quoteId\":%d,\"priceGrouping\":\"Sampled\",\"action\":\"subscribe\"}"
