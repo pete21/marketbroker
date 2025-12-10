@@ -32,4 +32,10 @@ class SubscriptionsService(
         }
     }
 
+    fun renewSubscriptions() {
+        log.info("renewSubscriptions request")
+        val subscriptions = subscriptionsRepository.findByStatusTrue()
+        subscriptions.forEach { websocketService.subscribe(it.quoteId, it.status) }
+    }
+
 }

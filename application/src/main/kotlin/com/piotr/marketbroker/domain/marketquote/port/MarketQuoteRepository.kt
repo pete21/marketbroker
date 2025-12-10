@@ -10,4 +10,5 @@ interface MarketQuoteRepository {
 
     fun findByQuoteID(s: Int) : MarketQuote?
 
+    fun deleteAll()
 }

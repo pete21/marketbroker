@@ -56,7 +56,7 @@ class KafkaConnectAdapter(
             when (connectorStatus) {
                 ConnectorStatus.STARTING, ConnectorStatus.RUNNING,
                 ConnectorStatus.FAILED, ConnectorStatus.UNASSIGNED -> pauseConnector(quoteId)
-                ConnectorStatus.PAUSED, ConnectorStatus.STOPPED -> {}
+                ConnectorStatus.PAUSED, ConnectorStatus.STOPPED,
                 null -> {}
             }
         }
@@ -101,6 +101,7 @@ class KafkaConnectAdapter(
             connectors[quoteId] = ConnectorStatus.RUNNING
             return true
         }
+        log.error("Error creating QuestDBSinkConnector: $name, Status: ${response.statusCode}, Body: ${response.body}")
         return false
     }
 
@@ -113,6 +114,7 @@ class KafkaConnectAdapter(
             connectors.remove(quoteId)
             return true
         }
+        log.error("Error removing QuestDBSinkConnector: $name, Status: ${response.statusCode}, Body: ${response.body}")
         return false
     }
 
@@ -125,6 +127,7 @@ class KafkaConnectAdapter(
             connectors[quoteId] = ConnectorStatus.PAUSED
             return true
         }
+        log.error("Error pausing QuestDBSinkConnector: $name, Status: ${response.statusCode}, Body: ${response.body}")
         return false
     }
 
@@ -137,6 +140,7 @@ class KafkaConnectAdapter(
             connectors[quoteId] = ConnectorStatus.RUNNING
             return true
         }
+        log.error("Error resuming QuestDBSinkConnector: $name, Status: ${response.statusCode}, Body: ${response.body}")
         return false
     }
 
@@ -149,6 +153,7 @@ class KafkaConnectAdapter(
             connectors[quoteId] = ConnectorStatus.RUNNING
             return true
         }
+        log.error("Error restarting QuestDBSinkConnector: $name, Status: ${response.statusCode}, Body: ${response.body}")
         return false
     }
 

@@ -19,4 +19,8 @@ class JPAMarketGroupsRepository(
     override fun findById(id: Int): MarketGroup? {
         return springDataMarketGroupsRepository.findById(id).orElse(null)
     }
+
+    override fun deleteAll() {
+        springDataMarketGroupsRepository.deleteAll()
+    }
 }

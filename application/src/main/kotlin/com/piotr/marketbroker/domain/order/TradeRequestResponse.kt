@@ -11,9 +11,9 @@ import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 
 @Entity
-@Table(name="trade_requests")
+@Table(name="trade_request_responses")
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class TradeRequest (
+data class TradeRequestResponse (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -75,6 +75,6 @@ data class TradeRequest (
     @JsonProperty("Message")
     val message: String? = null,
 
-    @OneToOne(mappedBy = "tradeRequest")
+    @OneToOne(mappedBy = "tradeRequestResponse")
     val order: Order?=null
 )

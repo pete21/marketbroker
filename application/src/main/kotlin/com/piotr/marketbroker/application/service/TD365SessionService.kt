@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.piotr.marketbroker.application.event.SessionClosedEvent
+import com.piotr.marketbroker.application.event.WebsocketDisconnectedEvent
 import com.piotr.marketbroker.application.websocket.WebsocketService
 import com.piotr.marketbroker.configuration.td365.TD365ConfigurationProperties
 import com.piotr.marketbroker.infrastructure.http.ApacheHttpAdapter
@@ -19,10 +20,11 @@ import com.piotr.marketbroker.infrastructure.http.RequestHeaders.Companion.redir
 import com.piotr.marketbroker.common.logger
 import com.piotr.marketbroker.domain.accounts.LiveAccounts
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.context.event.EventListener
 import org.springframework.http.HttpHeaders
+import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
-
 
 private const val USER_AUTH =
     "{\"realm\":\"Username-Password-Authentication\",\"client_id\":\"eeXrVwSMXPZ4pJpwStuNyiUa7XxGZRX9\",\"scope\":\"openid\",\"grant_type\":\"http://auth0.com/oauth/grant-type/password-realm\",\"username\":\"%s\",\"password\":\"%s\"}"
@@ -36,7 +38,8 @@ class TD365SessionService(
     private val td365ConfigurationProperties: TD365ConfigurationProperties,
     private val httpAdapter: ApacheHttpAdapter,
     private val websocketService: WebsocketService,
-    private val applicationEventPublisher: ApplicationEventPublisher
+    private val applicationEventPublisher: ApplicationEventPublisher,
+    private val subscriptionsService: SubscriptionsService
 ) {
 
     private val log by logger()
@@ -54,6 +57,7 @@ class TD365SessionService(
     private var token : String = ""
     private var jwt : Jwt? = null
     private var liveAccounts: LiveAccounts? = null
+    private var selectedAccountId: Int = 0
 
     fun getTD365ConfigurationProperties(): String {
         log.info(td365ConfigurationProperties.toString())
@@ -61,7 +65,9 @@ class TD365SessionService(
     }
 
     @Scheduled(fixedRateString = "\${td365ConfigurationProperties.sessionupdateinterval}")
+    @Async
     fun httpClientSessionUpdate() {
+        log.info("UpdateClientSessionID")
         if (sessionState == 1) {
             httpAdapter.postRequest("UpdateClientSessionID", "{}", redirectHeaders)
         }
@@ -79,8 +85,7 @@ class TD365SessionService(
         httpAdapter.baseUrl = td365ConfigurationProperties.demobaseurl
         httpAdapter.defaultHeaders = RequestHeaders(td365ConfigurationProperties.demoHeaders)
 
-        val pair =
-            httpAdapter.getRequestRedirects(td365ConfigurationProperties.demolink, redirectHeaders)
+        val pair = httpAdapter.getRequestRedirects(td365ConfigurationProperties.demolink, redirectHeaders)
         setValues(pair)
 
         val queryParams = pair.first[0].split("?")[1].split("&")
@@ -112,6 +117,44 @@ class TD365SessionService(
         return liveLogin
     }
 
+    @Scheduled(fixedRateString = "\${td365ConfigurationProperties.accesstokenupdateinterval}")
+    @Async
+    fun reauthenticate() {
+        log.info("tokenAuthentication")
+        val authenticationResult = tokenAuthentication()
+        if (!authenticationResult) {
+            log.error("Reauthentication failed")
+        }
+    }
+
+
+    @Async
+    @EventListener
+    fun handleDisconnect(event: WebsocketDisconnectedEvent) {
+        log.info("Handling WebsocketDisconnectedEvent")
+        if (sessionState==1) {
+
+            val account = liveAccounts!!.results.first { it.id == selectedAccountId }
+            val launchUrl = getUrl(selectedAccountId)
+
+            val pair = httpAdapter.getRequestRedirects(launchUrl, redirectHeaders)
+            setValues(pair)
+
+            val websocketServer =
+                if (account.accountType == "DEMO") {
+                    td365ConfigurationProperties.demowebsocketserver
+                } else {
+                    td365ConfigurationProperties.prodwebsocketserver
+                }
+
+            checkNotNull(account.ctLoginId) { "ctLoginId is null, check if account is active and can be logged in" }
+            if (!websocketService.connect(account.ctLoginId!!, token, websocketServer)) {
+                sessionState = 0
+            }
+            subscriptionsService.renewSubscriptions()
+        }
+    }
+
     fun liveSessionStart(accountId: Int) : Boolean {
         if (!liveLogin) {
             log.error("liveSessionStart: Login required")
@@ -121,8 +164,9 @@ class TD365SessionService(
             log.error("liveSessionStart: Session already started")
             return false
         }
-            val account = liveAccounts!!.results.first {it.id==accountId}
+        val account = liveAccounts!!.results.first {it.id==accountId}
         val launchUrl = getUrl(accountId)
+        selectedAccountId = accountId
 
         val websocketServer: String
         if (account.accountType=="DEMO") {
@@ -135,8 +179,7 @@ class TD365SessionService(
             websocketServer = td365ConfigurationProperties.prodwebsocketserver
         }
 
-        val pair =
-            httpAdapter.getRequestRedirects(launchUrl, redirectHeaders)
+        val pair = httpAdapter.getRequestRedirects(launchUrl, redirectHeaders)
         setValues(pair)
 
         checkNotNull(account.ctLoginId) {"ctLoginId is null, check if account is active and can be logged in"}
@@ -182,10 +225,10 @@ class TD365SessionService(
 
     fun sessionStop() {
         if (sessionState==1) {
+            sessionState = 0
             httpAdapter.postRequest("ClientLogout", "{}", postHeaders)
             websocketService.disconnect()
             applicationEventPublisher.publishEvent(SessionClosedEvent())
-            sessionState = 0
             ots = ""
             token = ""
         }
@@ -214,6 +257,7 @@ class TD365SessionService(
         val query = String.format(USER_AUTH, td365ConfigurationProperties.username, td365ConfigurationProperties.password)
         val httpResponseDto = httpAdapter.postRequest(td365ConfigurationProperties.authlink, query, authHeaders)
         try {
+            log.debug("Jwt: ${httpResponseDto.body}")
             jwt = mapper.readValue(httpResponseDto.body)
         } catch (e: JsonProcessingException) {
             log.error("Jwt mapping failed: %s", httpResponseDto)

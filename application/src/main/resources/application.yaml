@@ -114,14 +114,17 @@ logging:
     com.piotr.marketbroker.infrastructure.websocket: INFO
     ai.symmetrical.kafka.common.logging: INFO
     ai.symmetrical.kafka.producer: OFF
-    org.apache.http: INFO
-    org.springframework:
-      web: INFO
-      security: INFO
+    org:
+      apache:
+        http: INFO
+        kafka: INFO
+      springframework:
+        web: INFO
+        security: INFO
+        kafka: INFO
   pattern:
     level: "%5p [%X{traceId:-},%X{spanId:-}]"
     correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
-
 
 com.piotr:
   marketbroker:

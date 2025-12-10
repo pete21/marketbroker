@@ -19,4 +19,8 @@ class JPAMarketQuotesRepository(
     override fun findByQuoteID(s: Int): MarketQuote? {
         return springDataMarketQuotesRepository.findByQuoteID(s)
     }
+
+    override fun deleteAll() {
+        springDataMarketQuotesRepository.deleteAll()
+    }
 }

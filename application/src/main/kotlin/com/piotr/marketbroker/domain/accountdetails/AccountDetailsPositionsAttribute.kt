@@ -21,6 +21,9 @@ data class PositionsRecord (
     @JsonProperty("PositionID")
     val positionId: Int,
 
+    @JsonProperty("OrderID")
+    val orderId: Int,
+
     @JsonProperty("MarketID")
     val marketId: Int,
 
@@ -42,8 +45,8 @@ data class PositionsRecord (
     //    @JsonIgnore
     //    String expiryDateTime;
     //    @JsonProperty("CreationTime")
-    //    @JsonIgnore
-    //    String creationTime;
+//        @JsonIgnore
+//        String creationTime;
     @JsonProperty("CreationTimeUTC")
     val creationTimeUTC: LocalDateTime,
 

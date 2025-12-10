@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.piotr.marketbroker.domain.accountdetails.event.AccountDetailsEvent
+import com.piotr.marketbroker.application.event.AccountDetailsEvent
 import com.piotr.marketbroker.domain.accountsummary.event.AccountSummaryEvent
 import com.piotr.marketbroker.domain.subscription.event.SubscriptionEvent
 import com.piotr.marketbroker.domain.tick.event.TickData
@@ -109,11 +109,11 @@ class WebsocketMessageEventHandler(
                 val m: AccountDetailsDto = mapper.readValue(msg.d!!)
 
                 if (m.positions!=null && m.openingOrders!=null) {
-                    if (m.positions.totalRecords > 0 || m.openingOrders.totalRecords > 0) {
+//                    if (m.positions.totalRecords > 0 || m.openingOrders.totalRecords > 0) {
                         applicationEventPublisher.publishEvent(
                             AccountDetailsEvent(m.positions.records, m.openingOrders.records)
                         )
-                    }
+//                    }
                     log.info("Positions: ${m.positions.totalRecords} ${m.positions.records}")
                     log.info("OpeningOrders: ${m.openingOrders.totalRecords} ${m.openingOrders.records}")
                 }

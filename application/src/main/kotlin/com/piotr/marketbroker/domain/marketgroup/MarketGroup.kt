@@ -1,6 +1,7 @@
 package com.piotr.marketbroker.domain.marketgroup
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
@@ -10,6 +11,7 @@ import jakarta.persistence.Table
 data class MarketGroup (
     @Id
     @JsonProperty("ID")
+    @Column(unique=true)
     val groupId: Int=0,
 
     @JsonProperty("__type")

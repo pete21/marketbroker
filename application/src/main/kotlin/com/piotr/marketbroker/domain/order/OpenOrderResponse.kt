@@ -85,7 +85,7 @@ data class OpenOrderResponse (
     val iDOTrailingPoint: String?=null,
 
     @JsonProperty("Currency")
-    val currency: String="",
+    val currency: String?=null,
 
     @JsonProperty("TrailingPoint")
     val trailingPoint: String?=null,

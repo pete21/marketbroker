@@ -34,6 +34,7 @@ class MarketGroupService(
 
     fun postInstrumentGroups() {
         val response = httpAdapter.postRequest("GetMarketSuperGroup", "{}", RequestHeaders.postHeaders)
+        marketGroupRepository.deleteAll()
         saveMarketGroups(response.body.substring(5, response.body.length - 1))
         val groupIDs = marketGroupRepository.findAll()
             .filter { m -> !m.isWhiteLabelPopularMarket }
