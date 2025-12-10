@@ -1,4 +1,4 @@
-FROM cschranz/gpu-jupyter:v1.8_cuda-12.5_ubuntu-22.04
+FROM cschranz/gpu-jupyter:v1.8_cuda-12.5_ubuntu-22.04_python-only
 
 # Use C.UTF-8 locale to avoid issues with ASCII encoding
 ENV LC_ALL=C.UTF-8
@@ -24,7 +24,7 @@ WORKDIR /home/jovyan
 
 WORKDIR /home/jovyan
 
-# RUN --mount=type=cache,target=/root/.cache/pip pip install setuptools
+RUN --mount=type=cache,target=/root/.cache/pip pip install setuptools
 
 RUN --mount=type=cache,target=/root/.cache/pip pip install TA-Lib finta # pandas-ta 0.4.67b0 Requires-Python >=3.12; 0.4.71b0 Requires-Python >=3.12
 
@@ -47,9 +47,9 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install huggingface_sb3 huggi
 RUN --mount=type=cache,target=/root/.cache/pip pip install pyvirtualdisplay pyyaml imageio imageio_ffmpeg pyglet tqdm
 
 #RUN python3 -mpip install -U psutil dill joblib
-#RUN python3 -mpip install -U setuptools wheel build scikit-build
-#RUN python3 -mpip install -U numpy pandas pandas-datareader
-#RUN python3 -mpip install -U scikit-learn
+RUN python3 -mpip install -U setuptools wheel build scikit-build
+RUN python3 -mpip install -U numpy pandas pandas-datareader
+RUN python3 -mpip install -U scikit-learn
 RUN --mount=type=cache,target=/root/.cache/pip pip install matplotlib seaborn prophet ipympl
 
 RUN --mount=type=cache,target=/root/.cache/pip pip install pytest tox pyyaml dash flask flask_restful connexion requests
@@ -66,10 +66,10 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install questdb psycopg[binar
 RUN --mount=type=cache,target=/root/.cache/pip pip install openai langchain stockstats pyfolio-reloaded quantstats wrds pyportfolioopt
 RUN --mount=type=cache,target=/root/.cache/pip pip install bottleneck --upgrade
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install boto3 missingno finplot statsmodels graphviz stldecompose smartmoneyconcepts hurst quantreo mplfinance functools backtesting
-RUN --mount=type=cache,target=/root/.cache/pip pip install pandas-market-calendars IProgress empyrical-reloaded ipyparallel jupyter-ai langchain-ollama backtesting
+RUN --mount=type=cache,target=/root/.cache/pip pip install boto3 missingno finplot statsmodels graphviz stldecompose smartmoneyconcepts hurst quantreo mplfinance backtesting
+RUN --mount=type=cache,target=/root/.cache/pip pip install pandas-market-calendars IProgress empyrical-reloaded ipyparallel jupyter-ai langchain-ollama langchain_aws langchain_anthropic langchain_openai langchain_cohere langchain_google_genai langchain_mistralai langchain_nvidia_ai_endpoints langchain_google_vertexai
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install einops pywavelets sympy scipy
+RUN --mount=type=cache,target=/root/.cache/pip pip install einops pywavelets sympy scipy grpcio
 
 RUN mkdir /home/jovyan/.aws
 COPY credentials ./.aws/
