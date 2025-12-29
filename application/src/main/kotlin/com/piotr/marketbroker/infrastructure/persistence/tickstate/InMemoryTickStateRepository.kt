@@ -7,10 +7,10 @@ import org.springframework.stereotype.Repository
 @Repository
 class InMemoryTickStateRepository : TickState {
 
-    private val keysMap: MutableMap<Int, Tick?> = HashMap()
+    private val keysMap: MutableMap<Int, Tick> = HashMap()
 
     //    public static Tick emptyTick = new Tick(0, 0, 0, 0, 0, "");
-    override fun put(quoteId: Int, tick: Tick?) {
+    override fun put(quoteId: Int, tick: Tick) {
         keysMap[quoteId] = tick
     }
 
@@ -21,6 +21,11 @@ class InMemoryTickStateRepository : TickState {
     override fun remove(quoteId: Int) {
         keysMap.remove(quoteId)
     }
+
+    override fun getAll(): List<Tick> {
+        return keysMap.values.toList()
+    }
+
 }
 
 /*

@@ -63,8 +63,8 @@ class KafkaConnectAdapter(
     }
 
     fun deleteConnectors() {
-        val keys = connectors.keys
-        keys.forEach { deleteConnector(it) }
+        connectors.keys.forEach { deleteConnector(it) }
+        connectors.clear()
     }
 
     private fun connectorStatus(quoteId: Int): ConnectorStatus? {
@@ -111,7 +111,6 @@ class KafkaConnectAdapter(
         val response = httpAdapter.deleteRequest("${kafkaConnectConfigurationProperties.url}/connectors/$name",
             RequestHeaders.jsonRequestHeaders)
         if (response.statusCode / 100==2) {
-            connectors.remove(quoteId)
             return true
         }
         log.error("Error removing QuestDBSinkConnector: $name, Status: ${response.statusCode}, Body: ${response.body}")

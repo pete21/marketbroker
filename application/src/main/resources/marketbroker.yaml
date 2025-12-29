@@ -300,10 +300,26 @@ paths:
       responses:
         '200':
           description: OK
-
       tags:
         - instruments
       description: Generate Instrument quotes
+  /instruments/ticks:
+    get:
+      summary: Get last instrument ticks
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TickResponseDTO'
+      operationId: get-instrument-ticks
+      tags:
+        - instruments
+      description: Get last instrument ticks
+
   /publish-json:
     post:
       summary: Publish json data to kafka topic
@@ -869,6 +885,25 @@ components:
         - limitOrderPrice
         - stopOrderPrice
         - trailingPoint
+    TickResponseDTO:
+      title: TickResponseDTO
+      type: object
+      properties:
+        quoteId:
+          type: integer
+          format: int32
+        bid:
+          type: number
+          format: float
+        ask:
+          type: number
+          format: float
+        time:
+          type: number
+          format: int32
+        millis:
+          type: number
+          format: int32
 
     OpenOrderCopyDTO:
       title: OpenOrderCopyDTO
