@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://trade.tradefiapp.com/sitemap.xml

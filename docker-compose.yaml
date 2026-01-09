@@ -87,7 +87,7 @@ services:
     image: mysql:8.0.40-debian
     container_name: mysql8
     environment:
-      - MYSQL_DATABASE=marketbroker
+#      - MYSQL_DATABASE=marketbroker
       - MYSQL_PASSWORD=password
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_USER=user
@@ -381,7 +381,7 @@ services:
       - MYSQL_HOST=mysql8
       - MYSQL_PORT=3306
       - MYSQL_DATABASE=solana_db
-      - MYSQL_USER=user
+      - MYSQL_USER=solana_user
       - MYSQL_PASSWORD=password
       - SOLANA_RPC=https://api.devnet.solana.com
       - SOLANA_WEBSOCKET=wss://api.devnet.solana.com
