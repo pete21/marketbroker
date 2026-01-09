@@ -22,9 +22,11 @@ class TickEventHandler (
     @EventListener
     fun handleTickEvent(event: TicksEvent) {
         val ticks = TickMapper.toTick(event.ticks)
-        ticks.forEach { producer.produce(
+        ticks.forEach {
+            producer.produce(
             TickStreamEvent.invoke(it),
-            String.format(TOPIC_TICKSTREAM_TICKER_TEMPLATE, it.quoteId), null) }
+            String.format(TOPIC_TICKSTREAM_TICKER_TEMPLATE, it.quoteId), null)
+        }
 
 //        tickRepository.saveAll(ticks)                 // do not save to mssql
 

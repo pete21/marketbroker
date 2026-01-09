@@ -114,6 +114,9 @@ class TD365SessionService(
         loginHeaders.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwt!!.access_token)
 
         liveLogin = login() && accounts()
+
+        applicationEventPublisher.publishEvent(SessionClosedEvent())            //clear session (subscriptions, kafka-connectors, ...)
+
         return liveLogin
     }
 

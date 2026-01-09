@@ -1,6 +1,6 @@
 ARG VERSION=21.0.3-10
 
-FROM gradle:8.7.0-jdk21-alpine AS CACHE
+FROM gradle:8.7.0-jdk21-alpine AS cache
 RUN mkdir -p /home/gradle/cache_home
 ENV GRADLE_USER_HOME /home/gradle/cache_home
 WORKDIR /home/gradle/src
@@ -9,7 +9,7 @@ COPY --chown=gradle:gradle . /home/gradle/src
 RUN gradle clean build -i --stacktrace
 
 
-FROM gradle:8.7.0-jdk21-alpine AS BUILD
+FROM gradle:8.7.0-jdk21-alpine AS build
 #COPY --from=cache /home/gradle/cache_home /home/gradle/.gradle
 WORKDIR /home/gradle/src
 COPY ./repository /root/.m2/repository
@@ -29,5 +29,5 @@ EXPOSE 8080 8090
 HEALTHCHECK --interval=15s \
             --timeout=3s \
             CMD curl -f http://localhost:8090/health || exit 1
-COPY --from=BUILD --chown=$USER:$GROUP /home/gradle/src/application/build/libs/*.jar ./
+COPY --from=build --chown=$USER:$GROUP /home/gradle/src/application/build/libs/*.jar ./
 ENTRYPOINT ["java", "-jar", "./application.jar"]

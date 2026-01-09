@@ -98,6 +98,9 @@ dependencies {
 //    runtimeOnly("com.h2database:h2:2.2.224")
     // https://mvnrepository.com/artifact/org.springframework/spring-websocket
     implementation("org.springframework:spring-websocket:6.1.2")
+// https://mvnrepository.com/artifact/org.springframework/spring-messaging
+    implementation("org.springframework:spring-messaging:6.1.2")
+
 
     //Observability
     // https://mvnrepository.com/artifact/com.github.loki4j/loki-logback-appender

@@ -2,7 +2,7 @@ services:
   marketbroker:
     build:
       dockerfile: ./Dockerfile
-    image: marketbroker:0.3.0
+    image: registry.tradefiapp.com:5443/marketbroker:0.3.0
     container_name: marketbroker
     hostname: marketbroker
     ports:
@@ -19,7 +19,7 @@ services:
 #      - $HOME/.m2:/root/.m2
     networks:
       - marketbroker_net
-    profiles: [all,sdk]
+    profiles: [prop-trade-bundle,sdk]
 
   kafka0:
     image: docker.redpanda.com/redpandadata/redpanda:v25.3.1
@@ -56,7 +56,7 @@ services:
       - kafka0:/var/lib/redpanda/data
     networks:
       - marketbroker_net
-    profiles: [all,infra,sdk]
+    profiles: [prop-trade-bundle,infra,sdk]
 
   console:
     image: docker.redpanda.com/redpandadata/console:v3.3.1
@@ -81,7 +81,7 @@ services:
       - kafka0
     networks:
       - marketbroker_net
-    profiles: [all,infra,sdk]
+    profiles: [prop-trade-bundle,infra,sdk]
 
   mysql8:
     image: mysql:8.0.40-debian
@@ -99,7 +99,7 @@ services:
       - mysql-data:/var/lib/mysql
     networks:
       - marketbroker_net
-    profiles: [all,infra,sdk]
+    profiles: [prop-trade-bundle,infra,sdk]
 
   phpmyadmin:
     image: phpmyadmin:5.2.3-apache
@@ -114,7 +114,7 @@ services:
       - "8082:80"
     networks:
       - marketbroker_net
-    profiles: [all,infra,sdk]
+    profiles: [prop-trade-bundle,infra,sdk]
 
   questdb:
     image: questdb/questdb:9.2.0
@@ -138,7 +138,7 @@ services:
       - questdb-data:/var/lib/questdb
     networks:
       - marketbroker_net
-    profiles: [all,infra,lab,sdk]
+    profiles: [prop-trade-bundle,infra,lab,sdk]
 
   kafka-connect:
 #    image: ueisele/apache-kafka-connect-standalone:3.7.0
@@ -183,7 +183,7 @@ services:
       CONNECT_PLUGIN_PATH: /etc/kafka-connect/jars
     networks:
       - marketbroker_net
-    profiles: [all,infra,sdk]
+    profiles: [prop-trade-bundle,infra,sdk]
 
 #    command:
 #      - bash
@@ -232,7 +232,7 @@ services:
       - ./docker/grafana/etc_grafana:/etc/grafana/
     networks:
       - marketbroker_net
-    profiles: [all,infra,sdk]
+    profiles: [prop-trade-bundle,infra,sdk]
 
   prometheus:
     image: prom/prometheus:v3.7.3
@@ -253,7 +253,7 @@ services:
       - "9090:9090"
     networks:
       - marketbroker_net
-    profiles: [all,infra,sdk]
+    profiles: [prop-trade-bundle,infra,sdk]
 
 
   loki:
@@ -266,7 +266,7 @@ services:
       - ./docker/loki-config.yml:/etc/loki/loki-config.yml
     networks:
       - marketbroker_net
-    profiles: [all,infra,sdk]
+    profiles: [prop-trade-bundle,infra,sdk]
 
 
   tempo:
@@ -285,7 +285,7 @@ services:
       - "9411:9411"   # zipkin
     networks:
       - marketbroker_net
-    profiles: [all,infra,sdk]
+    profiles: [prop-trade-bundle,infra,sdk]
     depends_on:
       - memcached
 
@@ -299,7 +299,7 @@ services:
       - MEMCACHED_THREADS=2 # Number of threads to use
     networks:
       - marketbroker_net
-    profiles: [all,infra,sdk]
+    profiles: [prop-trade-bundle,infra,sdk]
 
   jupyter-notebook:
     image: quay.io/jupyter/tensorflow-notebook:tensorflow-2.16.1
@@ -369,12 +369,36 @@ services:
       - marketbroker_net
     profiles: [lab]
 
+  solana-event-listener:
+#    build:
+#      dockerfile: ./Dockerfile
+    image: registry.tradefiapp.com:5443/solana-event-listener:v1
+    container_name: solana-event-listener
+    #    ports:
+    #      - "5000:5000"
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka0:19092
+      - MYSQL_HOST=mysql8
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=solana_db
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+      - SOLANA_RPC=https://api.devnet.solana.com
+      - SOLANA_WEBSOCKET=wss://api.devnet.solana.com
+    networks:
+      - marketbroker_net
+    profiles: [prop-trade-bundle]
+    depends_on:
+      - kafka0
+
 
 networks:
   marketbroker_net:
+    name: marketbroker_net-network
 
 volumes:
   questdb-data:
   mysql-data:
   kafka0:
   tempo-data:
+
