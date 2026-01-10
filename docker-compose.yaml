@@ -398,7 +398,9 @@ services:
       - 443:443
       - 80:80
     volumes:
-      - ./docker/nginx:/etc/nginx:ro
+      - ./docker/nginx:/etc/nginx
+      - ./docker/nginx/sites-enabled:/etc/nginx/sites-enabled
+      - ./docker/nginx/sites-available:/etc/nginx/sites-available
 #      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
       - marketbroker_net
