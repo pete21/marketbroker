@@ -1,0 +1,72 @@
+server {
+    listen 443 ssl;
+    server_name trade.tradefiapp.com;
+
+    # SSL
+    ssl_certificate /etc/nginx/conf.d/domain.crt;
+    ssl_certificate_key /etc/nginx/conf.d/domain.key;
+
+    # Recommendations from https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html
+    ssl_protocols TLSv1.1 TLSv1.2;
+    ssl_ciphers 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH';
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache shared:SSL:10m;
+
+    auth_basic           "tradefiapp";
+    auth_basic_user_file /etc/nginx/conf.d/htpasswd;              # tradefiapp_user/password
+
+        location / {
+            auth_basic off;
+            include proxy_params;
+            proxy_pass http://127.0.0.1:3000/;
+        }
+
+        location /marketbroker {
+            include proxy_params;
+            proxy_pass http://127.0.0.1:8080/;
+        }
+
+        location /ws/ {
+            proxy_pass http://127.0.0.1:8080;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /topic/ {
+            proxy_pass http://127.0.0.1:8080;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /grafana {
+            include proxy_params;
+            proxy_pass http://127.0.0.1:4000/;
+        }
+        location /kafka-console {
+            include proxy_params;
+            proxy_pass http://127.0.0.1:8081/;
+        }
+        location /questdb {
+            include proxy_params;
+            proxy_pass http://127.0.0.1:9000/;
+        }
+        location /prometheus {
+            include proxy_params;
+            proxy_pass http://127.0.0.1:9090/;
+        }
+        location /loki {
+            include proxy_params;
+            proxy_pass http://127.0.0.1:3100/;
+        }
+
+}
