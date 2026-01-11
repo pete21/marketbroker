@@ -260,7 +260,7 @@ services:
     container_name: loki
     image: grafana/loki:3.5.8
     command:
-      - config.file=/etc/loki/loki-config.yml
+      -config.file=/etc/loki/loki-config.yml
     ports:
       - "3100:3100"
     volumes:
