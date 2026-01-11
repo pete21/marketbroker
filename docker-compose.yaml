@@ -26,10 +26,10 @@ services:
     container_name: kafka0
     hostname: kafka0
     ports:
-      - 18081:18081
-      - 18082:18082
-      - 9092:9092
-      - 19644:9644
+      - "18081:18081"
+      - "18082:18082"
+      - "9092:9092"
+      - "9644:9644"
     command:
       - redpanda
       - start
@@ -259,7 +259,8 @@ services:
   loki:
     container_name: loki
     image: grafana/loki:3.5.8
-    command: -config.file=/etc/loki/loki-config.yml
+    command:
+      - config.file=/etc/loki/loki-config.yml
     ports:
       - "3100:3100"
     volumes:
@@ -390,13 +391,15 @@ services:
     profiles: [prop-trade-bundle]
     depends_on:
       - kafka0
+      - mysql8
 
   nginx-tradefi:
     container_name: nginx-tradefi
     image: "nginx:1.28.1-alpine3.23"
     ports:
-      - 443:443
-      - 80:80
+      - "443:443"
+      - "80:80"
+      - "10000-10009:10000-10009"
     volumes:
       - ./docker/nginx:/etc/nginx
       - ./docker/nginx/sites-enabled/:/etc/nginx/sites-enabled/
