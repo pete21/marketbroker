@@ -406,6 +406,7 @@ services:
       - MYSQL_PASSWORD=password
       - SOLANA_RPC=https://api.devnet.solana.com
       - SOLANA_WEBSOCKET=wss://api.devnet.solana.com
+      - PYTHONUNBUFFERED=1
     networks:
       - marketbroker_net
     profiles: [prop-trade-bundle]
