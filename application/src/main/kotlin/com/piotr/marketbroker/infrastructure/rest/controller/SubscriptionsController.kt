@@ -19,18 +19,16 @@ private val subscriptionsService: SubscriptionsService
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     override fun getSubscriptions(): ResponseEntity<List<String>> {
         return ResponseEntity<List<String>>(subscriptionsService.getSubscriptions(), HttpStatus.OK)
-
     }
 
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
-    override fun createSubscription(subscriptionsRequestDTO: SubscriptionsRequestDTO): ResponseEntity<Unit> {
-        val result = subscriptionsService.postSubscriptions(
-            subscriptionsRequestDTO.quoteId, subscriptionsRequestDTO.status)
-        return if (result) {
-            ResponseEntity.ok().build()
-        } else {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
+    override fun createSubscription(subscriptionsRequestDTO: SubscriptionsRequestDTO): ResponseEntity<List<Boolean>> {
+        val response: MutableList<Boolean> = mutableListOf()
+        subscriptionsRequestDTO.quoteId.forEach {
+            val result = subscriptionsService.postSubscriptions(it, subscriptionsRequestDTO.status)
+            response.add(result)
         }
+        return ResponseEntity<List<Boolean>>(response, HttpStatus.OK)
     }
 
 }

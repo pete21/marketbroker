@@ -9,7 +9,7 @@ info:
 servers:
   - url: 'http://localhost:8080'
 paths:
-  /users/{userId}:
+  '/users/{userId}':
     parameters:
       - schema:
           type: integer
@@ -42,7 +42,6 @@ paths:
           description: User Not Found
       operationId: get-users-userId
       description: Retrieve the information of the user with the matching user ID.
-
     patch:
       summary: Update User Information
       operationId: patch-users-userId
@@ -98,7 +97,6 @@ paths:
         description: Patch user properties to update.
       tags:
         - users
-
   /account/summary:
     get:
       summary: Get Account summary
@@ -115,7 +113,6 @@ paths:
           description: Account summary not found
       operationId: get-account-summary
       description: Get Account summary
-
   /account/positions:
     get:
       summary: Get Positions
@@ -148,7 +145,6 @@ paths:
                   $ref: '#/components/schemas/OpeningOrderResponseDTO'
       operationId: get-opening-orders
       description: Get Opening orders
-
   /orders:
     get:
       summary: List Orders
@@ -164,7 +160,6 @@ paths:
                 items:
                   $ref: '#/components/schemas/OrderResponseDTO'
       operationId: list-orders
-
       description: List Orders
     post:
       summary: Create order
@@ -219,7 +214,6 @@ paths:
                 $ref: '#/components/schemas/OrderResponseDTO'
       operationId: amend-order-by-id
       description: Amend order details
-
     delete:
       summary: Delete open order
       operationId: delete-order-by-id
@@ -247,7 +241,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SessionDTO'
-
       tags:
         - demo
   /instruments/groups:
@@ -263,7 +256,6 @@ paths:
                 items:
                   type: string
       operationId: get-instrument-groups
-
       tags:
         - instruments
       description: Get Instrument groups
@@ -273,7 +265,6 @@ paths:
       responses:
         '200':
           description: OK
-
       tags:
         - instruments
       description: Generate Instrument groups
@@ -290,7 +281,6 @@ paths:
                 items:
                   type: string
       operationId: get-instrument-quotes
-
       tags:
         - instruments
       description: Get Instrument quotes
@@ -319,7 +309,6 @@ paths:
       tags:
         - instruments
       description: Get last instrument ticks
-
   /publish-json:
     post:
       summary: Publish json data to kafka topic
@@ -329,7 +318,6 @@ paths:
         '200':
           description: OK
       operationId: publish-json
-
       description: Publish json data to kafka topic
       requestBody:
         required: true
@@ -346,7 +334,6 @@ paths:
         '200':
           description: OK
       operationId: publish-text
-
       description: Publish text data to kafka topic
       requestBody:
         required: true
@@ -374,7 +361,6 @@ paths:
               $ref: '#/components/schemas/LoginDTO'
       tags:
         - live
-
   /live/accounts:
     get:
       summary: Get Live accounts
@@ -391,7 +377,6 @@ paths:
       description: Get live accounts
       tags:
         - live
-
   /live/session:
     post:
       summary: Live start session controller
@@ -412,7 +397,6 @@ paths:
               $ref: '#/components/schemas/SessionDTO'
       tags:
         - live
-
   /instruments/subscriptions:
     get:
       summary: Get Instrument subscriptions
@@ -435,8 +419,13 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: boolean
       description: Create subscription
-
       requestBody:
         required: true
         content:
@@ -445,13 +434,12 @@ paths:
               $ref: '#/components/schemas/SubscriptionsRequestDTO'
       tags:
         - subscriptions
-
 components:
   schemas:
     User:
       title: User
       type: object
-      description: 'User'
+      description: User
       examples:
         - id: 142
           firstName: Alice
@@ -553,7 +541,6 @@ components:
         - stake
         - openingPriceDecimal
         - currencyCode
-
     OpeningOrderResponseDTO:
       title: OpeningOrderResponseDTO
       type: object
@@ -649,7 +636,6 @@ components:
         - isForceOpen
         - orderPriceModeEnum
         - currencySymbol
-
     AccountSummaryResponseDTO:
       title: AccountSummaryResponseDTO
       type: object
@@ -834,8 +820,11 @@ components:
       type: object
       properties:
         quoteId:
-          type: integer
+          type: array
           format: int32
+          items:
+            type: integer
+            format: int32
         status:
           type: boolean
       required:
@@ -904,7 +893,6 @@ components:
         millis:
           type: number
           format: int32
-
     OpenOrderCopyDTO:
       title: OpenOrderCopyDTO
       type: object
@@ -944,7 +932,6 @@ components:
         - tp
         - openTime
         - comment
-
     LoginDTO:
       title: LoginDTO
       type: object
