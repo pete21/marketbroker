@@ -100,6 +100,13 @@ services:
     networks:
       - marketbroker_net
     profiles: [prop-trade-bundle,infra,sdk]
+    restart: on-failure
+    healthcheck:
+#      test: ["CMD-SHELL", "mysql -h localhost -u root -p$$MYSQL_ROOT_PASSWORD" ]
+      test: ["CMD", "mysqladmin", "-u$MYSQL_USER", "-p$MYSQL_PASSWORD",  "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   phpmyadmin:
     image: phpmyadmin:5.2.3-apache
@@ -390,8 +397,10 @@ services:
       - marketbroker_net
     profiles: [prop-trade-bundle]
     depends_on:
-      - kafka0
-      - mysql8
+      kafka0:
+        condition: service_healthy
+      mysql8:
+        condition: service_healthy
 
   nginx-tradefi:
     container_name: nginx-tradefi
