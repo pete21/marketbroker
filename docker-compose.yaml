@@ -57,6 +57,11 @@ services:
     networks:
       - marketbroker_net
     profiles: [prop-trade-bundle,infra,sdk]
+    healthcheck:
+      test: ["CMD", "rpk", "cluster", "info"]     # "-X", "user=superuser", "-X", "pass=secretpassword"
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   console:
     image: docker.redpanda.com/redpandadata/console:v3.3.1
