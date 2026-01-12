@@ -25,7 +25,7 @@ ARG USER="piotr-user"
 RUN addgroup -g 1111 $GROUP && adduser -u 1111 --disabled-password -G $GROUP $USER
 USER $USER
 WORKDIR /home/$USER
-COPY ./docker/curl-linux-x86_64-glibc-8.18.0.tar.xz .
+COPY ./curl-linux-x86_64-glibc-8.18.0.tar.xz .
 RUN unxz curl-linux-x86_64-glibc-8.18.0.tar.xz & \
     tar -xf curl-linux-x86_64-glibc-8.18.0.tar & \
     rm curl-linux-x86_64-glibc-8.18.0.tar
