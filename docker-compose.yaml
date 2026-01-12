@@ -20,12 +20,12 @@ services:
     networks:
       - marketbroker_net
     profiles: [prop-trade-bundle,sdk]
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8090/health" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://localhost:8090/health" ]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 30s
 
   kafka0:
     image: docker.redpanda.com/redpandadata/redpanda:v25.3.1

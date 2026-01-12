@@ -25,9 +25,13 @@ ARG USER="piotr-user"
 RUN addgroup -g 1111 $GROUP && adduser -u 1111 --disabled-password -G $GROUP $USER
 USER $USER
 WORKDIR /home/$USER
+COPY ./docker/curl-linux-x86_64-glibc-8.18.0.tar.xz .
+RUN unxz curl-linux-x86_64-glibc-8.18.0.tar.xz & \
+    tar -xf curl-linux-x86_64-glibc-8.18.0.tar & \
+    rm curl-linux-x86_64-glibc-8.18.0.tar
 EXPOSE 8080 8090
-HEALTHCHECK --interval=15s \
-            --timeout=3s \
+HEALTHCHECK --interval=20s \
+            --timeout=10s \
             CMD curl -f http://localhost:8090/health || exit 1
 COPY --from=build --chown=$USER:$GROUP /home/gradle/src/application/build/libs/*.jar ./
 ENTRYPOINT ["java", "-jar", "./application.jar"]
