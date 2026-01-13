@@ -416,6 +416,50 @@ services:
       mysql8:
         condition: service_healthy
 
+  tradefi-app:
+    container_name: tradefi-app
+    image: registry.tradefiapp.com:5443/tradefi-app:1.0.0
+    ports:
+      - "127.0.0.1:3001:3000"
+    networks:
+      - marketbroker_net
+    profiles: [prop-trade-bundle]
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:8.0.16-noble
+    container_name: mongodb
+    restart: always
+    ports:
+      - "127.0.0.1:27017:27017" # Expose MongoDB on the default port
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root # Set the admin username
+      MONGO_INITDB_ROOT_PASSWORD: password # Set the admin password
+    volumes:
+      - mongo-data:/data/db # Persist MongoDB data
+      - mongo-config:/data/configdb # Persist MongoDB configuration
+    networks:
+      - marketbroker_net
+    profiles: [prop-trade-bundle]
+
+  mongo-express:
+    container_name: mongo-express
+    image: mongo-express:1.0-20-alpine3.19
+    restart: always
+    ports:
+      - "127.0.0.1:8084:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_URL: mongodb://root:password@mongodb:27017/
+    networks:
+      - marketbroker_net
+    profiles: [prop-trade-bundle]
+    depends_on:
+      - mongodb
+
+
   nginx-tradefi:
     container_name: nginx-tradefi
     image: "nginx:1.28.1-alpine3.23"
@@ -443,4 +487,5 @@ volumes:
   mysql-data:
   kafka0:
   tempo-data:
-
+  mongo-data:
+  mongo-config:
