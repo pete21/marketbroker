@@ -118,7 +118,7 @@ services:
     restart: on-failure
     healthcheck:
 #      test: ["CMD-SHELL", "mysql -h localhost -u root -p$$MYSQL_ROOT_PASSWORD" ]
-      test: ["CMD", "mysqladmin", "-u$MYSQL_USER", "-p$MYSQL_PASSWORD",  "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "-u$MYSQL_USER", "-p$MYSQL_PASSWORD", "ping", "-h", "localhost"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -438,7 +438,8 @@ services:
       - marketbroker_net
     profiles: [prop-trade-bundle]
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
 
   mongodb:
     image: mongo:8.0.16-noble
@@ -456,6 +457,11 @@ services:
     networks:
       - marketbroker_net
     profiles: [prop-trade-bundle]
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", 'db.runCommand("ping").ok']
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   mongo-express:
     container_name: mongo-express
@@ -465,6 +471,7 @@ services:
     ports:
       - "127.0.0.1:8084:8081"
     environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: password
       ME_CONFIG_MONGODB_URL: mongodb://root:password@mongodb:27017/
