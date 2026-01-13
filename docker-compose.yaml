@@ -15,6 +15,7 @@ services:
       - questdb
       - kafka-connect
       - mysql8
+      - loki
 #    volumes:
 #      - $HOME/.m2:/root/.m2
     networks:
@@ -73,6 +74,7 @@ services:
   console:
     image: docker.redpanda.com/redpandadata/console:v3.3.1
     container_name: kafka-console
+    hostname: kafka-console
     entrypoint: /bin/sh
     command: -c "echo \"$$CONSOLE_CONFIG_FILE\" > /tmp/config.yml; /app/console"
     environment:
@@ -98,6 +100,7 @@ services:
   mysql8:
     image: mysql:8.0.40-debian
     container_name: mysql8
+    hostname: mysql8
     environment:
 #      - MYSQL_DATABASE=marketbroker
       - MYSQL_PASSWORD=password
@@ -124,6 +127,7 @@ services:
   phpmyadmin:
     image: phpmyadmin:5.2.3-apache
     container_name: phpmyadmin
+    hostname: phpmyadmin
     environment:
       - PMA_HOST=mysql8
       - PMA_PORT=3306
@@ -139,6 +143,7 @@ services:
   questdb:
     image: questdb/questdb:9.2.0
     container_name: questdb
+    hostname: questdb
     ports:
       - "127.0.0.1:8812:8812"
       - "127.0.0.1:9000:9000"
@@ -163,7 +168,8 @@ services:
   kafka-connect:
 #    image: ueisele/apache-kafka-connect-standalone:3.7.0
     image: cricketeerone/apache-kafka-connect:4.0.0
-    container_name: kafka_connect
+    container_name: kafka-connect
+    hostname: kafka-connect
     depends_on:
       - kafka0
       - questdb
@@ -227,6 +233,7 @@ services:
 
   grafana:
     container_name: grafana
+    hostname: grafana
     image: grafana/grafana:12.1.4
     # See: https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#override-configuration-with-environment-variables
     environment:
@@ -257,6 +264,7 @@ services:
   prometheus:
     image: prom/prometheus:v3.7.3
     container_name: prometheus
+    hostname: prometheus
     volumes:
       - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./docker/prometheus_data:/prometheus
@@ -278,6 +286,7 @@ services:
 
   loki:
     container_name: loki
+    hostname: loki
     image: grafana/loki:3.5.8
     command:
       -config.file=/etc/loki/loki-config.yml
@@ -292,6 +301,7 @@ services:
 
   tempo:
     container_name: tempo
+    hostname: tempo
     image: grafana/tempo:2.9.0
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
@@ -313,6 +323,7 @@ services:
   memcached:
     image: memcached:1.6.39
     container_name: memcached
+    hostname: memcached
     ports:
       - "127.0.0.1:11211:11211"
     environment:
@@ -395,6 +406,7 @@ services:
 #      dockerfile: ./Dockerfile
     image: registry.tradefiapp.com:5443/solana-event-listener:v1
     container_name: solana-event-listener
+    hostname: solana-event-listener
     #    ports:
     #      - "5000:5000"
     environment:
@@ -418,6 +430,7 @@ services:
 
   tradefi-app:
     container_name: tradefi-app
+    hostname: tradefi-app
     image: registry.tradefiapp.com:5443/tradefi-app:1.0.0
     ports:
       - "127.0.0.1:3001:3000"
@@ -430,6 +443,7 @@ services:
   mongodb:
     image: mongo:8.0.16-noble
     container_name: mongodb
+    hostname: mongodb
     restart: always
     ports:
       - "127.0.0.1:27017:27017" # Expose MongoDB on the default port
@@ -445,6 +459,7 @@ services:
 
   mongo-express:
     container_name: mongo-express
+    hostname: mongo-express
     image: mongo-express:1.0-20-alpine3.19
     restart: always
     ports:
