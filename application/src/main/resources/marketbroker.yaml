@@ -42,6 +42,7 @@ paths:
           description: User Not Found
       operationId: get-users-userId
       description: Retrieve the information of the user with the matching user ID.
+      x-internal: true
     patch:
       summary: Update User Information
       operationId: patch-users-userId
@@ -97,6 +98,7 @@ paths:
         description: Patch user properties to update.
       tags:
         - users
+      x-internal: true
   /account/summary:
     get:
       summary: Get Account summary
@@ -821,7 +823,6 @@ components:
       properties:
         quoteId:
           type: array
-          format: int32
           items:
             type: integer
             format: int32
@@ -976,7 +977,6 @@ components:
         - currency
         - balance
         - equity
-x-internal: true
 tags:
   - name: account
   - name: demo

@@ -32,7 +32,7 @@ RUN rm curl-linux-x86_64-glibc-8.18.0.tar
 EXPOSE 8080 8090
 HEALTHCHECK --interval=30s \
             --timeout=5s \
-            -- retries=3
+            --retries=3 \
 #            CMD wget -qO- http://localhost:8090/health/
             CMD ./curl --fail --silent http://localhost:8090/health | grep UP || exit 1
 COPY --from=build --chown=$USER:$GROUP /home/gradle/src/application/build/libs/*.jar ./
