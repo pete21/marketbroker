@@ -55,7 +55,7 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install matplotlib seaborn pr
 RUN --mount=type=cache,target=/root/.cache/pip pip install pytest tox pyyaml dash flask flask_restful connexion requests
 RUN --mount=type=cache,target=/root/.cache/pip pip install torch_geometric
 RUN --mount=type=cache,target=/root/.cache/pip pip install mlflow
-RUN --mount=type=cache,target=/root/.cache/pip pip install lightgbm mlxtend catboost xgboost
+RUN --mount=type=cache,target=/root/.cache/pip pip install lightgbm mlxtend catboost xgboost sambo
 
 RUN --mount=type=cache,target=/root/.cache/pip pip install tensorrt tensorboardX wrds ccxt
 

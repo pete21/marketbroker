@@ -1,10 +1,12 @@
+------ DAX40 ------- 6374
 
 CREATE TABLE IF NOT EXISTS DUKASCOPY_6374_OHLC(timestamp long,b float,a float,q symbol CAPACITY 2);
 
-```bash
-curl -F data=@<file>.csv 'http://localhost:9000/imp?name=DUKASCOPY_6374_OHLC'
+SELECT COUNT(*) FROM DUKASCOPY_6374_OHLC;
 
-```
+-- ```bash
+-- curl -F data=@<file>.csv 'http://localhost:9000/imp?name=DUKASCOPY_6374_OHLC'
+-- ```
 
 CREATE TABLE IF NOT EXISTS DUKASCOPY_6374_OHLC_1S(timestamp TIMESTAMP,open float,high float,low float,close float) TIMESTAMP(timestamp) PARTITION BY DAY WAL DEDUP UPSERT KEYS(timestamp);
 
@@ -12,20 +14,23 @@ INSERT INTO DUKASCOPY_6374_OHLC_1S
 SELECT cast(timestamp AS TIMESTAMP), first((b+a)/2), max((b+a)/2), min((b+a)/2), last((b+a)/2)
 FROM DUKASCOPY_6374_OHLC;
 
-SELECT * FROM DUKASCOPY_6374_OHLC_1S order by timestamp desc;
+SELECT * FROM DUKASCOPY_6374_OHLC_1S  order by timestamp asc limit 100;
+SELECT count(*) FROM DUKASCOPY_6374_OHLC_1S;
+
+SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_6374_OHLC_1S;
 
 
-
-*** Materialized views - Downsampling
-
-SELECT * FROM DUKASCOPY_6374_OHLC order by ts asc;
-
-SELECT * FROM DUKASCOPY_6374_OHLC_1S order by timestamp asc;
-
-SELECT * FROM DUKASCOPY_6374_OHLC_10S order by timestamp asc;
+        SELECT timestamp, open, high, low, close 
+        FROM DUKASCOPY_6374_OHLC_2M
+        WHERE timestamp >= '2025-01-01'
+        ORDER BY timestamp ASC;
 
 
--- Materialized views
+        SELECT timestamp, open, high, low, close 
+        FROM DUKASCOPY_6374_OHLC_10S
+        WHERE timestamp >= '2025-01-01'
+        ORDER BY timestamp ASC;
 
 DROP MATERIALIZED VIEW DUKASCOPY_6374_OHLC_10S;
 CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_10S
@@ -34,6 +39,7 @@ WITH BASE DUKASCOPY_6374_OHLC_1S REFRESH IMMEDIATE AS
 FROM DUKASCOPY_6374_OHLC_1S
 SAMPLE BY 10s);
 SELECT count(*) from DUKASCOPY_6374_OHLC_10S;
+SELECT * from DUKASCOPY_6374_OHLC_10S;
 
 DROP MATERIALIZED VIEW DUKASCOPY_6374_OHLC_1M;
 CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_1M
@@ -52,6 +58,15 @@ SAMPLE BY 2m);
 SELECT count(*) from DUKASCOPY_6374_OHLC_2M;
 SELECT * FROM DUKASCOPY_6374_OHLC_2M order by timestamp asc;
 
+DROP MATERIALIZED VIEW DUKASCOPY_6374_OHLC_3M;
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_3M
+WITH BASE DUKASCOPY_6374_OHLC_1S REFRESH IMMEDIATE AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_6374_OHLC_1S
+SAMPLE BY 3m);
+SELECT count(*) from DUKASCOPY_6374_OHLC_3M;
+SELECT * FROM DUKASCOPY_6374_OHLC_3M order by timestamp asc limit 100;
+
 DROP MATERIALIZED VIEW DUKASCOPY_6374_OHLC_4M;
 CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_4M
 WITH BASE DUKASCOPY_6374_OHLC_1S REFRESH IMMEDIATE AS
@@ -59,6 +74,14 @@ WITH BASE DUKASCOPY_6374_OHLC_1S REFRESH IMMEDIATE AS
 FROM DUKASCOPY_6374_OHLC_1S
 SAMPLE BY 4m);
 SELECT count(*) from DUKASCOPY_6374_OHLC_4M;
+
+DROP MATERIALIZED VIEW DUKASCOPY_6374_OHLC_5M;
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_5M
+WITH BASE DUKASCOPY_6374_OHLC_1S REFRESH IMMEDIATE AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_6374_OHLC_1S
+SAMPLE BY 5m);
+SELECT count(*) from DUKASCOPY_6374_OHLC_5M;
 
 DROP MATERIALIZED VIEW DUKASCOPY_6374_OHLC_10M;
 CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_10M
@@ -84,6 +107,14 @@ FROM DUKASCOPY_6374_OHLC_1S
 SAMPLE BY 20m);
 SELECT count(*) from DUKASCOPY_6374_OHLC_20M;
 
+DROP MATERIALIZED VIEW DUKASCOPY_6374_OHLC_30M;
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_30M
+WITH BASE DUKASCOPY_6374_OHLC_1S REFRESH IMMEDIATE AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_6374_OHLC_1S
+SAMPLE BY 30m);
+SELECT count(*) from DUKASCOPY_6374_OHLC_30M;
+
 DROP MATERIALIZED VIEW DUKASCOPY_6374_OHLC_1H;
 CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_1H
 WITH BASE DUKASCOPY_6374_OHLC_1S REFRESH IMMEDIATE AS
@@ -108,6 +139,7 @@ FROM DUKASCOPY_6374_OHLC_1S
 SAMPLE BY 4h);
 SELECT count(*) from DUKASCOPY_6374_OHLC_4H;
 
+
 DROP MATERIALIZED VIEW DUKASCOPY_6374_OHLC_1D;
 CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_1D
 WITH BASE DUKASCOPY_6374_OHLC_1S REFRESH IMMEDIATE AS
@@ -115,4 +147,55 @@ WITH BASE DUKASCOPY_6374_OHLC_1S REFRESH IMMEDIATE AS
 FROM DUKASCOPY_6374_OHLC_1S
 SAMPLE BY 1d);
 SELECT count(*) from DUKASCOPY_6374_OHLC_1D;
+
+
+
+SELECT a.timestamp,a.open,a.high,a.low,a.close,b.timestamp FROM DUKASCOPY_6374_OHLC_5M a
+JOIN (SELECT timestamp from DUKASCOPY_16917_OHLC_10S
+WHERE high>a.open*1.01 or low<a.open*0.99 LIMIT 1) b
+ON a.timestamp<=b.timestamp;
+
+SELECT a.timestamp,a.open,a.high,a.low,a.close,b.timestamp FROM DUKASCOPY_6374_OHLC_5M a
+JOIN (SELECT timestamp FROM DUKASCOPY_16917_OHLC_10S WHERE a.timestamp<=b.timestamp AND (b.high<=a.open*1.01 OR b.low>=a.open*0.99) LIMIT 1) AS b;
+
+SELECT a.timestamp,a.open,a.high,a.low,a.close,b.timestamp FROM DUKASCOPY_6374_OHLC_5M a
+LEFT JOIN (SELECT timestamp FROM DUKASCOPY_16917_OHLC_10S WHERE (high <= a.open*1.01 OR low >= a.open*0.99) LIMIT 1) AS b
+ON a.timestamp<=b.timestamp;
+
+WITH T1 AS
+(SELECT timestamp,open,high,low,close FROM DUKASCOPY_6374_OHLC_5M)        
+SELECT * FROM T1 LEFT JOIN
+(SELECT timestamp FROM DUKASCOPY_16917_OHLC_10S
+WHERE (T1.high <= T2.open*1.01 OR T1.low >= T2.open*0.99) LIMIT 1)
+ON a.timestamp<=b.timestamp;
+
+
+--- export to parquet
+
+-- COPY (SELECT * FROM DUKASCOPY_6374_OHLC_10S WHERE year(timestamp)>=2021) TO 'DUKASCOPY_6374_OHLC_10S' WITH FORMAT PARQUET;
+-- COPY (SELECT * FROM DUKASCOPY_6374_OHLC_1M WHERE year(timestamp)>=2021) TO 'DUKASCOPY_6374_OHLC_1M' WITH FORMAT PARQUET;
+-- COPY (SELECT * FROM DUKASCOPY_6374_OHLC_2M WHERE year(timestamp)>=2021) TO 'DUKASCOPY_6374_OHLC_2M' WITH FORMAT PARQUET;
+-- COPY (SELECT * FROM DUKASCOPY_6374_OHLC_5M WHERE year(timestamp)>=2021) TO 'DUKASCOPY_6374_OHLC_5M' WITH FORMAT PARQUET;
+-- COPY (SELECT * FROM DUKASCOPY_6374_OHLC_10M WHERE year(timestamp)>=2021) TO 'DUKASCOPY_6374_OHLC_10M' WITH FORMAT PARQUET;
+-- COPY (SELECT * FROM DUKASCOPY_6374_OHLC_15M WHERE year(timestamp)>=2021) TO 'DUKASCOPY_6374_OHLC_15M' WITH FORMAT PARQUET;
+-- COPY (SELECT * FROM DUKASCOPY_6374_OHLC_30M WHERE year(timestamp)>=2021) TO 'DUKASCOPY_6374_OHLC_30M' WITH FORMAT PARQUET;
+-- COPY (SELECT * FROM DUKASCOPY_6374_OHLC_1H WHERE year(timestamp)>=2021) TO 'DUKASCOPY_6374_OHLC_1H' WITH FORMAT PARQUET;
+
+COPY (SELECT cast(timestamp AS long)/1000L date, open, high, low, close, 1 as 'volume' FROM DUKASCOPY_6374_OHLC_10S WHERE year(timestamp)>=2020) TO 'DAX40_USDT_USDT-10s-futures' WITH FORMAT PARQUET;
+COPY (SELECT cast(timestamp AS long)/1000L date, open, high, low, close, 1 as 'volume' FROM DUKASCOPY_6374_OHLC_1M WHERE year(timestamp)>=2020) TO 'DAX40_USDT_USDT-1m-futures' WITH FORMAT PARQUET;
+COPY (SELECT cast(timestamp AS long)/1000L date, open, high, low, close, 1 as 'volume' FROM DUKASCOPY_6374_OHLC_2M WHERE year(timestamp)>=2020) TO 'DAX40_USDT_USDT-2m-futures' WITH FORMAT PARQUET;
+COPY (SELECT cast(timestamp AS long)/1000L date, open, high, low, close, 1 as 'volume' FROM DUKASCOPY_6374_OHLC_3M WHERE year(timestamp)>=2020) TO 'DAX40_USDT_USDT-3m-futures' WITH FORMAT PARQUET;
+COPY (SELECT cast(timestamp AS long)/1000L date, open, high, low, close, 1 as 'volume' FROM DUKASCOPY_6374_OHLC_4M WHERE year(timestamp)>=2020) TO 'DAX40_USDT_USDT-4m-futures' WITH FORMAT PARQUET;
+COPY (SELECT cast(timestamp AS long)/1000L date, open, high, low, close, 1 as 'volume' FROM DUKASCOPY_6374_OHLC_5M WHERE year(timestamp)>=2020) TO 'DAX40_USDT_USDT-5m-futures' WITH FORMAT PARQUET;
+COPY (SELECT cast(timestamp AS long)/1000L date, open, high, low, close, 1 as 'volume' FROM DUKASCOPY_6374_OHLC_10M WHERE year(timestamp)>=2020) TO 'DAX40_USDT_USDT-10m-futures' WITH FORMAT PARQUET;
+COPY (SELECT cast(timestamp AS long)/1000L date, open, high, low, close, 1 as 'volume' FROM DUKASCOPY_6374_OHLC_15M WHERE year(timestamp)>=2020) TO 'DAX40_USDT_USDT-15m-futures' WITH FORMAT PARQUET;
+COPY (SELECT cast(timestamp AS long)/1000L date, open, high, low, close, 1 as 'volume' FROM DUKASCOPY_6374_OHLC_20M WHERE year(timestamp)>=2020) TO 'DAX40_USDT_USDT-20m-futures' WITH FORMAT PARQUET;
+COPY (SELECT cast(timestamp AS long)/1000L date, open, high, low, close, 1 as 'volume' FROM DUKASCOPY_6374_OHLC_30M WHERE year(timestamp)>=2020) TO 'DAX40_USDT_USDT-30m-futures' WITH FORMAT PARQUET;
+COPY (SELECT cast(timestamp AS long)/1000L date, open, high, low, close, 1 as 'volume' FROM DUKASCOPY_6374_OHLC_1H WHERE year(timestamp)>=2020) TO 'DAX40_USDT_USDT-1h-futures' WITH FORMAT PARQUET;
+COPY (SELECT cast(timestamp AS long)/1000L date, open, high, low, close, 1 as 'volume' FROM DUKASCOPY_6374_OHLC_2H WHERE year(timestamp)>=2020) TO 'DAX40_USDT_USDT-2h-futures' WITH FORMAT PARQUET;
+COPY (SELECT cast(timestamp AS long)/1000L date, open, high, low, close, 1 as 'volume' FROM DUKASCOPY_6374_OHLC_4H WHERE year(timestamp)>=2020) TO 'DAX40_USDT_USDT-4h-futures' WITH FORMAT PARQUET;
+COPY (SELECT cast(timestamp AS long)/1000L date, open, high, low, close, 1 as 'volume' FROM DUKASCOPY_6374_OHLC_1D WHERE year(timestamp)>=2020) TO 'DAX40_USDT_USDT-1d-futures' WITH FORMAT PARQUET;
+
+-- COPY (SELECT cast(timestamp AS long)/1000L date, 0.000001 as 'open', 0 as 'high', 0 as 'low', 0 as 'close', 0 as 'volume' FROM DUKASCOPY_6374_OHLC_1H WHERE year(timestamp)>=2020) TO 'DAX40_USDT_USDT-1h-funding_rate' WITH FORMAT PARQUET;
+-- COPY (SELECT cast(timestamp AS long)/1000L date, open, high, low, close, 0 as 'volume' FROM DUKASCOPY_6374_OHLC_1H WHERE year(timestamp)>=2020) TO 'DAX40_USDT_USDT-1h-mark' WITH FORMAT PARQUET;
 
