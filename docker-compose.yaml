@@ -146,7 +146,7 @@ services:
     hostname: questdb
     ports:
       - "127.0.0.1:8812:8812"
-      - "127.0.0.1:9000:9000"
+      - "0.0.0.0:9000:9000"
       - "127.0.0.1:9009:9009"
       - "127.0.0.1:9003:9003"
 #    extra_hosts:
@@ -332,6 +332,30 @@ services:
     networks:
       - marketbroker_net
     profiles: [prop-trade-bundle,infra,sdk]
+
+  mitmproxy:
+      image: mitmproxy/mitmproxy:12.2.1
+      ports:
+          - 0.0.0.0:1080:8080
+          # - 1081:8081
+      volumes:
+          - ./docker/mitmproxy/config:/home/mitmproxy/config
+          - ./docker/mitmproxy/.mitmproxy:/home/mitmproxy/.mitmproxy
+      working_dir: /home/mitmproxy
+      command: mitmdump -s ./config/request_update.py --flow-detail 2
+      restart: unless-stopped
+      # environment:
+      #     - MITMPROXY_CONFIG_FILE=/home/mitmproxy/config/config.json
+      networks:
+        - marketbroker_net
+      profiles: [infra, sdk]
+      healthcheck:
+          test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+          interval: 30s
+          timeout: 10s
+          retries: 3
+          start_period: 20s
+
 
   jupyter-notebook:
     image: quay.io/jupyter/tensorflow-notebook:tensorflow-2.16.1

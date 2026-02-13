@@ -1,0 +1,78 @@
+{
+    "NQ100/USDT:USDT": [
+    {
+      "tier": 1.0,
+      "symbol": "NQ/USDT:USDT",
+      "currency": "USDT",
+      "minNotional": 0.0,
+      "maxNotional": 1000000.0,
+      "maintenanceMarginRate": 0.005,
+      "maxLeverage": 1.0,
+      "info": {
+        "bracket": "1",
+        "initialLeverage": "1",
+        "notionalCap": "1000000",
+        "notionalFloor": "0",
+        "maintMarginRatio": "0.005",
+        "cum": "0.0"
+      }
+    }
+  ],
+  "DAX40/USDT:USDT": [
+    {
+      "tier": 1.0,
+      "symbol": "DAX40/USDT:USDT",
+      "currency": "USDT",
+      "minNotional": 0.0,
+      "maxNotional": 1000000.0,
+      "maintenanceMarginRate": 0.005,
+      "maxLeverage": 1.0,
+      "info": {
+        "bracket": "1",
+        "initialLeverage": "1",
+        "notionalCap": "1000000",
+        "notionalFloor": "0",
+        "maintMarginRatio": "0.005",
+        "cum": "0.0"
+      }
+    }
+  ],
+  "SP500/USDT:USDT": [
+    {
+      "tier": 1.0,
+      "symbol": "SP500/USDT:USDT",
+      "currency": "USDT",
+      "minNotional": 0.0,
+      "maxNotional": 1000000.0,
+      "maintenanceMarginRate": 0.005,
+      "maxLeverage": 1.0,
+      "info": {
+        "bracket": "1",
+        "initialLeverage": "1",
+        "notionalCap": "1000000",
+        "notionalFloor": "0",
+        "maintMarginRatio": "0.005",
+        "cum": "0.0"
+      }
+    }
+  ],
+  "WIG20/USDT:USDT": [
+    {
+      "tier": 1.0,
+      "symbol": "NQ/USDT:USDT",
+      "currency": "USDT",
+      "minNotional": 0.0,
+      "maxNotional": 1000000.0,
+      "maintenanceMarginRate": 0.005,
+      "maxLeverage": 1.0,
+      "info": {
+        "bracket": "1",
+        "initialLeverage": "1",
+        "notionalCap": "1000000",
+        "notionalFloor": "0",
+        "maintMarginRatio": "0.005",
+        "cum": "0.0"
+      }
+    }
+  ]
+}

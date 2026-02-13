@@ -1,0 +1,337 @@
+[{
+    "symbol": "NQ100USDT",
+    "pair": "NQ100USDT",
+    "contractType": "PERPETUAL",
+    "deliveryDate": 4133404800000,
+    "onboardDate": 1569398400000,
+    "status": "TRADING",
+    "maintMarginPercent": "2.5000",
+    "requiredMarginPercent": "5.0000",
+    "baseAsset": "NQ100",
+    "quoteAsset": "USDT",
+    "marginAsset": "USDT",
+    "pricePrecision": 4,
+    "quantityPrecision": 1,
+    "baseAssetPrecision": 8,
+    "quotePrecision": 8,
+    "underlyingType": "COIN",
+    "underlyingSubType": [
+        "DeFi"
+    ],
+    "triggerProtect": "0.1000",
+    "liquidationFee": "0.015000",
+    "marketTakeBound": "0.10",
+    "maxMoveOrderLimit": 10000,
+    "filters": [
+        {
+            "minPrice": "0.0001",
+            "maxPrice": "100000",
+            "filterType": "PRICE_FILTER",
+            "tickSize": "0.0001"
+        },
+        {
+            "maxQty": "1000",
+            "filterType": "LOT_SIZE",
+            "minQty": "0.1",
+            "stepSize": "0.1"
+        },
+        {
+            "filterType": "MARKET_LOT_SIZE",
+            "maxQty": "1000",
+            "minQty": "0.1",
+            "stepSize": "0.1"
+        },
+        {
+            "filterType": "MAX_NUM_ORDERS",
+            "limit": 200
+        },
+        {
+            "filterType": "MIN_NOTIONAL",
+            "notional": "5"
+        },
+        {
+            "filterType": "PERCENT_PRICE",
+            "multiplierDecimal": "4",
+            "multiplierDown": "0.9000",
+            "multiplierUp": "1.1000"
+        },
+        {
+            "positionControlSide": "NONE",
+            "filterType": "POSITION_RISK_CONTROL"
+        }
+    ],
+    "orderTypes": [
+        "LIMIT",
+        "MARKET",
+        "STOP",
+        "STOP_MARKET",
+        "TAKE_PROFIT",
+        "TAKE_PROFIT_MARKET",
+        "TRAILING_STOP_MARKET"
+    ],
+    "timeInForce": [
+        "GTC",
+        "IOC",
+        "FOK",
+        "GTX",
+        "GTD"
+    ],
+    "permissionSets": [
+        "GRID",
+        "COPY",
+        "DCA"
+    ]
+},
+{
+    "symbol": "DAX40USDT",
+    "pair": "DAX40USDT",
+    "contractType": "PERPETUAL",
+    "deliveryDate": 4133404800000,
+    "onboardDate": 1569398400000,
+    "status": "TRADING",
+    "maintMarginPercent": "2.5000",
+    "requiredMarginPercent": "5.0000",
+    "baseAsset": "DAX40",
+    "quoteAsset": "USDT",
+    "marginAsset": "USDT",
+    "pricePrecision": 4,
+    "quantityPrecision": 1,
+    "baseAssetPrecision": 8,
+    "quotePrecision": 8,
+    "underlyingType": "COIN",
+    "underlyingSubType": [
+        "DeFi"
+    ],
+    "triggerProtect": "0.1000",
+    "liquidationFee": "0.015000",
+    "marketTakeBound": "0.10",
+    "maxMoveOrderLimit": 10000,
+    "filters": [
+        {
+            "minPrice": "0.0001",
+            "maxPrice": "100000",
+            "filterType": "PRICE_FILTER",
+            "tickSize": "0.0001"
+        },
+        {
+            "maxQty": "1000",
+            "filterType": "LOT_SIZE",
+            "minQty": "0.1",
+            "stepSize": "0.1"
+        },
+        {
+            "filterType": "MARKET_LOT_SIZE",
+            "maxQty": "1000",
+            "minQty": "0.1",
+            "stepSize": "0.1"
+        },
+        {
+            "filterType": "MAX_NUM_ORDERS",
+            "limit": 200
+        },
+        {
+            "filterType": "MIN_NOTIONAL",
+            "notional": "5"
+        },
+        {
+            "filterType": "PERCENT_PRICE",
+            "multiplierDecimal": "4",
+            "multiplierDown": "0.9000",
+            "multiplierUp": "1.1000"
+        },
+        {
+            "positionControlSide": "NONE",
+            "filterType": "POSITION_RISK_CONTROL"
+        }
+    ],
+    "orderTypes": [
+        "LIMIT",
+        "MARKET",
+        "STOP",
+        "STOP_MARKET",
+        "TAKE_PROFIT",
+        "TAKE_PROFIT_MARKET",
+        "TRAILING_STOP_MARKET"
+    ],
+    "timeInForce": [
+        "GTC",
+        "IOC",
+        "FOK",
+        "GTX",
+        "GTD"
+    ],
+    "permissionSets": [
+        "GRID",
+        "COPY",
+        "DCA"
+    ]
+},
+{
+    "symbol": "SP500USDT",
+    "pair": "SP500USDT",
+    "contractType": "PERPETUAL",
+    "deliveryDate": 4133404800000,
+    "onboardDate": 1569398400000,
+    "status": "TRADING",
+    "maintMarginPercent": "2.5000",
+    "requiredMarginPercent": "5.0000",
+    "baseAsset": "SP500",
+    "quoteAsset": "USDT",
+    "marginAsset": "USDT",
+    "pricePrecision": 4,
+    "quantityPrecision": 1,
+    "baseAssetPrecision": 8,
+    "quotePrecision": 8,
+    "underlyingType": "COIN",
+    "underlyingSubType": [
+        "DeFi"
+    ],
+    "triggerProtect": "0.1000",
+    "liquidationFee": "0.015000",
+    "marketTakeBound": "0.10",
+    "maxMoveOrderLimit": 10000,
+    "filters": [
+        {
+            "minPrice": "0.0001",
+            "maxPrice": "100000",
+            "filterType": "PRICE_FILTER",
+            "tickSize": "0.0001"
+        },
+        {
+            "maxQty": "1000",
+            "filterType": "LOT_SIZE",
+            "minQty": "0.1",
+            "stepSize": "0.1"
+        },
+        {
+            "filterType": "MARKET_LOT_SIZE",
+            "maxQty": "1000",
+            "minQty": "0.1",
+            "stepSize": "0.1"
+        },
+        {
+            "filterType": "MAX_NUM_ORDERS",
+            "limit": 200
+        },
+        {
+            "filterType": "MIN_NOTIONAL",
+            "notional": "5"
+        },
+        {
+            "filterType": "PERCENT_PRICE",
+            "multiplierDecimal": "4",
+            "multiplierDown": "0.9000",
+            "multiplierUp": "1.1000"
+        },
+        {
+            "positionControlSide": "NONE",
+            "filterType": "POSITION_RISK_CONTROL"
+        }
+    ],
+    "orderTypes": [
+        "LIMIT",
+        "MARKET",
+        "STOP",
+        "STOP_MARKET",
+        "TAKE_PROFIT",
+        "TAKE_PROFIT_MARKET",
+        "TRAILING_STOP_MARKET"
+    ],
+    "timeInForce": [
+        "GTC",
+        "IOC",
+        "FOK",
+        "GTX",
+        "GTD"
+    ],
+    "permissionSets": [
+        "GRID",
+        "COPY",
+        "DCA"
+    ]
+},
+{
+    "symbol": "WIG20USDT",
+    "pair": "WIG20USDT",
+    "contractType": "PERPETUAL",
+    "deliveryDate": 4133404800000,
+    "onboardDate": 1569398400000,
+    "status": "TRADING",
+    "maintMarginPercent": "2.5000",
+    "requiredMarginPercent": "5.0000",
+    "baseAsset": "WIG20",
+    "quoteAsset": "USDT",
+    "marginAsset": "USDT",
+    "pricePrecision": 4,
+    "quantityPrecision": 1,
+    "baseAssetPrecision": 8,
+    "quotePrecision": 8,
+    "underlyingType": "COIN",
+    "underlyingSubType": [
+        "DeFi"
+    ],
+    "triggerProtect": "0.1000",
+    "liquidationFee": "0.015000",
+    "marketTakeBound": "0.10",
+    "maxMoveOrderLimit": 10000,
+    "filters": [
+        {
+            "minPrice": "0.0001",
+            "maxPrice": "100000",
+            "filterType": "PRICE_FILTER",
+            "tickSize": "0.0001"
+        },
+        {
+            "maxQty": "1000",
+            "filterType": "LOT_SIZE",
+            "minQty": "0.1",
+            "stepSize": "0.1"
+        },
+        {
+            "filterType": "MARKET_LOT_SIZE",
+            "maxQty": "1000",
+            "minQty": "0.1",
+            "stepSize": "0.1"
+        },
+        {
+            "filterType": "MAX_NUM_ORDERS",
+            "limit": 200
+        },
+        {
+            "filterType": "MIN_NOTIONAL",
+            "notional": "5"
+        },
+        {
+            "filterType": "PERCENT_PRICE",
+            "multiplierDecimal": "4",
+            "multiplierDown": "0.9000",
+            "multiplierUp": "1.1000"
+        },
+        {
+            "positionControlSide": "NONE",
+            "filterType": "POSITION_RISK_CONTROL"
+        }
+    ],
+    "orderTypes": [
+        "LIMIT",
+        "MARKET",
+        "STOP",
+        "STOP_MARKET",
+        "TAKE_PROFIT",
+        "TAKE_PROFIT_MARKET",
+        "TRAILING_STOP_MARKET"
+    ],
+    "timeInForce": [
+        "GTC",
+        "IOC",
+        "FOK",
+        "GTX",
+        "GTD"
+    ],
+    "permissionSets": [
+        "GRID",
+        "COPY",
+        "DCA"
+    ]
+}
+]

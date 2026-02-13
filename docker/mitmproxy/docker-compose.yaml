@@ -1,0 +1,19 @@
+services: 
+    mitmproxy:
+        image: mitmproxy/mitmproxy:12.2.1
+        ports: 
+            - 0.0.0.0:1080:8080
+        volumes:
+            - ./config:/home/mitmproxy/config
+            - ./.mitmproxy:/home/mitmproxy/.mitmproxy
+        working_dir: /home/mitmproxy
+        command: mitmdump -s ./config/request_update.py --flow-detail 2
+        restart: unless-stopped
+        # environment:
+        #     - MITMPROXY_CONFIG_FILE=/home/mitmproxy/config/config.json
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 20s
