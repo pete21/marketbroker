@@ -35,7 +35,7 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install git+https://github.co
 
 #RUN --mount=type=cache,target=/root/.cache/pip pip install git+https://github.com/AI4Finance-LLC/ElegantRL.git
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install box2d stable-baselines3[extra] sb3-contrib ray[rllib] ray[default] rl_zoo3 dm-tree
+RUN --mount=type=cache,target=/root/.cache/pip pip install box2d stable-baselines3[extra] sb3-contrib ray[rllib] ray[default] rl_zoo3 dm-tree finrl-trading
 
 # RUN --mount=type=cache,target=/root/.cache/pip pip install mpi4py
 RUN --mount=type=cache,target=/root/.cache/pip pip install gymnasium yfinance gym shimmy pygame panda_gym
@@ -65,10 +65,10 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install questdb psycopg[binar
 RUN --mount=type=cache,target=/root/.cache/pip pip install openai langchain stockstats pyfolio-reloaded quantstats wrds pyportfolioopt
 RUN --mount=type=cache,target=/root/.cache/pip pip install bottleneck --upgrade
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install boto3 missingno finplot statsmodels graphviz stldecompose smartmoneyconcepts hurst quantreo mplfinance functools backtesting oipd
+RUN --mount=type=cache,target=/root/.cache/pip pip install boto3 missingno finplot statsmodels graphviz stldecompose smartmoneyconcepts hurst quantreo mplfinance backtesting oipd
 RUN --mount=type=cache,target=/root/.cache/pip pip install pandas-market-calendars IProgress empyrical-reloaded ipyparallel jupyter-ai langchain-ollama pandas-datareader
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install einops PyWavelets sympy scipy pykalman alphalens-reloaded #pywavelet
+RUN --mount=type=cache,target=/root/.cache/pip pip install einops PyWavelets sympy scipy pykalman alphalens-reloaded #pywavelet functools
 
 RUN mkdir /home/jovyan/.aws
 COPY credentials ./.aws/
