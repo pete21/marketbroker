@@ -26,8 +26,9 @@ import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 
-private const val USER_AUTH =
-    "{\"realm\":\"Username-Password-Authentication\",\"client_id\":\"eeXrVwSMXPZ4pJpwStuNyiUa7XxGZRX9\",\"scope\":\"openid\",\"grant_type\":\"http://auth0.com/oauth/grant-type/password-realm\",\"username\":\"%s\",\"password\":\"%s\"}"
+private const val USER_AUTH = "{\"username\":\"%s\",\"password\":\"%s\"}"
+
+private const val ACCOUNT_ID = "{\"account_id\":%d}"
 
 private const val ACCESS_CONTROL_REQUEST_METHOD = "access-control-request-method"
 
@@ -51,8 +52,7 @@ class TD365SessionService(
     private var sessionState: Int = 0
     private var liveLogin: Boolean = false
 
-    private var login : String = ""
-//    private var password : String = ""
+//    private var login : String = ""
     private var ots : String = ""
     private var token : String = ""
     private var jwt : Jwt? = null
@@ -73,47 +73,46 @@ class TD365SessionService(
         }
     }
 
-    fun demoSessionStart(): Boolean {
-        if (liveLogin) {
-            log.warn("Logged in to live account, log out first before starting demo session")
-            return false
-        }
-        if (sessionState==1) {
-            log.warn("Demo Session already started")
-            return false
-        }
-        httpAdapter.baseUrl = td365ConfigurationProperties.demobaseurl
-        httpAdapter.defaultHeaders = RequestHeaders(td365ConfigurationProperties.demoHeaders)
-
-        val pair = httpAdapter.getRequestRedirects(td365ConfigurationProperties.demolink, redirectHeaders)
-        setValues(pair)
-
-        val queryParams = pair.first[0].split("?")[1].split("&")
-        log.info("queryParams: $queryParams")
-        login = queryParams[0].split("=")[1]
-        log.info("login: $login")
-
-        if (websocketService.connect(login, token, td365ConfigurationProperties.demowebsocketserver)) {
-            sessionState = 1
-            return true
-        }
-        return false
-    }
+//    fun demoSessionStart(): Boolean {
+//        if (liveLogin) {
+//            log.warn("Logged in to live account, log out first before starting demo session")
+//            return false
+//        }
+//        if (sessionState==1) {
+//            log.warn("Demo Session already started")
+//            return false
+//        }
+//        httpAdapter.baseUrl = td365ConfigurationProperties.demobaseurl
+//        httpAdapter.defaultHeaders = RequestHeaders(td365ConfigurationProperties.demoHeaders)
+//
+//        val pair = httpAdapter.getRequestRedirects(td365ConfigurationProperties.demolink, redirectHeaders)
+//        setValues(pair)
+//
+//        val queryParams = pair.first[0].split("?")[1].split("&")
+//        log.info("queryParams: $queryParams")
+//        login = queryParams[0].split("=")[1]
+//        log.info("login: $login")
+//
+//        if (websocketService.connect(login, token, td365ConfigurationProperties.demowebsocketserver)) {
+//            sessionState = 1
+//            return true
+//        }
+//        return false
+//    }
 
     fun liveLogin(): Boolean {
         if (sessionState==1) {
             log.warn("liveLogin: Session already started")
             return false
         }
-        httpAdapter.baseUrl = td365ConfigurationProperties.prodbaseurl
         httpAdapter.defaultHeaders = RequestHeaders(td365ConfigurationProperties.prodHeaders)
-
         if (!tokenAuthentication()) {
             return false
         }
         loginHeaders.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwt!!.access_token)
+        httpAdapter.baseUrl = td365ConfigurationProperties.prodbaseurl
 
-        liveLogin = login() && accounts()
+        liveLogin = accounts()
 
         applicationEventPublisher.publishEvent(SessionClosedEvent())            //clear session (subscriptions, kafka-connectors, ...)
 
@@ -137,21 +136,23 @@ class TD365SessionService(
         log.info("Handling WebsocketDisconnectedEvent")
         if (sessionState==1) {
 
-            val account = liveAccounts!!.results.first { it.id == selectedAccountId }
+            val account = liveAccounts!!.app_metadata?.trading_accounts?.first { it?.id == selectedAccountId }
+            checkNotNull(account) {"Account not found"}
+
             val launchUrl = getUrl(selectedAccountId)
 
             val pair = httpAdapter.getRequestRedirects(launchUrl, redirectHeaders)
             setValues(pair)
 
             val websocketServer =
-                if (account.accountType == "DEMO") {
+                if (account.type == "Demo") {
                     td365ConfigurationProperties.demowebsocketserver
                 } else {
                     td365ConfigurationProperties.prodwebsocketserver
                 }
 
-            checkNotNull(account.ctLoginId) { "ctLoginId is null, check if account is active and can be logged in" }
-            if (!websocketService.connect(account.ctLoginId!!, token, websocketServer)) {
+            checkNotNull(account.ct_login_id) { "ct_login_id is null, check if account is active and can be logged in" }
+            if (!websocketService.connect(account.ct_login_id!!, token, websocketServer)) {
                 sessionState = 0
             }
             subscriptionsService.renewSubscriptions()
@@ -167,12 +168,14 @@ class TD365SessionService(
             log.error("liveSessionStart: Session already started")
             return false
         }
-        val account = liveAccounts!!.results.first {it.id==accountId}
+        val account = liveAccounts!!.app_metadata?.trading_accounts?.first { it?.id == accountId }
+        checkNotNull(account) {"Account not found"}
+
         val launchUrl = getUrl(accountId)
         selectedAccountId = accountId
 
         val websocketServer: String
-        if (account.accountType=="DEMO") {
+        if (account.type =="Demo") {
             httpAdapter.baseUrl = td365ConfigurationProperties.demobaseurl
             httpAdapter.defaultHeaders = RequestHeaders(td365ConfigurationProperties.demoHeaders)
             websocketServer = td365ConfigurationProperties.demowebsocketserver
@@ -185,8 +188,8 @@ class TD365SessionService(
         val pair = httpAdapter.getRequestRedirects(launchUrl, redirectHeaders)
         setValues(pair)
 
-        checkNotNull(account.ctLoginId) {"ctLoginId is null, check if account is active and can be logged in"}
-        if (websocketService.connect(account.ctLoginId!!, token, websocketServer)) {
+        checkNotNull(account.ct_login_id) {"ct_login_id is null, check if account is active and can be logged in"}
+        if (websocketService.connect(account.ct_login_id!!, token, websocketServer)) {
             sessionState = 1
             return true
         }
@@ -194,8 +197,7 @@ class TD365SessionService(
     }
 
     private fun getUrl(accountId: Int): String {
-        val accountLink = String.format(td365ConfigurationProperties.prodlink, accountId)
-        httpAdapter.optionsRequest(accountLink, RequestHeaders(
+        httpAdapter.optionsRequest(td365ConfigurationProperties.loginlink, RequestHeaders(
                 loginHeaders, mapOf(
                     ACCESS_CONTROL_REQUEST_METHOD to "GET",
                     ACCESS_CONTROL_REQUEST_HEADERS to "authorization",
@@ -204,7 +206,7 @@ class TD365SessionService(
                 )
             )
         )
-        val httpResponse = httpAdapter.getRequest(accountLink, loginHeaders)
+        val httpResponse = httpAdapter.postRequest(td365ConfigurationProperties.loginlink, String.format(ACCOUNT_ID, accountId), loginHeaders)
         try {
             val redirectUrl: RedirectUrl = mapper.readValue(httpResponse.body)
             return redirectUrl.url
@@ -251,13 +253,8 @@ class TD365SessionService(
     }
 
     private fun tokenAuthentication(): Boolean {
-        httpAdapter.optionsRequest(td365ConfigurationProperties.authlink,
-                RequestHeaders(authHeaders, mapOf(
-                    ACCESS_CONTROL_REQUEST_METHOD to "POST",
-                    ACCESS_CONTROL_REQUEST_HEADERS to "content-type",
-                    HttpHeaders.CONTENT_TYPE to ""
-                )))
         val query = String.format(USER_AUTH, td365ConfigurationProperties.username, td365ConfigurationProperties.password)
+        log.debug("query: ${query}")
         val httpResponseDto = httpAdapter.postRequest(td365ConfigurationProperties.authlink, query, authHeaders)
         try {
             log.debug("Jwt: ${httpResponseDto.body}")
@@ -269,37 +266,21 @@ class TD365SessionService(
         return true
     }
 
-    private fun login(): Boolean {
-        httpAdapter.optionsRequest(
-            td365ConfigurationProperties.accountlink + "login/", RequestHeaders(
-                loginHeaders, mapOf(
-                    ACCESS_CONTROL_REQUEST_METHOD to "POST",
-                    ACCESS_CONTROL_REQUEST_HEADERS to "authorization,content-type",
-                    HttpHeaders.CONTENT_TYPE to "",
-                    HttpHeaders.AUTHORIZATION to ""
-                )
-            )
-        )
-        val httpResponse = httpAdapter.postRequest(
-            td365ConfigurationProperties.accountlink + "login/", "{}", loginHeaders
-        )
-        return httpResponse.statusCode == 200
-    }
-
     private fun accounts(): Boolean {
         httpAdapter.optionsRequest(
-            td365ConfigurationProperties.accountlink + "accounts/", RequestHeaders(
+            td365ConfigurationProperties.accountlink, RequestHeaders(
                 loginHeaders, mapOf(
                     ACCESS_CONTROL_REQUEST_METHOD to "GET",
-                    ACCESS_CONTROL_REQUEST_HEADERS to "authorization",
+                    ACCESS_CONTROL_REQUEST_HEADERS to "authorization,baggage,content-type,sentry-trace",
                     HttpHeaders.CONTENT_TYPE to "",
                     HttpHeaders.AUTHORIZATION to ""
                 )
             )
         )
         val httpResponse = httpAdapter.getRequest(
-            td365ConfigurationProperties.accountlink + "accounts/", loginHeaders
+            td365ConfigurationProperties.accountlink, loginHeaders
         )
+        log.debug(httpResponse.body)
         if (httpResponse.statusCode != 200) {
             return false
         }

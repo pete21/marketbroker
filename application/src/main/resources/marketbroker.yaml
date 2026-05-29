@@ -225,26 +225,6 @@ paths:
       description: Delete open order
       tags:
         - orders
-  /demo/session:
-    post:
-      summary: Demo session controller
-      operationId: demo-session
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResponseDTO'
-      description: Demo session
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SessionDTO'
-      tags:
-        - demo
   /instruments/groups:
     get:
       summary: Get Instrument groups
@@ -979,7 +959,6 @@ components:
         - equity
 tags:
   - name: account
-  - name: demo
   - name: instruments
   - name: kafka
   - name: live

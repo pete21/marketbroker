@@ -1,9 +1,8 @@
-FROM cschranz/gpu-jupyter:v1.8_cuda-12.5_ubuntu-22.04_python-only
+FROM cschranz/gpu-jupyter:v1.10_cuda-12.9_ubuntu-24.04_python-only
 
 # Use C.UTF-8 locale to avoid issues with ASCII encoding
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
-
 
 # --------------------------
 
@@ -80,6 +79,7 @@ COPY credentials ./.aws/
 
 ENV MLFLOW_TRACKING_URI=http://host.docker.internal:5000
 ENV MLFLOW_S3_ENDPOINT_URL=http://host.docker.internal:9900
+ENV JUPYTER_TOKEN=1234
 
 #ENV LD_LIBRARY=/usr/lib/x86_64-linux-gnu/
 

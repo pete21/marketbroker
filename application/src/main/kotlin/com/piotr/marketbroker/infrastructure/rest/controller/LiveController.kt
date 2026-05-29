@@ -44,9 +44,10 @@ class LiveController(
 
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     override fun getLiveAccounts(): ResponseEntity<List<LiveAccountDTO>> {
-        val accounts = td365SessionService.getAccounts()?.results?.map { LiveAccountDTO(
-            it.id, it.platform, it.account, it.accountType, it.currency,
-            it.balance.toFloat(), it.equity.toFloat(), it.ctLoginId, it.ctLoginPassword) }.orEmpty()
+        val accounts = td365SessionService.getAccounts()?.app_metadata?.trading_accounts?.map { LiveAccountDTO(
+            it?.id ?: 0, it?.platform ?:"", it?.account_id ?:"", it?.type ?:"", it?.currency ?: "",
+            it?.balance?.cash_balance?.toFloat() ?:0f, it?.balance?.total_equity?.toFloat() ?:0f,
+            it?.ct_login_id, it?.ct_login_password) }.orEmpty()
         return ResponseEntity<List<LiveAccountDTO>>(accounts, HttpStatus.OK)
     }
 

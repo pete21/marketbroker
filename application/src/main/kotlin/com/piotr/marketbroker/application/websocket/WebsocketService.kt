@@ -35,7 +35,7 @@ class WebsocketService(
             sessionState = true
         } catch (e: InterruptedException) {
             // TODO Auto-generated catch block
-            log.error("Websocket connect failed")
+            log.error("Websocket connect failed: ${e.message}")
             return false
         }
         return true
@@ -89,7 +89,7 @@ class WebsocketService(
         private const val UNSUBSCRIBE = "{\"quoteId\":%d,\"priceGrouping\":\"Sampled\",\"action\":\"unsubscribe\"}"
 
         private const val LOGIN =
-            "{\"action\":\"authentication\",\"loginId\":\"%s\",\"tradingAccountType\":\"SPREAD\",\"token\":\"%s\"}"
+            "{\"action\":\"authentication\",\"loginId\":\"%s\",\"tradingAccountType\":\"SPREAD\",\"token\":\"%s\",\"reason\": \"Connect\",\"clientVersion\": \"1.0.0.6\"}"
 
         private const val ACCOUNT_SUMMARY =
             "{\"data\":\"{\\\"SubscribeToAccountSummary\\\":true,\\\"SubscribeToAccountDetails\\\":true}\",\"action\":\"options\"}"

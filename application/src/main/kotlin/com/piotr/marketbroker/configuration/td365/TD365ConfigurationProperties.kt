@@ -4,9 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "td365")
 data class TD365ConfigurationProperties(
-    val demolink: String,
     val demobaseurl: String,
-    val prodlink: String,
     val prodbaseurl: String,
     val demoHeaders: Map<String, String>,
     val prodHeaders: Map<String, String>,
@@ -15,6 +13,7 @@ data class TD365ConfigurationProperties(
     val demowebsocketserver: String,
     val prodwebsocketserver: String,
     val authlink: String,
+    val loginlink: String,
     val accountlink: String,
     val sessionupdateinterval: Int = 90000,
     val accesstokenupdateinterval: Int = 36000000,            //86400
