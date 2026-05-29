@@ -391,13 +391,16 @@ services:
     profiles: [notebook]
 
   jupyter-lab:
-    image: ml_11:v1.8_cuda-12.5_ubuntu-22.04_extra
+    image: ml_11:v1.10_cuda-12.9_ubuntu-24.04
     build:
-      dockerfile: ./docker/ml/Dockerfile3
+      dockerfile: ./docker/ml/Dockerfile4
       context: .
     container_name: jupyter-lab
     volumes:
-      - ./notebooks:/opt/notebooks
+#      - ./notebooks:/opt/notebooks
+      - ./notebooks:/home/jovyan/notebooks
+      - ./ml_examples:/home/jovyan/examples
+
     ports:
       - "8888:8888"
 #    command: sh -c "pip install questdb psycopg[binary] psycopg2-binary kafka-python confluent-kafka \"confluent-kafka[avro]\" fastavro requests \
