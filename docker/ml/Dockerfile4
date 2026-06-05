@@ -51,7 +51,7 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install pyvirtualdisplay pyya
 #RUN python3 -mpip install -U scikit-learn
 RUN --mount=type=cache,target=/root/.cache/pip pip install matplotlib seaborn prophet ipympl polars polars_talib
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install pytest tox pyyaml dash flask flask_restful connexion requests
+RUN --mount=type=cache,target=/root/.cache/pip pip install pytest tox pyyaml dash flask flask_cors flask_restful connexion requests
 RUN --mount=type=cache,target=/root/.cache/pip pip install torch_geometric
 RUN --mount=type=cache,target=/root/.cache/pip pip install mlflow
 RUN --mount=type=cache,target=/root/.cache/pip pip install lightgbm mlxtend catboost xgboost sambo copulae feature-engine
@@ -68,7 +68,7 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install bottleneck --upgrade
 RUN --mount=type=cache,target=/root/.cache/pip pip install boto3 missingno finplot statsmodels graphviz stldecompose smartmoneyconcepts hurst quantreo mplfinance backtesting oipd
 RUN --mount=type=cache,target=/root/.cache/pip pip install pandas-market-calendars IProgress empyrical-reloaded ipyparallel jupyter-ai langchain-ollama pandas-datareader
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install einops PyWavelets sympy scipy pykalman alphalens-reloaded #pywavelet functools
+RUN --mount=type=cache,target=/root/.cache/pip pip install einops PyWavelets sympy scipy pykalman alphalens-reloaded dvc dvc[s3] joblib nltk wordcloud antropy #pywavelet functools
 
 RUN mkdir /home/jovyan/.aws
 COPY credentials ./.aws/

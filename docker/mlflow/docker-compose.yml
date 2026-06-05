@@ -32,7 +32,7 @@ services:
 
     db:
         restart: always
-        image: mysql/mysql-server:8.0.32-1.2.11-server
+        image: mysql:8.0.40-debian
         container_name: mlflow_db
         ports:
             - "3306:3306"
