@@ -58,7 +58,20 @@ services:
             - MLFLOW_S3_ENDPOINT_URL=http://minio:9900
             - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
             - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-        command: mlflow server --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE} --default-artifact-root s3://mlflow/ --host 0.0.0.0
+        command: mlflow server --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE} --default-artifact-root s3://mlflow/ --host 0.0.0.0 --port=5000
+
+    phpmyadmin:
+        image: phpmyadmin:5.2.3-apache
+        container_name: phpmyadmin
+        hostname: phpmyadmin
+        environment:
+          - PMA_HOST=db
+          - PMA_PORT=3306
+          - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+          - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+          - MYSQL_USER=${MYSQL_USER}
+        ports:
+          - "8082:80"
 
 volumes:
     mlflow_dbdata:

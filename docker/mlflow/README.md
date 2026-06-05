@@ -23,3 +23,12 @@ The MLflow tracking server is composed of 4 docker containers:
 * MinIO object storage server
 * MySQL database server
 
+
+### Note
+
+mlflow_server has a db migration problem. Run this:
+
+`sql
+UPDATE alembic_version SET version_num='1bd49d398cd23';
+`
+
