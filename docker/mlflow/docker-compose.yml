@@ -92,5 +92,5 @@ volumes:
 networks:
     mlflow_net:
         name: mlflow_network
-        external: true
+#        external: true
 
