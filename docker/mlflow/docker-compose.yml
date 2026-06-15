@@ -66,7 +66,7 @@ services:
             - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
             - MLFLOW_S3_IGNORE_TLS=true
             - MLFLOW_SERVER_ALLOWED_HOSTS="*"
-        command: mlflow server --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE} --default-artifact-root --allowed-hosts "*" s3://mlflow/ --host 0.0.0.0 --port=5000
+        command: mlflow server --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE} --default-artifact-root s3://mlflow/ --allowed-hosts "*" --host 0.0.0.0 --port=5000
 #        command: mlflow server --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE} --artifacts-destination s3://mlflow/ --serve-artifacts --host 0.0.0.0 --port=5000
         networks:
             - mlflow_net
