@@ -13,7 +13,7 @@ MinIO S3 is used as the artifact store and MySQL server is used as the backend s
 
 4. Access MLflow UI with http://localhost:5000
 
-5. Access MinIO UI with http://localhost:9000
+5. Access MinIO UI with http://localhost:9901
 
 ## Containerization
 

@@ -12,6 +12,8 @@ services:
             - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
         volumes:
             - mlflow_minio_data:/data
+        networks:
+            - mlflow_net
 
     mc:
         image: minio/mc:RELEASE.2025-08-13T08-35-41Z
@@ -29,6 +31,8 @@ services:
             "
         volumes:
             - ./wait-for-it.sh:/tmp/wait-for-it.sh
+        networks:
+            - mlflow_net
 
     db:
         restart: always
@@ -43,8 +47,10 @@ services:
             - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
         volumes:
             - mlflow_dbdata:/var/lib/mysql
+        networks:
+            - mlflow_net
 
-    web:
+    mlflow:
         restart: always
         build: ./mlflow
         image: mlflow_server
@@ -58,7 +64,11 @@ services:
             - MLFLOW_S3_ENDPOINT_URL=http://minio:9900
             - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
             - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+            - MLFLOW_S3_IGNORE_TLS=true
         command: mlflow server --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE} --default-artifact-root s3://mlflow/ --host 0.0.0.0 --port=5000
+#        command: mlflow server --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE} --artifacts-destination s3://mlflow/ --serve-artifacts --host 0.0.0.0 --port=5000
+        networks:
+            - mlflow_net
 
     phpmyadmin:
         image: phpmyadmin:5.2.3-apache
@@ -72,7 +82,13 @@ services:
           - MYSQL_USER=${MYSQL_USER}
         ports:
           - "8082:80"
+        networks:
+            - mlflow_net
 
 volumes:
     mlflow_dbdata:
     mlflow_minio_data:
+
+networks:
+    mlflow_net:
+        name: mlflow_network
