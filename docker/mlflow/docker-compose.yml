@@ -1,8 +1,9 @@
 services:
     minio:
+        hostname: minio
         restart: always
         image: minio/minio:RELEASE.2025-09-07T16-13-09Z
-        container_name: mlflow_s3
+        container_name: minio
         ports:
             - "9900:9900"
             - "9901:9901"
@@ -13,9 +14,11 @@ services:
         volumes:
             - mlflow_minio_data:/data
         networks:
-            - mlflow_net
+            - marketbroker_net
+        profiles: [mlflow_server_only,mlflow_all]
 
     mc:
+        hostname: mc
         image: minio/mc:RELEASE.2025-08-13T08-35-41Z
         depends_on:
             - minio
@@ -32,12 +35,14 @@ services:
         volumes:
             - ./wait-for-it.sh:/tmp/wait-for-it.sh
         networks:
-            - mlflow_net
+            - marketbroker_net
+        profiles: [mlflow_server_only,mlflow_all]
 
-    db:
+    mysql8:
+        hostname: mysql8
         restart: always
         image: mysql:8.0.40-debian
-        container_name: mlflow_db
+        container_name: mysql8
         ports:
             - "3306:3306"
         environment:
@@ -48,16 +53,18 @@ services:
         volumes:
             - mlflow_dbdata:/var/lib/mysql
         networks:
-            - mlflow_net
+            - marketbroker_net
+        profiles: [mlflow_all]
 
     mlflow:
+        hostname: mlflow
         restart: always
         build: ./mlflow
-        image: mlflow_server
-        container_name: mlflow_server
+        image: mlflow
+        container_name: mlflow
         depends_on:
             - mc
-            - db
+            - mysql8
         ports:
             - "5000:5000"
         environment:
@@ -66,17 +73,18 @@ services:
             - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
             - MLFLOW_S3_IGNORE_TLS=true
             - MLFLOW_SERVER_ALLOWED_HOSTS="*"
-        command: mlflow server --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE} --default-artifact-root s3://mlflow/ --allowed-hosts "*" --host 0.0.0.0 --port=5000
-#        command: mlflow server --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE} --artifacts-destination s3://mlflow/ --serve-artifacts --host 0.0.0.0 --port=5000
+        command: mlflow server --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql8:3306/${MYSQL_DATABASE} --default-artifact-root s3://mlflow/ --allowed-hosts "*" --host 0.0.0.0 --port=5000
+#        command: mlflow server --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql8:3306/${MYSQL_DATABASE} --artifacts-destination s3://mlflow/ --serve-artifacts --host 0.0.0.0 --port=5000
         networks:
-            - mlflow_net
+            - marketbroker_net
+        profiles: [mlflow_server_only,mlflow_all]
 
     phpmyadmin:
         image: phpmyadmin:5.2.3-apache
         container_name: phpmyadmin
         hostname: phpmyadmin
         environment:
-          - PMA_HOST=db
+          - PMA_HOST=mysql8
           - PMA_PORT=3306
           - MYSQL_PASSWORD=${MYSQL_PASSWORD}
           - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
@@ -84,14 +92,15 @@ services:
         ports:
           - "8082:80"
         networks:
-            - mlflow_net
+            - marketbroker_net
+        profiles: [mlflow_all]
 
 volumes:
     mlflow_dbdata:
     mlflow_minio_data:
 
 networks:
-    mlflow_net:
-        name: mlflow_network
-#        external: true
+    marketbroker_net:
+        name: marketbroker_net-network
+        external: true
 

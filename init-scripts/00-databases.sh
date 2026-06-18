@@ -1,0 +1,9 @@
+#!/bin/bash
+# init-scripts/00-databases.sh
+set -e
+
+mysql -u root -p"$MYSQL_ROOT_PASSWORD" <<-EOSQL
+    CREATE DATABASE IF NOT EXISTS $MLFLOW_DATABASE;
+    GRANT ALL PRIVILEGES ON $MLFLOW_DATABASE.* TO '$MYSQL_USER'@'%';
+    FLUSH PRIVILEGES;
+EOSQL

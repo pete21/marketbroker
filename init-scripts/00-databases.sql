@@ -1,0 +1,3 @@
+CREATE DATABASE IF NOT EXISTS mlflow_database;
+GRANT ALL PRIVILEGES ON mlflow_database.* TO 'user'@'%';
+FLUSH PRIVILEGES;
