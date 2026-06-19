@@ -116,8 +116,8 @@ services:
       - "0.0.0.0:3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-#      - ./init-scripts/00-databases.sql:/docker-entrypoint-initdb.d/00-databases.sql
       - ./init-scripts/00-databases.sh:/docker-entrypoint-initdb.d/00-databases.sh
+      - ./init-scripts/00-databases.sql:/docker-entrypoint-initdb.d/01-databases.sql
     networks:
       - marketbroker_net
     profiles: [infra,sdk,mlflow_db_only]
