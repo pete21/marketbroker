@@ -4,7 +4,7 @@ FROM gradle:8.7.0-jdk21-alpine AS cache
 RUN mkdir -p /home/gradle/cache_home
 ENV GRADLE_USER_HOME /home/gradle/cache_home
 WORKDIR /home/gradle/src
-COPY ./repository /root/.m2/repository
+COPY ./repository /home/gradle/.m2/repository
 COPY --chown=gradle:gradle . /home/gradle/src
 RUN gradle clean build -i --stacktrace --debug
 
@@ -12,7 +12,7 @@ RUN gradle clean build -i --stacktrace --debug
 FROM gradle:8.7.0-jdk21-alpine AS build
 #COPY --from=cache /home/gradle/cache_home /home/gradle/.gradle
 WORKDIR /home/gradle/src
-COPY ./repository /root/.m2/repository
+COPY ./repository /home/gradle/.m2/repository
 COPY --chown=gradle:gradle . /home/gradle/src
 RUN gradle clean bootJar
 
