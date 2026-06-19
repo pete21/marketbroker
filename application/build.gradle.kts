@@ -162,11 +162,6 @@ tasks.jacocoTestReport {
 //    }
 //}
 
-repositories {
-    mavenCentral()
-    mavenLocal()
-}
-
 // Validating a single specification
 openApiValidate {
     inputSpec.set("$projectDir/src/main/resources/marketbroker.yaml")
