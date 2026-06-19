@@ -6,7 +6,7 @@ ENV GRADLE_USER_HOME /home/gradle/cache_home
 WORKDIR /home/gradle/src
 COPY ./repository /root/.m2/repository
 COPY --chown=gradle:gradle . /home/gradle/src
-RUN gradle clean build -i --stacktrace
+RUN gradle clean build -i --stacktrace --debug
 
 
 FROM gradle:8.7.0-jdk21-alpine AS build
