@@ -73,8 +73,16 @@ services:
             - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
             - MLFLOW_S3_IGNORE_TLS=true
             - MLFLOW_SERVER_ALLOWED_HOSTS="*"
+            - DO_NOT_TRACK: "true"
+
         command: mlflow server --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql8:3306/${MYSQL_DATABASE} --default-artifact-root s3://mlflow/ --allowed-hosts "*" --host 0.0.0.0 --port=5000
 #        command: mlflow server --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql8:3306/${MYSQL_DATABASE} --artifacts-destination s3://mlflow/ --serve-artifacts --host 0.0.0.0 --port=5000
+        healthcheck:
+            test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+            interval: 10s
+            timeout: 10s
+            retries: 5
+            start_period: 10s
         networks:
             - marketbroker_net
         profiles: [mlflow_server_only,mlflow_all]
@@ -91,6 +99,12 @@ services:
           - MYSQL_USER=${MYSQL_USER}
         ports:
           - "8082:80"
+        healthcheck:
+            test: ["CMD", "curl", "-Ss", "http://localhost/robots.txt"]
+            start_period: 10s
+            interval: 10s
+            timeout: 10s
+            retries: 5
         networks:
             - marketbroker_net
         profiles: [mlflow_all]

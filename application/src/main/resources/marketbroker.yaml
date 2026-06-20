@@ -8,6 +8,8 @@ info:
     name: piotr.nazarewicz@gmail.com
 servers:
   - url: 'http://localhost:8080'
+  - url: 'http://192.168.10.250:8080'
+    description: Marketbroker API on fedora2
 paths:
   '/users/{userId}':
     parameters:

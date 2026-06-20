@@ -8,6 +8,10 @@ MinIO S3 is used as the artifact store and MySQL server is used as the backend s
 3. Build and run the containers with `docker-compose`
 
     ```bash
+    docker compose -f docker/mlflow/docker-compose.yml build mlflow
+    ```
+
+    ```bash
     docker compose up -d --build
     ```
 

@@ -6,7 +6,7 @@ services:
     container_name: marketbroker
     hostname: marketbroker
     ports:
-      - "127.0.0.1:8080:8080"
+      - "0.0.0.0:8080:8080"
       - "0.0.0.0:8090:8090"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -165,6 +165,9 @@ services:
       - QDB_WRITERS=stdout,http.min
       - QDB_CAIRO_SQL_COPY_ROOT=/var/lib/questdb/questdb_import
       - QDB_TELEMETRY_ENABLED=false
+      - QDB_PG_READONLY_USER_ENABLED=true
+      - QDB_PG_READONLY_USER=ro_user
+      - QDB_PG_READONLY_PASSWORD=ro_password
     volumes:
 #      - ./docker/questdb-data:/root/.questdb
       - ./docker/questdb-import:/var/lib/questdb/questdb_import
@@ -182,7 +185,7 @@ services:
       - kafka0
       - questdb
     ports:
-      - "127.0.0.1:8083:8083"
+      - "0.0.0.0:8083:8083"
 #    extra_hosts:
 #      - "host.docker.internal:host-gateway"
 #    user: "1001"
@@ -286,7 +289,7 @@ services:
     #    expose:
     #      - 9090
     ports:
-      - "9091:9090"
+      - "0.0.0.0:9091:9090"
     networks:
       - marketbroker_net
     profiles: [infra,sdk]

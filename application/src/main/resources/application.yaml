@@ -163,8 +163,8 @@ com.piotr:
   kafkaconnect:
     url: http://localhost:8083
     questdbHost: questdb:9000
-  questdb:
-    url: http://localhost:9000
+  # questdb:
+  #   url: http://localhost:9000
   loki:
     host: localhost:3100
 
