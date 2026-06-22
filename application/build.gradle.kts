@@ -140,6 +140,10 @@ tasks.withType<KotlinCompile> {
     }
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }

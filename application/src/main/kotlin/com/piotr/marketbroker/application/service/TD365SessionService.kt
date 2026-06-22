@@ -127,6 +127,8 @@ class TD365SessionService(
         if (!authenticationResult) {
             log.error("Reauthentication failed")
         }
+        loginHeaders.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwt!!.access_token)
+
     }
 
 
@@ -172,7 +174,7 @@ class TD365SessionService(
         checkNotNull(account) {"Account not found"}
         log.info("liveSessionStart: $account")
 
-        val launchUrl = getUrl(accountId) + "&lan=1"
+        val launchUrl = getUrl(accountId)
         selectedAccountId = accountId
 
         val websocketServer: String
@@ -214,7 +216,7 @@ class TD365SessionService(
         try {
             val redirectUrl: RedirectUrl = mapper.readValue(httpResponse.body)
             log.info("redirectUrl: ${redirectUrl.url}")
-            return redirectUrl.url
+            return redirectUrl.url + "&lan=1"
         } catch (e: JsonProcessingException) {
             log.error("RedirectUrl mapping failed: %s", httpResponse)
             return ""

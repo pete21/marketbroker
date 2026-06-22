@@ -68,7 +68,7 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install bottleneck --upgrade
 RUN --mount=type=cache,target=/root/.cache/pip pip install boto3 missingno finplot statsmodels graphviz stldecompose smartmoneyconcepts hurst quantreo mplfinance backtesting oipd
 RUN --mount=type=cache,target=/root/.cache/pip pip install pandas-market-calendars IProgress empyrical-reloaded ipyparallel jupyter-ai langchain-ollama pandas-datareader
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install einops PyWavelets sympy scipy pykalman alphalens-reloaded dvc dvc[s3] joblib nltk wordcloud antropy #pywavelet functools
+RUN --mount=type=cache,target=/root/.cache/pip pip install einops PyWavelets sympy scipy pykalman alphalens-reloaded dvc dvc[s3] joblib nltk wordcloud antropy #pywavelet functools pytimetk
 
 RUN mkdir /home/jovyan/.aws
 COPY credentials ./.aws/
