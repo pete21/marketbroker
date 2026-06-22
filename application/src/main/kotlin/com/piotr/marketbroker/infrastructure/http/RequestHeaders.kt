@@ -22,6 +22,8 @@ private const val APPLICATION_JSON = "application/json"
 
 private const val USER_AGENT_STRING = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36"
 
+// private const val SEC_CH_UA = "\"Chromium\";v=\"148\", \"Google Chrome\";v=\"148\", \"Not/A)Brand\";v=\"99\""
+
 data class RequestHeaders(var headers: Map<String, String>) {
     fun toListPair(): List<Pair<String, String>> {
         return headers.toList()
@@ -71,7 +73,11 @@ data class RequestHeaders(var headers: Map<String, String>) {
                 SEC_FETCH_SITE to CROSS_SITE,
                 HttpHeaders.ACCEPT to "*/*",
                 HttpHeaders.CONTENT_TYPE to APPLICATION_JSON,
-                HttpHeaders.USER_AGENT to USER_AGENT_STRING
+                HttpHeaders.USER_AGENT to USER_AGENT_STRING,
+                // "Sec-Ch-Ua-Platform" to "macOS",
+                // "Sec-Ch-Ua-Mobile" to "?0",
+                // "Sec-Ch-Ua" to SEC_CH_UA,
+                HttpHeaders.REFERER to "https://tradenation.com",
             )
         )
 
@@ -100,7 +106,11 @@ data class RequestHeaders(var headers: Map<String, String>) {
                 SEC_FETCH_SITE to CROSS_SITE,
                 HttpHeaders.ACCEPT to "*/*",
                 HttpHeaders.CONTENT_TYPE to APPLICATION_JSON,
-                HttpHeaders.USER_AGENT to USER_AGENT_STRING
+                HttpHeaders.USER_AGENT to USER_AGENT_STRING,
+                // "Sec-Ch-Ua-Platform" to "macOS",
+                // "Sec-Ch-Ua-Mobile" to "?0",
+                // "Sec-Ch-Ua" to SEC_CH_UA,
+                HttpHeaders.REFERER to "https://tradenation.com",
             )
         )
 

@@ -16,10 +16,32 @@ docker compose --profile infra up
 ```
 
 
+### Refresh image of running container
+
+```bash
+docker-compose --profile sdk stop marketbroker && docker-compose --profile sdk up -d --no-deps marketbroker
+```
+
+```bash
+docker compose --profile sdk stop marketbroker
+docker compose --profile sdk rm -f marketbroker
+docker compose --profile sdk up -d marketbroker
+```
+
+
+# kafka-connect
+
+## Connector
+
+Run:
+
+```bash
+./docker/kafka_connect.sh
+```
+
 
 
 # Grafana
-
 
 ## Data sources:
 

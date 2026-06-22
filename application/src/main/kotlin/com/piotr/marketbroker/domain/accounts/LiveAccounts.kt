@@ -31,6 +31,10 @@ class AppMetadata {
 //    var previous_experience: String? = null
     var trading_accounts: ArrayList<TradingAccount?>? = null
     var has_getprofile_error: Boolean = false
+
+    override fun toString(): String {
+        return "AppMetadata(trading_accounts=${trading_accounts?.joinToString(";") { it?.toString() ?: "null" }})"
+    }
 }
 
 class Backend {
@@ -102,6 +106,10 @@ class LiveAccounts {
     var user_id: String? = null
 //    var user_metadata: UserMetadata? = null
     var app_metadata: AppMetadata? = null
+
+    override fun toString(): String {
+        return "LiveAccounts(email=$email, app_metadata=$app_metadata)"
+    }
 }
 
 class TradingAccount {
@@ -131,6 +139,10 @@ class TradingAccount {
     var is_allowed_deposit: Boolean = false
     var is_allowed_withdrawal: Boolean = false
     var status: String? = null
+
+    override fun toString(): String {
+        return "TradingAccount(external_id=$external_id, client_profile_id=$client_profile_id, type=$type, loginName=$loginName, account_id=$account_id, platform=$platform, backend=$backend, balance=$balance, id=$id, display_name=$display_name, username=$username, ct_login_id=$ct_login_id, ct_login_password=$ct_login_password, platform_url=$platform_url, status=$status)"
+    }
 }
 
 //class UserMetadata {

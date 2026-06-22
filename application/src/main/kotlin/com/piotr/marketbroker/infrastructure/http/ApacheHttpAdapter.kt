@@ -24,7 +24,7 @@ class ApacheHttpAdapter {
     private val log by logger()
 
     private val cookieStore: CookieStore = BasicCookieStore()
-    private lateinit var client: CloseableHttpClient
+    private var client: CloseableHttpClient? = null
     private var httpClientContext: HttpClientContext = HttpClientContext.create()
     var defaultHeaders: RequestHeaders? = null
     var baseUrl: String = ""
@@ -38,11 +38,12 @@ class ApacheHttpAdapter {
 //        .setDefaultHeaders(mutableListOf(BasicHeader(
 //            HttpHeaders.USER_AGENT,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")))
             .build()
+        checkNotNull(client) {"HttpClient not initialized"}
     }
 
     fun postRequest(url: String, body: String, headers: RequestHeaders?): HttpAdapterResponse {
         val targetUrl = if (url.startsWith("http")) { url } else { baseUrl + url }
-        log.info("postRequest: $targetUrl")
+        log.info("postRequest: $targetUrl Body: $body")
         val response = execute(HttpPost(targetUrl), body, headers)          //.ifEmpty { "{}" }
 
         val httpAdapterResponse = HttpAdapterResponse(response.code, EntityUtils.toString(response.entity))
@@ -52,7 +53,7 @@ class ApacheHttpAdapter {
 
     fun putRequest(url: String, body: String, headers: RequestHeaders?): HttpAdapterResponse {
         val targetUrl = if (url.startsWith("http")) { url } else { baseUrl + url }
-        log.info("putRequest: $targetUrl")
+        log.info("putRequest: $targetUrl Body: $body")
         val response = execute(HttpPut(targetUrl), body, headers)          //.ifEmpty { "{}" }
 
         val httpAdapterResponse = HttpAdapterResponse(response.code, EntityUtils.toString(response.entity))
@@ -111,7 +112,7 @@ class ApacheHttpAdapter {
             httpRequest.entity = StringEntity(body, ContentType.APPLICATION_JSON)
         }
 
-        return client.execute(httpRequest, httpClientContext)
+        return client!!.execute(httpRequest, httpClientContext)
     }
 
 }

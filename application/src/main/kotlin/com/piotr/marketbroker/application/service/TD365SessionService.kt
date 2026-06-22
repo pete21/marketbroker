@@ -170,8 +170,9 @@ class TD365SessionService(
         }
         val account = liveAccounts!!.app_metadata?.trading_accounts?.first { it?.id == accountId }
         checkNotNull(account) {"Account not found"}
+        log.info("liveSessionStart: $account")
 
-        val launchUrl = getUrl(accountId)
+        val launchUrl = getUrl(accountId) + "&lan=1"
         selectedAccountId = accountId
 
         val websocketServer: String
@@ -179,10 +180,12 @@ class TD365SessionService(
             httpAdapter.baseUrl = td365ConfigurationProperties.demobaseurl
             httpAdapter.defaultHeaders = RequestHeaders(td365ConfigurationProperties.demoHeaders)
             websocketServer = td365ConfigurationProperties.demowebsocketserver
+            redirectHeaders.setHeader(HttpHeaders.HOST, "practice.tradenation.com")
         } else {
             httpAdapter.baseUrl = td365ConfigurationProperties.prodbaseurl
             httpAdapter.defaultHeaders = RequestHeaders(td365ConfigurationProperties.prodHeaders)
             websocketServer = td365ConfigurationProperties.prodwebsocketserver
+            redirectHeaders.setHeader(HttpHeaders.HOST, "platform.tradenation.com")
         }
 
         val pair = httpAdapter.getRequestRedirects(launchUrl, redirectHeaders)
@@ -197,6 +200,7 @@ class TD365SessionService(
     }
 
     private fun getUrl(accountId: Int): String {
+        log.info("getUrl for account: $accountId")
         httpAdapter.optionsRequest(td365ConfigurationProperties.loginlink, RequestHeaders(
                 loginHeaders, mapOf(
                     ACCESS_CONTROL_REQUEST_METHOD to "GET",
@@ -209,6 +213,7 @@ class TD365SessionService(
         val httpResponse = httpAdapter.postRequest(td365ConfigurationProperties.loginlink, String.format(ACCOUNT_ID, accountId), loginHeaders)
         try {
             val redirectUrl: RedirectUrl = mapper.readValue(httpResponse.body)
+            log.info("redirectUrl: ${redirectUrl.url}")
             return redirectUrl.url
         } catch (e: JsonProcessingException) {
             log.error("RedirectUrl mapping failed: %s", httpResponse)
@@ -239,13 +244,14 @@ class TD365SessionService(
         }
     }
 
-    fun liveLogout() {
+    fun liveLogout() {                                  // https://platform.tradenation.com/logout.aspx
         if (sessionState==0 && liveLogin) {
             liveLogin = false
             jwt = null
             liveAccounts = null
             loginHeaders.removeHeader(HttpHeaders.AUTHORIZATION)
             httpAdapter.baseUrl = ""
+            httpAdapter.getRequest(td365ConfigurationProperties.logoutlink, loginHeaders)
             httpAdapter.defaultHeaders = null
         } else {
             log.error("liveLogout: Not logged in or session is active")
@@ -254,7 +260,7 @@ class TD365SessionService(
 
     private fun tokenAuthentication(): Boolean {
         val query = String.format(USER_AUTH, td365ConfigurationProperties.username, td365ConfigurationProperties.password)
-        log.debug("query: ${query}")
+        // log.debug("query: ${query}")
         val httpResponseDto = httpAdapter.postRequest(td365ConfigurationProperties.authlink, query, authHeaders)
         try {
             log.debug("Jwt: ${httpResponseDto.body}")
@@ -286,6 +292,7 @@ class TD365SessionService(
         }
         try {
             liveAccounts = mapper.readValue(httpResponse.body)
+            log.info("liveAccounts: ${liveAccounts?.toString()}")
         } catch (e: JsonProcessingException) {
             log.error("Accounts mapping failed: ${e.message}")
             return false
