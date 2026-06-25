@@ -298,10 +298,10 @@ class TD365SessionService(
     fun liveLogout() : Boolean {                                  // https://platform.tradenation.com/logout.aspx
         if (sessionState==0 && liveLogin) {
             loginHeaders.removeHeader(HttpHeaders.AUTHORIZATION)
-            loginHeaders.removeHeader(HttpHeaders.HOST)
-            // loginHeaders.setHeader(HttpHeaders.REFERER, "https://tradenation.com/account/accounts")
-            httpAdapter.baseUrl = ""
+            loginHeaders.setHeader(HttpHeaders.REFERER, "https://tradenation.com/account/accounts")
             httpAdapter.getRequest(td365ConfigurationProperties.platformlogoutlink, loginHeaders)
+            loginHeaders.removeHeader(HttpHeaders.HOST)
+            httpAdapter.baseUrl = ""
             liveLogin = false
             jwt = null
             liveAccounts = null

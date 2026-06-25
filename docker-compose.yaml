@@ -302,7 +302,7 @@ services:
     command:
       -config.file=/etc/loki/loki-config.yml
     ports:
-      - "127.0.0.1:3100:3100"
+      - "0.0.0.0:3100:3100"
     volumes:
       - ./docker/loki-config.yml:/etc/loki/loki-config.yml
     networks:
