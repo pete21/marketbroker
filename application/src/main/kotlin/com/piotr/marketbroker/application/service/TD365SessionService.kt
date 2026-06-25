@@ -157,7 +157,7 @@ class TD365SessionService(
             } catch (e: Exception) {
                 log.error("getUrl failed: %s", e.message)
                 log.error("Retrying authentication...")
-                Thread.sleep(2000)
+                Thread.sleep(5000)
                 reauthenticate()
                 applicationEventPublisher.publishEvent(WebsocketDisconnectedEvent())
                 reconnect_attempts = reconnect_attempts + 1
@@ -170,7 +170,7 @@ class TD365SessionService(
             } catch (e: Exception) {
                 log.error("getRequestRedirects failed: %s", e.message)
                 log.error("Retrying authentication...")
-                Thread.sleep(2000)
+                Thread.sleep(5000)
                 reauthenticate()
                 applicationEventPublisher.publishEvent(WebsocketDisconnectedEvent())
                 reconnect_attempts = reconnect_attempts + 1
@@ -187,9 +187,10 @@ class TD365SessionService(
             checkNotNull(account.ct_login_id) { "ct_login_id is null, check if account is active and can be logged in" }
             if (!websocketService.connect(account.ct_login_id!!, token, websocketServer)) {
                 sessionState = 0
+            } else {
                 reconnect_attempts = 0
+                subscriptionsService.renewSubscriptions()
             }
-            subscriptionsService.renewSubscriptions()
         }
     }
 
@@ -276,19 +277,7 @@ class TD365SessionService(
             sessionState = 0
             httpAdapter.postRequest("ClientLogout", "{}", postHeaders)
             websocketService.disconnect()
-            applicationEventPublisher.publishEvent(SessionClosedEvent())
-            ots = ""
-            token = ""
-        }
-    }
-
-    fun liveLogout() : Boolean {                                  // https://platform.tradenation.com/logout.aspx
-        if (sessionState==0 && liveLogin) {
-            loginHeaders.removeHeader(HttpHeaders.AUTHORIZATION)
-            // httpAdapter.baseUrl = ""
-            httpAdapter.getRequest(td365ConfigurationProperties.logoutlink, loginHeaders)
-            liveLogin = false
-            jwt = null
+            
             val account = liveAccounts!!.app_metadata?.trading_accounts?.first { it?.id == selectedAccountId }
             checkNotNull(account) {"Account not found"}
             val logoutUrl = if (account.type == "Demo") {
@@ -299,6 +288,22 @@ class TD365SessionService(
                 td365ConfigurationProperties.logoutlink
             }
             httpAdapter.getRequest(logoutUrl, loginHeaders)
+
+            applicationEventPublisher.publishEvent(SessionClosedEvent())
+            ots = ""
+            token = ""
+        }
+    }
+
+    fun liveLogout() : Boolean {                                  // https://platform.tradenation.com/logout.aspx
+        if (sessionState==0 && liveLogin) {
+            loginHeaders.removeHeader(HttpHeaders.AUTHORIZATION)
+            loginHeaders.removeHeader(HttpHeaders.HOST)
+            // loginHeaders.setHeader(HttpHeaders.REFERER, "https://tradenation.com/account/accounts")
+            httpAdapter.baseUrl = ""
+            httpAdapter.getRequest(td365ConfigurationProperties.platformlogoutlink, loginHeaders)
+            liveLogin = false
+            jwt = null
             liveAccounts = null
             httpAdapter.defaultHeaders = null
             applicationEventPublisher.publishEvent(SessionClosedEvent())            //clear session (subscriptions, kafka-connectors, ...) - may be redundant

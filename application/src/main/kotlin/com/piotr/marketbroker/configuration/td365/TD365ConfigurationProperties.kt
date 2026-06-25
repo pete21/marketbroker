@@ -17,6 +17,7 @@ data class TD365ConfigurationProperties(
     val accountlink: String,
     val logoutlink: String,
     val demologoutlink: String,
+    val platformlogoutlink: String,
     val sessionupdateinterval: Int = 120000,
     val accesstokenupdateinterval: Int = 18000000,            //86400
     val username: String,
