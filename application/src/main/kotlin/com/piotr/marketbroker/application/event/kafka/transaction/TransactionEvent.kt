@@ -8,6 +8,7 @@ import com.piotr.marketbroker.configuration.kafka.KafkaTopics
 @SendToTopic(topicSuffix = KafkaTopics.TOPIC_TRANSACTIONS)
 data class TransactionEvent(
     val o: Int,
+    val p: Int? = null,
     val type: TransactionType,
     val price: Float,
     val sl: Float? = null,

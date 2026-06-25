@@ -37,6 +37,9 @@ class PositionClosedEventHandler(
 
         val orders = ordersRepository.findOrdersByPositionIdIn(event.positions.map { it.positionId})          //orderId changes with execution/close
 
+        log.info("History orders: ${filteredTransactionHistory}")
+        log.info("Orders: ${orders}")
+        
         orders.forEach { order ->
             if (!order.active) {
                 log.error("Order to be closed (id=${order.orderId}) is already closed")
@@ -50,6 +53,8 @@ class PositionClosedEventHandler(
                         && order.open_price == historyOrder.OpenPrice
                         && order.direction * order.stake == historyOrder.Amount
             } ?: emptyList()
+
+
             if (matchedHistoryOrders.size == 1) {
                 order.active = false
                 order.close_price = matchedHistoryOrders[0].ClosePrice

@@ -27,6 +27,10 @@ springBoot {
     buildInfo()
 }
 
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
 
 dependencies {
 

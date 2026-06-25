@@ -48,7 +48,7 @@ curl -F data=@<file>.csv 'http://localhost:9000/imp?name=DUKASCOPY_16917_OHLC'
 CREATE TABLE IF NOT EXISTS DUKASCOPY_16917_OHLC_1S(timestamp TIMESTAMP,open float,high float,low float,close float) TIMESTAMP(timestamp) PARTITION BY DAY WAL DEDUP UPSERT KEYS(timestamp)
 
 INSERT INTO DUKASCOPY_16917_OHLC_1S
-SELECT cast(timestamp * 1000L AS TIMESTAMP), first(open), max(high), min(low), last(close)
+SELECT cast(timestamp AS TIMESTAMP), first((b+a)/2), max((b+a)/2), min((b+a)/2), last((b+a)/2)
 FROM DUKASCOPY_16917_OHLC
 
 
@@ -243,4 +243,13 @@ SELECT
   refresh_base_table_txn,
   base_table_txn
 FROM materialized_views();
+
+
+
+
+-- Union of DUKASOPY and TICKSTREAM
+
+SELECT * FROM DUKASCOPY_6374_OHLC_1M where timestamp>'2026-06-20'
+UNION
+SELECT * FROM TICKSTREAM_6374_OHLC_1M where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_1M);
 

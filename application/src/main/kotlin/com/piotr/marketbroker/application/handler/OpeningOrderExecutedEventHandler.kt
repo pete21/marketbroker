@@ -57,6 +57,7 @@ class OpeningOrderExecutedEventHandler(
                 producer.produce(
                     TransactionEvent(
                         o = order.orderId,
+                        p = order.positionId,
                         type = TransactionType.FILLED,
                         price = order.open_price,
                         sl = order.stopOrderPrice,

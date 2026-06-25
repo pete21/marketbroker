@@ -59,12 +59,14 @@ class TD365SessionService(
     private var liveAccounts: LiveAccounts? = null
     private var selectedAccountId: Int = 0
 
+    private var reconnect_attempts: Int = 0
+
     fun getTD365ConfigurationProperties(): String {
         log.info(td365ConfigurationProperties.toString())
         return td365ConfigurationProperties.toString()
     }
 
-    @Scheduled(fixedRateString = "\${td365ConfigurationProperties.sessionupdateinterval}")
+    @Scheduled(fixedRateString = "\${td365.sessionupdateinterval}")
     @Async
     fun httpClientSessionUpdate() {
         log.info("UpdateClientSessionID")
@@ -119,9 +121,13 @@ class TD365SessionService(
         return liveLogin
     }
 
-    @Scheduled(fixedRateString = "\${td365ConfigurationProperties.accesstokenupdateinterval}")
+    @Scheduled(fixedRateString = "\${td365.accesstokenupdateinterval}", initialDelay = 3600000)
     @Async
     fun reauthenticate() {
+        if (!liveLogin) {
+            log.info("Reauthentication not needed, not logged in")
+            return
+        }
         log.info("tokenAuthentication")
         val authenticationResult = tokenAuthentication()
         if (!authenticationResult) {
@@ -136,15 +142,40 @@ class TD365SessionService(
     @EventListener
     fun handleDisconnect(event: WebsocketDisconnectedEvent) {
         log.info("Handling WebsocketDisconnectedEvent")
+        if (reconnect_attempts > 3) {
+            log.error("Reconnect failed, too many attempts")
+            sessionStop()
+        }
         if (sessionState==1) {
 
             val account = liveAccounts!!.app_metadata?.trading_accounts?.first { it?.id == selectedAccountId }
             checkNotNull(account) {"Account not found"}
 
-            val launchUrl = getUrl(selectedAccountId)
+            var launchUrl: String
+            try {
+                launchUrl = getUrl(selectedAccountId)
+            } catch (e: Exception) {
+                log.error("getUrl failed: %s", e.message)
+                log.error("Retrying authentication...")
+                Thread.sleep(2000)
+                reauthenticate()
+                applicationEventPublisher.publishEvent(WebsocketDisconnectedEvent())
+                reconnect_attempts = reconnect_attempts + 1
+                return
+            }
 
-            val pair = httpAdapter.getRequestRedirects(launchUrl, redirectHeaders)
-            setValues(pair)
+            try {
+                val pair = httpAdapter.getRequestRedirects(launchUrl, redirectHeaders)
+                setValues(pair)
+            } catch (e: Exception) {
+                log.error("getRequestRedirects failed: %s", e.message)
+                log.error("Retrying authentication...")
+                Thread.sleep(2000)
+                reauthenticate()
+                applicationEventPublisher.publishEvent(WebsocketDisconnectedEvent())
+                reconnect_attempts = reconnect_attempts + 1
+                return
+            }
 
             val websocketServer =
                 if (account.type == "Demo") {
@@ -156,6 +187,7 @@ class TD365SessionService(
             checkNotNull(account.ct_login_id) { "ct_login_id is null, check if account is active and can be logged in" }
             if (!websocketService.connect(account.ct_login_id!!, token, websocketServer)) {
                 sessionState = 0
+                reconnect_attempts = 0
             }
             subscriptionsService.renewSubscriptions()
         }
@@ -214,11 +246,15 @@ class TD365SessionService(
         )
         val httpResponse = httpAdapter.postRequest(td365ConfigurationProperties.loginlink, String.format(ACCOUNT_ID, accountId), loginHeaders)
         try {
+            log.info("httpResponse.body: ${httpResponse.body}")
             val redirectUrl: RedirectUrl = mapper.readValue(httpResponse.body)
             log.info("redirectUrl: ${redirectUrl.url}")
             return redirectUrl.url + "&lan=1"
         } catch (e: JsonProcessingException) {
             log.error("RedirectUrl mapping failed: %s", httpResponse)
+            return ""
+        } catch (e: Exception) {
+            log.error("getUrl failed: %s", httpResponse)
             return ""
         }
     }
@@ -246,17 +282,30 @@ class TD365SessionService(
         }
     }
 
-    fun liveLogout() {                                  // https://platform.tradenation.com/logout.aspx
+    fun liveLogout() : Boolean {                                  // https://platform.tradenation.com/logout.aspx
         if (sessionState==0 && liveLogin) {
+            loginHeaders.removeHeader(HttpHeaders.AUTHORIZATION)
+            // httpAdapter.baseUrl = ""
+            httpAdapter.getRequest(td365ConfigurationProperties.logoutlink, loginHeaders)
             liveLogin = false
             jwt = null
+            val account = liveAccounts!!.app_metadata?.trading_accounts?.first { it?.id == selectedAccountId }
+            checkNotNull(account) {"Account not found"}
+            val logoutUrl = if (account.type == "Demo") {
+                loginHeaders.setHeader(HttpHeaders.HOST, "practice.tradenation.com")
+                td365ConfigurationProperties.demologoutlink
+            } else {
+                loginHeaders.setHeader(HttpHeaders.HOST, "platform.tradenation.com")
+                td365ConfigurationProperties.logoutlink
+            }
+            httpAdapter.getRequest(logoutUrl, loginHeaders)
             liveAccounts = null
-            loginHeaders.removeHeader(HttpHeaders.AUTHORIZATION)
-            httpAdapter.baseUrl = ""
-            httpAdapter.getRequest(td365ConfigurationProperties.logoutlink, loginHeaders)
             httpAdapter.defaultHeaders = null
+            applicationEventPublisher.publishEvent(SessionClosedEvent())            //clear session (subscriptions, kafka-connectors, ...) - may be redundant
+            return true
         } else {
             log.error("liveLogout: Not logged in or session is active")
+            return false
         }
     }
 

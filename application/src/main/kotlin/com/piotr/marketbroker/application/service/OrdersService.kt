@@ -1,5 +1,11 @@
 package com.piotr.marketbroker.application.service
 
+import ai.symmetrical.kafka.producer.VariableTopicMessageProducer
+import com.piotr.marketbroker.application.event.kafka.transaction.TransactionEvent
+import com.piotr.marketbroker.application.event.kafka.transaction.TransactionType
+import com.piotr.marketbroker.common.logger
+import com.piotr.marketbroker.configuration.kafka.KafkaTopics.TOPIC_TRANSACTIONS
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.PropertyAccessor
@@ -41,7 +47,8 @@ private const val HISTORY_QUERY = "{\"transType\":2,\"days\":1,\"page\":0}"
 class OrdersService(
     private val httpAdapter: ApacheHttpAdapter,
     private val ordersRepository: OrdersRepository,
-    private val accountDetailsHandler: AccountDetailsHandler
+    private val accountDetailsHandler: AccountDetailsHandler,
+    private val producer: VariableTopicMessageProducer<TransactionEvent>
 ) {
     private val log by logger()
 
@@ -260,12 +267,25 @@ class OrdersService(
                     RequestHeaders.postHeaders
                 )
             if (httpResponse.statusCode == 200) {
+                val datetimenow = LocalDateTime.now()
                 val order = ordersRepository.findByOrderId(orderId)
                 if (order!=null) {
                     order.active = false
-                    order.updatedAt = LocalDateTime.now()
+                    order.updatedAt = datetimenow
                     ordersRepository.save(order)
                 }
+
+                producer.produce(
+                    TransactionEvent(
+                        o = orderId,
+                        type = TransactionType.CANCELLED,
+                        price = order?.price?:0f,
+                        sl = order?.stopOrderPrice?:0f,
+                        tp = order?.limitOrderPrice?:0f,
+                        t = datetimenow.toEpochSecond(ZoneOffset.UTC)
+                    ),
+                    TOPIC_TRANSACTIONS, null)   
+
                 return true
             }
             log.warn("DeleteOrder: Order $orderId could not be deleted")

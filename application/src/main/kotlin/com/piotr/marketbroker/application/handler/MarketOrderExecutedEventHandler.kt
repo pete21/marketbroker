@@ -37,6 +37,7 @@ class MarketOrderExecutedEventHandler(
                 producer.produce(
                     TransactionEvent(
                         o = order.orderId,
+                        p = matchedPositions[0].positionId,
                         type = TransactionType.FILLED,
                         price = order.open_price,
                         sl = order.stopOrderPrice,

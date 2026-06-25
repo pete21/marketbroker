@@ -35,8 +35,11 @@ class LiveController(
                 return ResponseEntity<ResponseDTO>(ResponseDTO(1, "Login error"), HttpStatus.OK)
             }
             "STOP" -> {
-                td365SessionService.liveLogout()
-                return ResponseEntity<ResponseDTO>(ResponseDTO(0, "Logout OK"), HttpStatus.OK)
+                val result = td365SessionService.liveLogout()
+                if (result) {
+                    return ResponseEntity<ResponseDTO>(ResponseDTO(0, "Logout OK"), HttpStatus.OK)
+                }
+                return ResponseEntity<ResponseDTO>(ResponseDTO(1, "Logout error"), HttpStatus.OK)
             }
         }
         return ResponseEntity<ResponseDTO>(ResponseDTO(1, "Unrecognized request"), HttpStatus.BAD_REQUEST)
