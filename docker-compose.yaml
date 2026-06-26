@@ -41,16 +41,16 @@ services:
     command:
       - redpanda
       - start
-      - --kafka-addr internal://0.0.0.0:19092,external://192.168.10.250:9092
+      - --kafka-addr internal://0.0.0.0:19092,external://0.0.0.0:9092
       # Address the broker advertises to clients that connect to the Kafka API.
       # Use the internal addresses to connect to the Redpanda brokers'
       # from inside the same Docker network.
       # Use the external addresses to connect to the Redpanda brokers'
       # from outside the Docker network.
-      - --advertise-kafka-addr internal://kafka0:19092,external://localhost:9092
+      - --advertise-kafka-addr internal://kafka0:19092,external://192.168.10.250:9092
       - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:18082
       # Address the broker advertises to clients that connect to the HTTP Proxy.
-      - --advertise-pandaproxy-addr internal://kafka0:8082,external://localhost:18082
+      - --advertise-pandaproxy-addr internal://kafka0:8082,external://192.168.10.250:18082
       - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:18081
       # Redpanda brokers use the RPC API to communicate with each other internally.
       - --rpc-addr kafka0:33145
