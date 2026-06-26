@@ -57,7 +57,7 @@ spring:
   jackson:
     default-property-inclusion: non_null
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: 192.168.10.250:9092
     consumer:
       group-id: marketbroker
       max-poll-records: 1
@@ -162,9 +162,9 @@ com.piotr:
       enabled: false
   kafkaconnect:
     url: http://192.168.10.250:8083
-    questdbHost: questdb:9000
-  # questdb:
-  #   url: http://localhost:9000
+    questdbHost: 192.168.10.250:9000
+  questdb:
+    url: http://192.168.10.250:9000
   loki:
     host: 192.168.10.250:3100
 

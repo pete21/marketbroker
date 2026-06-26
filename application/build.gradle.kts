@@ -27,11 +27,6 @@ springBoot {
     buildInfo()
 }
 
-repositories {
-    mavenCentral()
-    mavenLocal()
-}
-
 dependencies {
 
     // spring boot libs

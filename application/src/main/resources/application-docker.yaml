@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:mysql://mysql8:3306/marketbroker
 com.piotr:
-  kafka-connect:
+  kafkaconnect:
     url: http://kafka-connect:8083
   questdb:
     url: http://questdb:9000
