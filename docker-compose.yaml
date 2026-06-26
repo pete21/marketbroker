@@ -41,7 +41,7 @@ services:
     command:
       - redpanda
       - start
-      - --kafka-addr internal://0.0.0.0:19092,external://0.0.0.0:9092
+      - --kafka-addr internal://0.0.0.0:19092,external://192.168.10.250:9092
       # Address the broker advertises to clients that connect to the Kafka API.
       # Use the internal addresses to connect to the Redpanda brokers'
       # from inside the same Docker network.
