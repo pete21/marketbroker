@@ -194,6 +194,17 @@ class OrdersService(
             return TradeRequestResponse(message = msg, status = -1)
         }
         val tradeRequest = saveTradeRequest(httpResponse, order)
+//        producer.produce(                                           // Alternative way to throw market order filled event, currently implemented based on AccountDetailsEvent websocket event
+//            TransactionEvent(
+//                o = order.orderId,
+//                p = order.positionId,
+//                type = TransactionType.FILLED,
+//                price = order.open_price,
+//                sl = order.stopOrderPrice,
+//                tp = order.limitOrderPrice,
+//                t = order.open_date?.toEpochSecond(ZoneOffset.UTC)?:0L
+//            ),
+//            TOPIC_TRANSACTIONS, null)
         return tradeRequest
     }
 
@@ -243,6 +254,19 @@ class OrdersService(
             order.openOrderResponse = openOrderResponse
 //            order.open_date = OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime()
             ordersRepository.save(order)
+
+            producer.produce(
+                TransactionEvent(
+                    o = order.orderId,
+                    p = order.positionId,
+                    type = TransactionType.PENDING,
+                    price = order.open_price,
+                    sl = order.stopOrderPrice,
+                    tp = order.limitOrderPrice,
+                    t = order.open_date?.toEpochSecond(ZoneOffset.UTC)?:0L
+                ),
+                TOPIC_TRANSACTIONS, null)
+
             return openOrderResponse
         } catch (e: Exception) {
             val msg = "OpenOrderResponse mapping error: ${e.message}"
@@ -278,6 +302,7 @@ class OrdersService(
                 producer.produce(
                     TransactionEvent(
                         o = orderId,
+                        p = order?.positionId,
                         type = TransactionType.CANCELLED,
                         price = order?.price?:0f,
                         sl = order?.stopOrderPrice?:0f,

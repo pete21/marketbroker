@@ -61,3 +61,8 @@ JVM SpringBoot3 dashboard (for Prometheus Operator) ID: 22108
 
 https://questdb.com/blog/how-to-create-a-materialized-view/
 
+
+
+
+# STOMP Websocket server
+

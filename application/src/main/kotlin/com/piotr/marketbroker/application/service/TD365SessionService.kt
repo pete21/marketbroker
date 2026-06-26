@@ -288,6 +288,7 @@ class TD365SessionService(
                 td365ConfigurationProperties.logoutlink
             }
             httpAdapter.getRequest(logoutUrl, loginHeaders)
+            loginHeaders.setHeader(HttpHeaders.HOST, "portal.cube.finsatechnology.com")
 
             applicationEventPublisher.publishEvent(SessionClosedEvent())
             ots = ""
@@ -296,21 +297,19 @@ class TD365SessionService(
     }
 
     fun liveLogout() : Boolean {                                  // https://platform.tradenation.com/logout.aspx
-        if (sessionState==0 && liveLogin) {
+        return if (sessionState==0 && liveLogin) {
             loginHeaders.removeHeader(HttpHeaders.AUTHORIZATION)
-            loginHeaders.setHeader(HttpHeaders.REFERER, "https://tradenation.com/account/accounts")
             httpAdapter.getRequest(td365ConfigurationProperties.platformlogoutlink, loginHeaders)
-            loginHeaders.removeHeader(HttpHeaders.HOST)
             httpAdapter.baseUrl = ""
             liveLogin = false
             jwt = null
             liveAccounts = null
             httpAdapter.defaultHeaders = null
             applicationEventPublisher.publishEvent(SessionClosedEvent())            //clear session (subscriptions, kafka-connectors, ...) - may be redundant
-            return true
+            true
         } else {
             log.error("liveLogout: Not logged in or session is active")
-            return false
+            false
         }
     }
 

@@ -48,7 +48,7 @@ data class RequestHeaders(var headers: Map<String, String>) {
     companion object {
         val redirectHeaders: RequestHeaders = RequestHeaders(
             mapOf(
-                HttpHeaders.HOST to "platform.tradenation.com",
+//                HttpHeaders.HOST to "platform.tradenation.com",
 //                HttpHeaders.REFERER to "https://tradenation.com",
                 HttpHeaders.AUTHORIZATION to "",
                 HttpHeaders.CONNECTION to "keep-alive",

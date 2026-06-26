@@ -21,7 +21,8 @@ data class TD365ConfigurationProperties(
     val sessionupdateinterval: Int = 120000,
     val accesstokenupdateinterval: Int = 18000000,            //86400
     val username: String,
-    val password: String
+    val password: String,
+    val brokertimeutcdelta: Int = 1
 //    override fun toString(): String {
 //        return "TD365ConfigurationProperties(demolink='$demolink', demobaseurl='$demobaseurl', prodlink='$prodlink', prodbaseurl='$prodbaseurl', demoHeaders=$demoHeaders, prodHeaders=$prodHeaders, demowebsocketserver='$demowebsocketserver', prodwebsocketserver='$prodwebsocketserver', authlink='$authlink', accountlink='$accountlink', sessionupdateinterval=$sessionupdateinterval, username='$username', password='$password')"
 //    }

@@ -7,12 +7,12 @@ import com.piotr.marketbroker.application.event.kafka.transaction.TransactionEve
 import com.piotr.marketbroker.application.event.kafka.transaction.TransactionType
 import com.piotr.marketbroker.common.logger
 import com.piotr.marketbroker.configuration.kafka.KafkaTopics.TOPIC_TRANSACTIONS
+import com.piotr.marketbroker.configuration.td365.TD365ConfigurationProperties
 import com.piotr.marketbroker.domain.order.port.OrdersRepository
 import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
-import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
 @Service
@@ -20,40 +20,42 @@ class PositionClosedEventHandler(
     private val ordersRepository: OrdersRepository,
     private val ordersService: OrdersService,
     private val producer: VariableTopicMessageProducer<TransactionEvent>,
+    private val td365ConfigurationProperties: TD365ConfigurationProperties,
     ) {
     private val log by logger()
 
-    var lastGetHistory = OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime().minusDays(1)
+    var lastGetHistory = LocalDateTime.now().minusDays(1)
 
     @Async
     @EventListener
     fun handlePositionClosedEvent(event: PositionClosedEvent) {
         val transactionHistory = ordersService.getHistory()
+        log.info("Transaction history datetime filter from: ${lastGetHistory}")
         val filteredTransactionHistory = transactionHistory?.filter { it.TransactionDate>lastGetHistory }
+        log.info("History orders: ${filteredTransactionHistory}")
+
         if (filteredTransactionHistory==null) {
-            log.error("No history orders since last check at ${lastGetHistory}")
+            log.error("No history orders since datetime: ${lastGetHistory}")
         }
-        lastGetHistory = OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime().minusSeconds(3)
+        lastGetHistory = filteredTransactionHistory?.maxOfOrNull { it.TransactionDate } ?: lastGetHistory
 
         val orders = ordersRepository.findOrdersByPositionIdIn(event.positions.map { it.positionId})          //orderId changes with execution/close
 
-        log.info("History orders: ${filteredTransactionHistory}")
-        log.info("Orders: ${orders}")
-        
         orders.forEach { order ->
+            log.info("Order: o=${order.orderId}, p=${order.positionId}, price=${order.price}, open_price=${order.open_price}, open_date=${order.open_date}, close_date=${order.close_date} created=${order.createdAt}, updated=${order.updatedAt}")
             if (!order.active) {
                 log.error("Order to be closed (id=${order.orderId}) is already closed")
                 return@forEach
             }
 
             val matchedHistoryOrders = filteredTransactionHistory?.filter { historyOrder ->
-                val timeFrom = historyOrder.OpenPeriod.minusSeconds(3)
-                val timeTo = historyOrder.OpenPeriod.plusSeconds(3)
+                val timeFrom = historyOrder.OpenPeriod.minusSeconds(1).minusHours(td365ConfigurationProperties.brokertimeutcdelta.toLong())
+                val timeTo = historyOrder.OpenPeriod.plusSeconds(1).minusHours(td365ConfigurationProperties.brokertimeutcdelta.toLong())
+                log.info("History order: timeFrom=$timeFrom, timeTo=$timeTo, Order: open_date=${order.open_date}")
                 order.open_date!! >= timeFrom && order.open_date!! <= timeTo
                         && order.open_price == historyOrder.OpenPrice
                         && order.direction * order.stake == historyOrder.Amount
             } ?: emptyList()
-
 
             if (matchedHistoryOrders.size == 1) {
                 order.active = false

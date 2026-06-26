@@ -29,5 +29,5 @@ data class TransactionEvent(
 //}
 
 enum class TransactionType {
-    FILLED, CLOSED, REJECTED, CANCELLED
+    PENDING, FILLED, CLOSED, REJECTED, CANCELLED
 }
