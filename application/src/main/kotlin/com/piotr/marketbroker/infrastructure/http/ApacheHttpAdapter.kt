@@ -17,6 +17,8 @@ import org.apache.hc.core5.http.ContentType
 import org.apache.hc.core5.http.io.entity.EntityUtils
 import org.apache.hc.core5.http.io.entity.StringEntity
 import org.springframework.stereotype.Component
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Component
 class ApacheHttpAdapter {
@@ -94,22 +96,61 @@ class ApacheHttpAdapter {
         return Pair(redirectURIs, cookies)
     }
 
-    private fun execute(httpRequest: HttpUriRequestBase, body: String, headers: RequestHeaders?): CloseableHttpResponse {
-        if (headers != null) {
-            RequestHeaders(defaultHeaders!!, headers).toListPair().forEach {
-                run {
-                    if (it.second.isEmpty())
-                        httpRequest.removeHeaders(it.first)
-                    else httpRequest.setHeader(it.first, it.second)
-                }
-            }
-        } else {
-            defaultHeaders!!.toListPair().forEach {
-                run { httpRequest.setHeader(it.first, it.second) }
+    fun postFormRequest(url: String, formParams: Map<String, String>, headers: RequestHeaders?): HttpAdapterResponse {
+        val targetUrl = if (url.startsWith("http")) { url } else { baseUrl + url }
+        val body = encodeFormParams(formParams)
+        log.info("postFormRequest: $targetUrl")
+        val response = execute(HttpPost(targetUrl), body, headers, ContentType.APPLICATION_FORM_URLENCODED)
+        val httpAdapterResponse = HttpAdapterResponse(response.code, EntityUtils.toString(response.entity))
+        response.close()
+        return httpAdapterResponse
+    }
+
+    fun postFormRequestWithRedirects(
+        url: String,
+        formParams: Map<String, String>,
+        headers: RequestHeaders?
+    ): Pair<HttpAdapterResponse, List<String>> {
+        val targetUrl = if (url.startsWith("http")) { url } else { baseUrl + url }
+        val body = encodeFormParams(formParams)
+        log.info("postFormRequestWithRedirects: $targetUrl")
+        val response = execute(HttpPost(targetUrl), body, headers, ContentType.APPLICATION_FORM_URLENCODED)
+        val redirectURIs = httpClientContext.redirectLocations.all.map { it.toString() }
+        val httpAdapterResponse = HttpAdapterResponse(response.code, EntityUtils.toString(response.entity))
+        response.close()
+        return Pair(httpAdapterResponse, redirectURIs)
+    }
+
+    fun clearCookies() {
+        cookieStore.clear()
+    }
+
+    private fun encodeFormParams(formParams: Map<String, String>): String =
+        formParams.entries.joinToString("&") { (key, value) ->
+            "${URLEncoder.encode(key, StandardCharsets.UTF_8)}=${URLEncoder.encode(value, StandardCharsets.UTF_8)}"
+        }
+
+    private fun execute(
+        httpRequest: HttpUriRequestBase,
+        body: String,
+        headers: RequestHeaders?,
+        contentType: ContentType = ContentType.APPLICATION_JSON
+    ): CloseableHttpResponse {
+        val effectiveHeaders = when {
+            headers != null && defaultHeaders != null -> RequestHeaders(defaultHeaders!!, headers)
+            headers != null -> headers
+            defaultHeaders != null -> defaultHeaders!!
+            else -> RequestHeaders(emptyMap())
+        }
+        effectiveHeaders.toListPair().forEach {
+            if (it.second.isEmpty()) {
+                httpRequest.removeHeaders(it.first)
+            } else {
+                httpRequest.setHeader(it.first, it.second)
             }
         }
         if (body.isNotEmpty()) {
-            httpRequest.entity = StringEntity(body, ContentType.APPLICATION_JSON)
+            httpRequest.entity = StringEntity(body, contentType)
         }
 
         return client!!.execute(httpRequest, httpClientContext)

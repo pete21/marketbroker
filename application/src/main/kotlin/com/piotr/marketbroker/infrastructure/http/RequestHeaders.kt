@@ -97,6 +97,51 @@ data class RequestHeaders(var headers: Map<String, String>) {
             )
         )
 
+        val oauthNavigateHeaders: RequestHeaders = RequestHeaders(
+            mapOf(
+                HttpHeaders.HOST to "auth.tradenation.com",
+                HttpHeaders.ACCEPT to "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                HttpHeaders.ACCEPT_LANGUAGE to "en-GB,en;q=0.9",
+                HttpHeaders.REFERER to "https://tradenation.com/",
+                HttpHeaders.USER_AGENT to USER_AGENT_STRING,
+                SEC_FETCH_DEST to DOCUMENT,
+                SEC_FETCH_MODE to NAVIGATE,
+                SEC_FETCH_SITE to SAME_SITE,
+                SEC_FETCH_USER to "?1",
+                "Upgrade-Insecure-Requests" to "1",
+            )
+        )
+
+        val oauthLoginFormHeaders: RequestHeaders = RequestHeaders(
+            mapOf(
+                HttpHeaders.HOST to "auth.tradenation.com",
+                HttpHeaders.ACCEPT to "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                HttpHeaders.ACCEPT_LANGUAGE to "en-GB,en;q=0.9",
+                HttpHeaders.CONTENT_TYPE to "application/x-www-form-urlencoded",
+                HttpHeaders.USER_AGENT to USER_AGENT_STRING,
+                SEC_FETCH_DEST to DOCUMENT,
+                SEC_FETCH_MODE to NAVIGATE,
+                SEC_FETCH_SITE to "same-origin",
+                SEC_FETCH_USER to "?1",
+                "Upgrade-Insecure-Requests" to "1",
+            )
+        )
+
+        val oauthTokenHeaders: RequestHeaders = RequestHeaders(
+            mapOf(
+                HttpHeaders.HOST to "auth.tradenation.com",
+                HttpHeaders.ACCEPT to "*/*",
+                HttpHeaders.ACCEPT_LANGUAGE to "en-GB,en;q=0.9",
+                HttpHeaders.CONTENT_TYPE to "application/x-www-form-urlencoded",
+                "Origin" to "https://tradenation.com",
+                HttpHeaders.REFERER to "https://tradenation.com/",
+                HttpHeaders.USER_AGENT to USER_AGENT_STRING,
+                SEC_FETCH_DEST to "empty",
+                SEC_FETCH_MODE to "cors",
+                SEC_FETCH_SITE to SAME_SITE,
+            )
+        )
+
         val loginHeaders: RequestHeaders = RequestHeaders(
             mapOf(
                 HttpHeaders.HOST to "portal.cube.finsatechnology.com",

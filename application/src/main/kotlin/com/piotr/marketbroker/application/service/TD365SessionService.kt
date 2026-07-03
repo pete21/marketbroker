@@ -13,8 +13,10 @@ import com.piotr.marketbroker.application.websocket.WebsocketService
 import com.piotr.marketbroker.configuration.td365.TD365ConfigurationProperties
 import com.piotr.marketbroker.infrastructure.http.ApacheHttpAdapter
 import com.piotr.marketbroker.infrastructure.http.RequestHeaders
-import com.piotr.marketbroker.infrastructure.http.RequestHeaders.Companion.authHeaders
 import com.piotr.marketbroker.infrastructure.http.RequestHeaders.Companion.loginHeaders
+import com.piotr.marketbroker.infrastructure.http.RequestHeaders.Companion.oauthLoginFormHeaders
+import com.piotr.marketbroker.infrastructure.http.RequestHeaders.Companion.oauthNavigateHeaders
+import com.piotr.marketbroker.infrastructure.http.RequestHeaders.Companion.oauthTokenHeaders
 import com.piotr.marketbroker.infrastructure.http.RequestHeaders.Companion.postHeaders
 import com.piotr.marketbroker.infrastructure.http.RequestHeaders.Companion.redirectHeaders
 import com.piotr.marketbroker.common.logger
@@ -25,8 +27,12 @@ import org.springframework.http.HttpHeaders
 import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
-
-private const val USER_AUTH = "{\"username\":\"%s\",\"password\":\"%s\"}"
+import java.net.URLDecoder
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
+import java.security.SecureRandom
+import java.util.Base64
 
 private const val ACCOUNT_ID = "{\"account_id\":%d}"
 
@@ -75,42 +81,16 @@ class TD365SessionService(
         }
     }
 
-//    fun demoSessionStart(): Boolean {
-//        if (liveLogin) {
-//            log.warn("Logged in to live account, log out first before starting demo session")
-//            return false
-//        }
-//        if (sessionState==1) {
-//            log.warn("Demo Session already started")
-//            return false
-//        }
-//        httpAdapter.baseUrl = td365ConfigurationProperties.demobaseurl
-//        httpAdapter.defaultHeaders = RequestHeaders(td365ConfigurationProperties.demoHeaders)
-//
-//        val pair = httpAdapter.getRequestRedirects(td365ConfigurationProperties.demolink, redirectHeaders)
-//        setValues(pair)
-//
-//        val queryParams = pair.first[0].split("?")[1].split("&")
-//        log.info("queryParams: $queryParams")
-//        login = queryParams[0].split("=")[1]
-//        log.info("login: $login")
-//
-//        if (websocketService.connect(login, token, td365ConfigurationProperties.demowebsocketserver)) {
-//            sessionState = 1
-//            return true
-//        }
-//        return false
-//    }
 
     fun liveLogin(): Boolean {
         if (sessionState==1) {
             log.warn("liveLogin: Session already started")
             return false
         }
-        httpAdapter.defaultHeaders = RequestHeaders(td365ConfigurationProperties.prodHeaders)
         if (!tokenAuthentication()) {
             return false
         }
+        httpAdapter.defaultHeaders = RequestHeaders(td365ConfigurationProperties.prodHeaders)
         loginHeaders.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwt!!.access_token)
         httpAdapter.baseUrl = td365ConfigurationProperties.prodbaseurl
 
@@ -314,17 +294,131 @@ class TD365SessionService(
     }
 
     private fun tokenAuthentication(): Boolean {
-        val query = String.format(USER_AUTH, td365ConfigurationProperties.username, td365ConfigurationProperties.password)
-        // log.debug("query: ${query}")
-        val httpResponseDto = httpAdapter.postRequest(td365ConfigurationProperties.authlink, query, authHeaders)
+        httpAdapter.clearCookies()
+        httpAdapter.defaultHeaders = RequestHeaders(emptyMap())
+
+        val codeVerifier = generateCodeVerifier()
+        val codeChallenge = generateCodeChallenge(codeVerifier)
+        val state = generateOAuthState()
+        val authorizeUrl = buildAuthorizeUrl(codeChallenge, state)
+
+        val loginPageResponse = httpAdapter.getRequest(authorizeUrl, oauthNavigateHeaders)
+        if (loginPageResponse.statusCode != 200) {
+            log.error("OAuth authorize page request failed: {}", loginPageResponse)
+            return false
+        }
+
+        val authenticateUrl = extractLoginFormAction(loginPageResponse.body)
+        if (authenticateUrl == null) {
+            log.error("OAuth login form action not found in authorize page")
+            return false
+        }
+
+        val loginResponse = httpAdapter.postFormRequestWithRedirects(
+            authenticateUrl,
+            mapOf(
+                "username" to td365ConfigurationProperties.username,
+                "password" to td365ConfigurationProperties.password,
+                "credentialId" to ""
+            ),
+            oauthLoginFormHeaders
+        )
+        val authCode = extractAuthCode(loginResponse.second)
+        if (authCode == null) {
+            log.error("OAuth authorization code not found, login response: {}", loginResponse.first)
+            return false
+        }
+
+        val tokenResponse = httpAdapter.postFormRequest(
+            td365ConfigurationProperties.oauthtokenurl,
+            mapOf(
+                "grant_type" to "authorization_code",
+                "client_id" to td365ConfigurationProperties.oauthclientid,
+                "redirect_uri" to td365ConfigurationProperties.oauthredirecturi,
+                "code" to authCode,
+                "code_verifier" to codeVerifier
+            ),
+            oauthTokenHeaders
+        )
+        if (tokenResponse.statusCode != 200) {
+            log.error("OAuth token exchange failed: {}", tokenResponse)
+            return false
+        }
+
         try {
-            log.debug("Jwt: ${httpResponseDto.body}")
-            jwt = mapper.readValue(httpResponseDto.body)
+            log.debug("Jwt: ${tokenResponse.body}")
+            jwt = mapper.readValue(tokenResponse.body)
         } catch (e: JsonProcessingException) {
-            log.error("Jwt mapping failed: %s", httpResponseDto)
+            log.error("Jwt mapping failed: %s", tokenResponse)
             return false
         }
         return true
+    }
+
+    private fun buildAuthorizeUrl(codeChallenge: String, state: String): String {
+        val params = linkedMapOf(
+            "response_type" to "code",
+            "client_id" to td365ConfigurationProperties.oauthclientid,
+            "audience" to td365ConfigurationProperties.oauthaudience,
+            "redirect_uri" to td365ConfigurationProperties.oauthredirecturi,
+            "scope" to "openid",
+            "code_challenge" to codeChallenge,
+            "code_challenge_method" to "S256",
+            "state" to state,
+            "ui_locales" to "en",
+            "ui_brand" to td365ConfigurationProperties.oauthuibrand,
+            "prompt" to "login"
+        )
+        val query = params.entries.joinToString("&") { (key, value) ->
+            "${URLEncoder.encode(key, StandardCharsets.UTF_8)}=${URLEncoder.encode(value, StandardCharsets.UTF_8)}"
+        }
+        return "${td365ConfigurationProperties.oauthauthorizeurl}?$query"
+    }
+
+    private fun extractLoginFormAction(html: String): String? {
+        val pattern = Regex("""action="([^"]*login-actions/authenticate[^"]*)"""")
+        val action = pattern.find(html)?.groupValues?.get(1)?.replace("&amp;", "&") ?: return null
+        return if (action.startsWith("http")) {
+            action
+        } else {
+            "https://auth.tradenation.com${if (action.startsWith("/")) action else "/$action"}"
+        }
+    }
+
+    private fun extractAuthCode(redirectUrls: List<String>): String? {
+        for (url in redirectUrls.asReversed()) {
+            extractQueryParam(url, "code")?.let { return it }
+        }
+        return null
+    }
+
+    private fun extractQueryParam(url: String, param: String): String? {
+        val query = url.substringAfter('?', "")
+        if (query.isEmpty()) {
+            return null
+        }
+        return query.split('&')
+            .map { it.split('=', limit = 2) }
+            .firstOrNull { it[0] == param }
+            ?.getOrNull(1)
+            ?.let { URLDecoder.decode(it, StandardCharsets.UTF_8) }
+    }
+
+    private fun generateCodeVerifier(): String {
+        val bytes = ByteArray(32)
+        SecureRandom().nextBytes(bytes)
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes)
+    }
+
+    private fun generateCodeChallenge(codeVerifier: String): String {
+        val digest = MessageDigest.getInstance("SHA-256").digest(codeVerifier.toByteArray(StandardCharsets.US_ASCII))
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(digest)
+    }
+
+    private fun generateOAuthState(): String {
+        val bytes = ByteArray(16)
+        SecureRandom().nextBytes(bytes)
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes)
     }
 
     private fun accounts(): Boolean {
