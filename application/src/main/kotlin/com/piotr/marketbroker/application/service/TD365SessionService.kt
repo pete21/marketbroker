@@ -101,7 +101,7 @@ class TD365SessionService(
         return liveLogin
     }
 
-    @Scheduled(fixedRateString = "\${td365.accesstokenupdateinterval}", initialDelay = 3600000)
+    @Scheduled(fixedRateString = "\${td365.accesstokenupdateinterval}", initialDelayString = "\${td365.accesstokenupdateinterval}")
     @Async
     fun reauthenticate() {
         if (!liveLogin) {
@@ -458,6 +458,9 @@ class TD365SessionService(
 internal class Jwt (
     @JsonProperty("access_token")
     val access_token: String,
+
+    @JsonProperty("refresh_token")
+    val refresh_token: String,
 
     @JsonProperty("id_token")
     private val id_token: String,
