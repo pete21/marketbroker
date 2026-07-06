@@ -27,6 +27,6 @@ echo "Uploaded data to quantdb table ${table_base}"
 # INSERT INTO ${table_base}_1S SELECT cast(timestamp AS TIMESTAMP), first((b+a)/2), max((b+a)/2), min((b+a)/2), last((b+a)/2) FROM ${table_base}
 
 curl -G http://localhost:9000/exec \
-  --data-urlencode "query=INSERT INTO ${table_base}_1S SELECT cast(timestamp AS TIMESTAMP), first((b+a)/2), max((b+a)/2), min((b+a)/2), last((b+a)/2) FROM ${table_base}"
+  --data-urlencode "query=INSERT INTO ${table_base}_1S SELECT cast(timestamp AS TIMESTAMP), first((b+a)/2), max((b+a)/2), min((b+a)/2), last((b+a)/2) FROM ${table_base} where timestamp >= '${last_date}'"
 echo "Migrated data to ${table_base}_1S"
 

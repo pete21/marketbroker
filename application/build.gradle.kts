@@ -23,6 +23,11 @@ java {
     targetCompatibility = JavaVersion.VERSION_21
 }
 
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
 springBoot {
     buildInfo()
 }
