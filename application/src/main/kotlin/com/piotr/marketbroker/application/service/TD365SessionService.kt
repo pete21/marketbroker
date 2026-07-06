@@ -40,6 +40,8 @@ private const val ACCESS_CONTROL_REQUEST_METHOD = "access-control-request-method
 
 private const val ACCESS_CONTROL_REQUEST_HEADERS = "access-control-request-headers"
 
+private const val ACCOUNT_NOT_FOUND = "Account not found"
+
 @Service
 class TD365SessionService(
     private val td365ConfigurationProperties: TD365ConfigurationProperties,
@@ -129,7 +131,7 @@ class TD365SessionService(
         if (sessionState==1) {
 
             val account = liveAccounts!!.app_metadata?.trading_accounts?.first { it?.id == selectedAccountId }
-            checkNotNull(account) {"Account not found"}
+            checkNotNull(account) {ACCOUNT_NOT_FOUND}
 
             var launchUrl: String
             try {
@@ -184,7 +186,7 @@ class TD365SessionService(
             return false
         }
         val account = liveAccounts!!.app_metadata?.trading_accounts?.first { it?.id == accountId }
-        checkNotNull(account) {"Account not found"}
+        checkNotNull(account) {ACCOUNT_NOT_FOUND}
         log.info("liveSessionStart: $account")
 
         val launchUrl = getUrl(accountId)
@@ -232,10 +234,10 @@ class TD365SessionService(
             log.info("redirectUrl: ${redirectUrl.url}")
             return redirectUrl.url + "&lan=1"
         } catch (e: JsonProcessingException) {
-            log.error("RedirectUrl mapping failed: %s", httpResponse)
+            log.error("RedirectUrl mapping failed: ${e.message}")
             return ""
         } catch (e: Exception) {
-            log.error("getUrl failed: %s", httpResponse)
+            log.error("getUrl failed: ${e.message}")
             return ""
         }
     }
@@ -259,7 +261,7 @@ class TD365SessionService(
             websocketService.disconnect()
             
             val account = liveAccounts!!.app_metadata?.trading_accounts?.first { it?.id == selectedAccountId }
-            checkNotNull(account) {"Account not found"}
+            checkNotNull(account) {ACCOUNT_NOT_FOUND}
             val logoutUrl = if (account.type == "Demo") {
                 loginHeaders.setHeader(HttpHeaders.HOST, "practice.tradenation.com")
                 td365ConfigurationProperties.demologoutlink
@@ -349,7 +351,7 @@ class TD365SessionService(
             log.debug("Jwt: ${tokenResponse.body}")
             jwt = mapper.readValue(tokenResponse.body)
         } catch (e: JsonProcessingException) {
-            log.error("Jwt mapping failed: %s", tokenResponse)
+            log.error("Jwt mapping failed: ${e.message}")
             return false
         }
         return true
