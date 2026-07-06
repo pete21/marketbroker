@@ -5,9 +5,9 @@ symbol="${2:?Usage: $0 <instrument_id> <symbol>}"
 
 table_base="DUKASCOPY_${instrument_id}_OHLC"
 
-# Query last available date from quantdb
-last_date=$(curl -s -G http://localhost:9000/exec --data-urlencode "query=select to_str(MAX(timestamp), 'yyyy-MM-dd') as timestamp FROM ${table_base}_1S" | jq -r '.dataset[0][0]')
-echo "Last date: $last_date"
+# Query last available date +1 day from quantdb
+last_date=$(curl -s -G http://localhost:9000/exec --data-urlencode "query=select to_str(max(dateadd('d',1,timestamp)), 'yyyy-MM-dd') as timestamp FROM ${table_base}" | jq -r '.dataset[0][0]')
+echo "Last date +1 day: $last_date"
 
 today=$(date +%Y-%m-%d)
 echo "Today: $today"
