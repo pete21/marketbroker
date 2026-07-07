@@ -23,10 +23,11 @@ java {
     targetCompatibility = JavaVersion.VERSION_21
 }
 
-//repositories {
-//    mavenCentral()
-//    mavenLocal()
-//}
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "com.piotr.marketbroker.MarketbrokerApplication"
+    }
+}
 
 springBoot {
     buildInfo()

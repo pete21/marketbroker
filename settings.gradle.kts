@@ -14,6 +14,6 @@ dependencyResolutionManagement {
 
 buildCache.local.directory = "/opt/gradle/caches/build-cache-${rootProject.name}"
 include("application")
-include("open-api")
+// include("open-api")
 
 System.setProperty("sonar.gradle.skipCompile", "true")

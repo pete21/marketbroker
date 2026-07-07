@@ -1,8 +1,12 @@
 .gradle/
 .idea/
+.vscode/
 bin/
 build/
 docker/
 notebooks/
 ml_examples/
 init-scripts/
+gradle/
+application/bin/
+application/build/

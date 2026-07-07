@@ -2,7 +2,7 @@ services:
   marketbroker:
     build:
       dockerfile: ./Dockerfile
-    image: registry.tradefiapp.com:5443/marketbroker:0.3.0
+    image: registry.tradefiapp.com:5443/marketbroker:0.4.0
     container_name: marketbroker
     hostname: marketbroker
     ports:
