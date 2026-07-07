@@ -7,7 +7,7 @@
 
 # Use format "HH:MM YYYY-MM-DD"
 start="00:00 $2"
-end="23:00 $3"
+end="00:00 $3"
 increment="+1 hours"
 instrument=$1
 #=======================================================================
@@ -25,7 +25,7 @@ printf "End: %s\n" "${end}"
 # NOTE: The +%s in the first line converts the date to "seconds since 
 # EPOC" which makes the comparison between start and end time possible.
 # See bottom of page here: https://phoenixnap.com/kb/linux-date-command
-while (( $(date -d "${start}" +%s) <= $(date -d "${end}" +%s) )); do
+while (( $(date -d "${start}" +%s) < $(date -d "${end}" +%s) )); do
     # echo      #< empty echo statement prints a blank line
     # echo Current Loop Date: ${start}
    
@@ -47,13 +47,20 @@ while (( $(date -d "${start}" +%s) <= $(date -d "${end}" +%s) )); do
 
 
     is_weekend=$(date -d "${start}" +%u)
-    if [ ${is_weekend} -eq 6 ] || [ ${is_weekend} -eq 7 ]; then
-        echo "Skipping weekend date: ${year}/${month}/${day}/${hour}h"
+    # if [ ${is_weekend} -eq 6 ] || [ ${is_weekend} -eq 7 ]; then
+    if [ ${is_weekend} -eq 6 ]; then
+        echo "Skipping Saturday: ${year}/${month}/${day}/${hour}h"
         touch ./cache/${instrument}-${formatted_start_file}h_ticks.bi5
         start=$(date -d "${start} ${increment}")
         continue
     fi
 
+    if [ ${is_weekend} -eq 7 ] && [ ${hour} -lt 21 ]; then
+        echo "Skipping Sunday: ${year}/${month}/${day}/${hour}h"
+        touch ./cache/${instrument}-${formatted_start_file}h_ticks.bi5
+        start=$(date -d "${start} ${increment}")
+        continue
+    fi
 
     # echo Downloading: https://datafeed.dukascopy.com/datafeed/${instrument}/${formatted_start}h_ticks.bi5
     # echo Cached file: ./cache/${instrument}-${formatted_start_file}h_ticks.bi5
