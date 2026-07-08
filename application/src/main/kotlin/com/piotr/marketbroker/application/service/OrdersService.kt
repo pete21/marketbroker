@@ -329,6 +329,7 @@ class OrdersService(
                 httpAdapter.postRequest(GET_OPEN_ORDER, String.format(ORDER_QUERY, id), RequestHeaders.postHeaders)
             val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
             log.info("getOrder response: $response")
+            // Possible response: {"__type":"TradingPlatform.OpenOrder","OrderID":null,"QuoteID":null,"MarketID":null,"Market":null,"ExpiryDate":null,"TradeMode":null,"Stake":null,"OrderMode":null,"OrderType":null,"OrderPriceMode":null,"LimitOrderPrice":null,"StopOrderPrice":null,"OrderStatus":null,"IsForceOpen":false,"IDOID":null,"IDOOrderMode":null,"IDOTradeMode":null,"IDOIsGuaranteedStop":false,"IDOLimitOrderPrice":null,"IDOStopOrderPrice":null,"IDOTrailingPoint":null,"Currency":null,"TrailingPoint":null,"IsRollingMarket":false,"Status":-996,"Message":"Session Expired."}
             try {
                 val openOrderResponse: OpenOrderResponse = mapper.readValue(response)
                 return openOrderResponse

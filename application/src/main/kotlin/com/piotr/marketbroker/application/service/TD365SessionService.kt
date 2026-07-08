@@ -137,7 +137,7 @@ class TD365SessionService(
             try {
                 launchUrl = getUrl(selectedAccountId)
             } catch (e: Exception) {
-                log.error("getUrl failed: %s", e.message)
+                log.error("getUrl failed: ${e.message}")
                 log.error("Retrying authentication...")
                 Thread.sleep(5000)
                 reauthenticate()
@@ -150,7 +150,7 @@ class TD365SessionService(
                 val pair = httpAdapter.getRequestRedirects(launchUrl, redirectHeaders)
                 setValues(pair)
             } catch (e: Exception) {
-                log.error("getRequestRedirects failed: %s", e.message)
+                log.error("getRequestRedirects failed: ${e.message}")
                 log.error("Retrying authentication...")
                 Thread.sleep(5000)
                 reauthenticate()
