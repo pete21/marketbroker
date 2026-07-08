@@ -67,16 +67,16 @@ class KafkaConnectAdapter(
         connectors.clear()
     }
 
-    private fun connectorStatus(quoteId: Int): ConnectorStatus? {
-        val name = String.format(CONNECTOR_NAME_TEMPLATE, quoteId)
-        val response = httpAdapter.getRequest("${kafkaConnectConfigurationProperties.url}/connectors/$name/status", RequestHeaders.jsonRequestHeaders)
-        return null
-    }
-
-    private fun listConnectors(): List<String>? {
-        val response = httpAdapter.getRequest("${kafkaConnectConfigurationProperties.url}/connectors", RequestHeaders.jsonRequestHeaders)
-        return null
-    }
+//    private fun connectorStatus(quoteId: Int): ConnectorStatus? {
+//        val name = String.format(CONNECTOR_NAME_TEMPLATE, quoteId)
+//        val response = httpAdapter.getRequest("${kafkaConnectConfigurationProperties.url}/connectors/$name/status", RequestHeaders.jsonRequestHeaders)
+//        return null
+//    }
+//
+//    private fun listConnectors(): List<String>? {
+//        val response = httpAdapter.getRequest("${kafkaConnectConfigurationProperties.url}/connectors", RequestHeaders.jsonRequestHeaders)
+//        return null
+//    }
 
 
     private fun createConnector(quoteId: Int): Boolean {

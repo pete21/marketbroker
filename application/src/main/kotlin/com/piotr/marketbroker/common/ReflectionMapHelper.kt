@@ -23,8 +23,8 @@ object ReflectionMapHelper {
         val toReturn = mutableMapOf<String, String>()
         map.forEach { (k, v) ->
             if (v is Map<*, *>) {
-                val map = flattenSkipNull(v as Map<String, Any?>, path + "_" + k)
-                toReturn.putAll(map)
+                val map2 = flattenSkipNull(v as Map<String, Any?>, path + "_" + k)
+                toReturn.putAll(map2)
             } else {
                 v?.run { toReturn.put("${path}_$k".lowercase(Locale.getDefault()), v.toString()) }
             }

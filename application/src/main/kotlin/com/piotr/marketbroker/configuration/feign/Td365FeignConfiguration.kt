@@ -12,7 +12,7 @@ class Td365FeignConfiguration {
     @Bean
     fun requestInterceptor(
     ): RequestInterceptor {
-        return RequestInterceptor { requestTemplate: RequestTemplate ->
+        return RequestInterceptor { _ : RequestTemplate ->
             run {
 //                val token = getHubspotToken(properties)
 //                log.trace("Adding token to HS request")
