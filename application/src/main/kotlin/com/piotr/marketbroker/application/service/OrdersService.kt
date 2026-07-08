@@ -349,11 +349,12 @@ class OrdersService(
     }
 
     fun getHistory(): List<TransactionHistoryOrder>? {
-        var httpResponse: HttpAdapterResponse = HttpAdapterResponse(0, "")
+        var httpResponse: HttpAdapterResponse? = null
         try {
             log.info("GetHistory request")
             httpResponse =
                 httpAdapter.postRequest(GET_TRANSACTION_HISTORY, HISTORY_QUERY, RequestHeaders.postHeaders)
+            // log.info("GetHistory full response: $httpResponse")
             val response = httpResponse.body.substring(10, httpResponse.body.length - 2)    //.replace('/','-')
             log.info("GetHistory response: $response")
             try {
@@ -365,7 +366,7 @@ class OrdersService(
                 return null
             }
         } catch (e: Exception) {
-            log.error("GetHistory error: ${httpResponse.statusCode} ${httpResponse.body}")
+            log.error("GetHistory error: ${httpResponse?.statusCode} ${httpResponse?.body}")
             return null
         }
     }
