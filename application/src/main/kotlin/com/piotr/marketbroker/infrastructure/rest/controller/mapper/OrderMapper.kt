@@ -5,9 +5,12 @@ import com.piotr.marketbroker.application.model.OrderResponseDTO
 import com.piotr.marketbroker.domain.order.OpenOrderResponse
 import com.piotr.marketbroker.domain.order.Order
 import com.piotr.marketbroker.domain.order.TradeRequestResponse
+import com.piotr.marketbroker.domain.order.TransactionHistoryOrder
 import com.piotr.marketbroker.domain.tick.Tick
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
+import kotlin.math.abs
+import kotlin.math.sign
 
 private const val ZONE_OFFSET_CET = "+01:00"
 
@@ -31,6 +34,27 @@ object OrderMapper {
         positionId = order.positionId,
         active = order.active,
         createdAt = OffsetDateTime.of(order.createdAt, ZoneOffset.of(ZONE_OFFSET_CET)),
+        status = 0
+    )
+
+    fun mapHistoryToOrderResponseDto(order: TransactionHistoryOrder) = OrderResponseDTO(
+        orderId = order.RefID.toInt(),
+        marketId = 0,
+        quoteId = 0,
+        price = 0f,
+        stake = abs(order.Amount),
+        direction = sign(order.Amount).toInt(),
+        limitOrderPrice = 0f,
+        stopOrderPrice = 0f,
+        trailingPoint = false,
+        openPrice = order.OpenPrice,
+        closePrice = order.ClosePrice,
+        openDate = order.OpenPeriod.let { OffsetDateTime.of(order.OpenPeriod, ZoneOffset.of(ZONE_OFFSET_CET)) },
+        closeDate = order.TransactionDate.let { OffsetDateTime.of(order.TransactionDate, ZoneOffset.of(ZONE_OFFSET_CET)) },
+        message = "",
+        positionId = order.RefID.toInt(),
+        active = false,
+        createdAt = null,
         status = 0
     )
 

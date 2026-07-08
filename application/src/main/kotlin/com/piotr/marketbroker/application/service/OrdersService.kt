@@ -40,7 +40,7 @@ private const val INSERT_CLOSE_POSITION = "InsertClosePosition"
 private const val GET_TRANSACTION_HISTORY = "GetTransactionHistory"
 
 private const val ORDER_QUERY = "{\"orderID\":%d}"
-private const val HISTORY_QUERY = "{\"transType\":2,\"days\":1,\"page\":0}"
+private const val HISTORY_QUERY = "{\"transType\":2,\"days\":3,\"page\":0}"
 
 
 @Service

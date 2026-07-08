@@ -8,8 +8,9 @@ info:
     name: piotr.nazarewicz@gmail.com
 servers:
   - url: 'http://localhost:8080'
+    description: Access marketbroker from local
   - url: 'http://192.168.0.250:8080'
-    description: Marketbroker API on fedora2
+    description: Access marketbroker from remote
 paths:
   '/users/{userId}':
     parameters:
@@ -227,6 +228,22 @@ paths:
       description: Delete open order
       tags:
         - orders
+  /orders/history:
+    get:
+      summary: List Orders history
+      tags:
+        - orders
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderResponseDTO'
+      operationId: list-orders-history
+      description: List Orders history
   /instruments/groups:
     get:
       summary: Get Instrument groups

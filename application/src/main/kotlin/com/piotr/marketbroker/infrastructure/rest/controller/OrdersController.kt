@@ -41,6 +41,15 @@ class OrdersController(
     }
 
     @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
+    override fun listOrdersHistory(): ResponseEntity<List<OrderResponseDTO>> {
+        log.info("listOrdersHistory request")
+        return ResponseEntity(
+            ordersService.getHistory()?.map { OrderMapper.mapHistoryToOrderResponseDto(it) },
+            HttpStatus.OK
+        )
+    }
+
+    @PreAuthorize("hasRole('${SecurityRole.role_manager}')")
     override fun getOrderById(@PathVariable("id") id: Int): ResponseEntity<OrderResponseDTO> {
         log.info("getOrderById request: $id")
         return ordersService.getOrder(id)

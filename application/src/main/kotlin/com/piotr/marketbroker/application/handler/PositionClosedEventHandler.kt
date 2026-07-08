@@ -24,7 +24,7 @@ class PositionClosedEventHandler(
     ) {
     private val log by logger()
 
-    var lastGetHistory = LocalDateTime.now().minusDays(1)
+    var lastGetHistory = LocalDateTime.now().minusDays(3)
 
     @Async
     @EventListener
@@ -49,8 +49,8 @@ class PositionClosedEventHandler(
             }
 
             val matchedHistoryOrders = filteredTransactionHistory?.filter { historyOrder ->
-                val timeFrom = historyOrder.OpenPeriod.minusSeconds(1).minusHours(td365ConfigurationProperties.brokertimeutcdelta.toLong())
-                val timeTo = historyOrder.OpenPeriod.plusSeconds(1).minusHours(td365ConfigurationProperties.brokertimeutcdelta.toLong())
+                val timeFrom = historyOrder.OpenPeriod.minusSeconds(2).minusHours(td365ConfigurationProperties.brokertimeutcdelta.toLong())
+                val timeTo = historyOrder.OpenPeriod.plusSeconds(2).minusHours(td365ConfigurationProperties.brokertimeutcdelta.toLong())
                 log.info("History order: timeFrom=$timeFrom, timeTo=$timeTo, Order: open_date=${order.open_date}")
                 order.open_date!! >= timeFrom && order.open_date!! <= timeTo
                         && order.open_price == historyOrder.OpenPrice
