@@ -78,8 +78,11 @@ class OrdersController(
         when (order?.orderModeID) {
             0 ->                                          //Market order, +SL, +TP, +SL+TP
                 orderResponseDto = ordersService.requestTrade(order).let { OrderMapper.mapTradeRequestToOrderResponseDTO(it) }
-            1 ->                                          //Open order, OO+SL, OO+TP, OO+SL+TP
-                orderResponseDto = ordersService.insertOpenOrder(order).let { OrderMapper.mapOpenOrderResponseToOrderResponseDTO(it) }
+            1 -> {                                         //Open order, OO+SL, OO+TP, OO+SL+TP
+                val orderResponseBody = ordersService.insertOpenOrder(order)
+                log.info("insertOpenOrder: $orderResponseBody")
+                orderResponseDto = orderResponseBody.let { OrderMapper.mapOpenOrderResponseToOrderResponseDTO(it) }
+            }
             2 ->                                          //Open order stop + SL + TP
                 orderResponseDto = ordersService.insertOpenOrder(order).let { OrderMapper.mapOpenOrderResponseToOrderResponseDTO(it) }
             4 ->                                          //Close open position by positionId

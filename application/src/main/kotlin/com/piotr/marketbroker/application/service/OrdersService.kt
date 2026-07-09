@@ -146,7 +146,7 @@ class OrdersService(
             log.error(msg)
             log.debug("TradeRequest json: $response")
             // TODO Auto-generated catch block
-            return TradeRequestResponse(message = msg, status = -1)
+            return TradeRequestResponse(message = response, status = -1)
         }
 
     }
@@ -182,7 +182,7 @@ class OrdersService(
             order.key!!
         )
 
-        val httpResponse: HttpAdapterResponse
+        var httpResponse: HttpAdapterResponse = HttpAdapterResponse(0, "")
         try {
             val jsonString = mapper.writeValueAsString(requestTradeDTO)
             log.info("requestTrade: $jsonString")
@@ -191,7 +191,7 @@ class OrdersService(
             val msg = "requestTrade error: ${e.message}"
             log.error(msg)
             // TODO Auto-generated catch block
-            return TradeRequestResponse(message = msg, status = -1)
+            return TradeRequestResponse(message = httpResponse.body, status = -1)
         }
         val tradeRequest = saveTradeRequest(httpResponse, order)
 //        producer.produce(                                           // Alternative way to throw market order filled event, currently implemented based on AccountDetailsEvent websocket event
@@ -239,11 +239,11 @@ class OrdersService(
             log.info("insertOpenOrder request: $jsonString")
             httpResponse = httpAdapter.postRequest(INSERT_OPEN_ORDER, jsonString, RequestHeaders.postHeaders)
         } catch (e: Exception) {
-            val msg = "RequestTrade error: ${e.message}. HTTP status: ${httpResponse.statusCode} ${httpResponse.body}"
+            val msg = "insertOpenOrder error: ${e.message}. HTTP status: ${httpResponse.statusCode} ${httpResponse.body}"
             // TODO Auto-generated catch block
             log.error(msg)
             // TODO Auto-generated catch block
-            return OpenOrderResponse(message = msg, status = -1)
+            return OpenOrderResponse(message = httpResponse.body, status = -1)
         }
         val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
         log.info("insertOpenOrder response: $response")
