@@ -1,5 +1,7 @@
 dukascopy-node/cache/
+dukascopy-node/cache2/
 dukascopy-node/download/
+dukascopy-node/download2/
 questdb-import/*.parquet
 questdb-import/*.zip
 prometheus_data/

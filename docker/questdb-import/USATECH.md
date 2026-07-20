@@ -2,6 +2,8 @@
 
 CREATE TABLE IF NOT EXISTS DUKASCOPY_16917_OHLC(timestamp long,b float,a float,q symbol CAPACITY 2);
 
+CREATE TABLE IF NOT EXISTS DUKASCOPY_16917_OHLC_CSV(timestamp TIMESTAMP,open float,high float,low float,close float,tick_count short);
+
 -- ```bash
 -- curl -F data=@<file>.csv 'http://localhost:9000/imp?name=DUKASCOPY_16917_OHLC'
 -- ```

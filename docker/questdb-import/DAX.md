@@ -2,6 +2,9 @@
 
 CREATE TABLE IF NOT EXISTS DUKASCOPY_6374_OHLC(timestamp long,b float,a float,q symbol CAPACITY 2);
 
+CREATE TABLE IF NOT EXISTS DUKASCOPY_6374_OHLC_CSV(timestamp TIMESTAMP,open float,high float,low float,close float,tick_count short);
+
+
 SELECT COUNT(*) FROM DUKASCOPY_6374_OHLC;
 
 -- ```bash

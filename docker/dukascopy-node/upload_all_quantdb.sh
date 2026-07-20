@@ -2,20 +2,20 @@
 
 instrument_ids=(
     "6374"
-    "16917"
-    "872703"
+    # "16917"
+    # "872703"
 )
 
 symbols=(
-    "deuidxeur"
-    "usatechidxusd"
-    "usa500idxusd"
+    "DEU.IDX-EUR"
+    "USATECH.IDX-USD"
+    "USA500.IDX-USD"
 )
 
 for i in "${!instrument_ids[@]}"; do
-    ./upload_to_quantdb.sh "${instrument_ids[$i]}" "${symbols[$i]}"
+    ./upload_to_quantdb2.sh "${instrument_ids[$i]}" "${symbols[$i]}"
 done
 
-# ./upload_to_quantdb.sh 6374 deuidxeur
-# ./upload_to_quantdb.sh 16917 usatechidxusd
-# ./upload_to_quantdb.sh 872703 usa500idxusd
+# ./upload_to_quantdb2.sh 6374 DEU.IDX-EUR
+# ./upload_to_quantdb2.sh 16917 USATECH.IDX-USD
+# ./upload_to_quantdb2.sh 872703 USA500.IDX-USD
