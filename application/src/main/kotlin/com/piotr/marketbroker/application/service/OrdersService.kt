@@ -131,9 +131,13 @@ class OrdersService(
             log.info("insertClosePosition: $jsonString")
             httpResponse = httpAdapter.postRequest(INSERT_CLOSE_POSITION, jsonString, RequestHeaders.postHeaders)
         } catch (e: Exception) {
-            val msg = "InsertClosePosition error: ${e.message}"
+            val msg = "InsertClosePosition exception: ${e.message}"
             log.error(msg)
             return TradeRequestResponse(message = msg, status = -1)
+        }
+        if (httpResponse.statusCode != 200) {
+            log.error("insertClosePosition error: ${httpResponse.statusCode} ${httpResponse.body}")
+            return TradeRequestResponse(message = httpResponse.body, status = -1)
         }
 //        val tradeRequst = saveTradeRequest(httpResponse, order)
 //        return tradeRequst
@@ -142,11 +146,10 @@ class OrdersService(
             val tradeRequestResponse: TradeRequestResponse = mapper.readValue(response)
             return tradeRequestResponse
         } catch (e: Exception) {
-            val msg = "TradeRequest mapping error: ${e.message}"
+            val msg = "To TradeRequestResponse mapping exception: ${e.message}"
             log.error(msg)
-            log.debug("TradeRequest json: $response")
-            // TODO Auto-generated catch block
-            return TradeRequestResponse(message = response, status = -1)
+            log.debug("insertClosePosition response: $response")
+            return TradeRequestResponse(message = msg, status = -1)
         }
 
     }
@@ -188,12 +191,25 @@ class OrdersService(
             log.info("requestTrade: $jsonString")
             httpResponse = httpAdapter.postRequest(REQUEST_TRADE, jsonString, RequestHeaders.postHeaders)
         } catch (e: Exception) {
-            val msg = "requestTrade error: ${e.message}"
+            val msg = "requestTrade exception: ${e.message}"
             log.error(msg)
-            // TODO Auto-generated catch block
             return TradeRequestResponse(message = httpResponse.body, status = -1)
         }
-        val tradeRequest = saveTradeRequest(httpResponse, order)
+        if (httpResponse.statusCode != 200) {
+            log.error("requestTrade error: ${httpResponse.statusCode} ${httpResponse.body}")
+            return TradeRequestResponse(message = httpResponse.body, status = -1)
+        }
+        val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
+        log.info("requestTrade response: $response")
+        try {
+            val tradeRequestResponse: TradeRequestResponse = mapper.readValue(response)
+            return tradeRequestResponse
+        } catch (e: Exception) {
+            val msg = "To TradeRequestResponse mapping exception: ${e.message}"
+            log.error(msg)
+            log.debug("requestTrade response: $response")
+            return TradeRequestResponse(message = msg, status = -1)
+        }
 //        producer.produce(                                           // Alternative way to throw market order filled event, currently implemented based on AccountDetailsEvent websocket event
 //            TransactionEvent(
 //                o = order.orderId,
@@ -205,7 +221,6 @@ class OrdersService(
 //                t = order.open_date?.toEpochSecond(ZoneOffset.UTC)?:0L
 //            ),
 //            TOPIC_TRANSACTIONS, null)
-        return tradeRequest
     }
 
 /*
@@ -238,13 +253,20 @@ class OrdersService(
             val jsonString = mapper.writeValueAsString(insertOpenOrderRequestDTO)
             log.info("insertOpenOrder request: $jsonString")
             httpResponse = httpAdapter.postRequest(INSERT_OPEN_ORDER, jsonString, RequestHeaders.postHeaders)
+            log.info("insertOpenOrder response: ${httpResponse.statusCode} ${httpResponse.body}")
         } catch (e: Exception) {
-            val msg = "insertOpenOrder error: ${e.message}. HTTP status: ${httpResponse.statusCode} ${httpResponse.body}"
+            val msg = "insertOpenOrder exception: ${e.message}. HTTP status: ${httpResponse.statusCode} ${httpResponse.body}"
             // TODO Auto-generated catch block
             log.error(msg)
             // TODO Auto-generated catch block
             return OpenOrderResponse(message = httpResponse.body, status = -1)
         }
+
+        if (httpResponse.statusCode != 200) {
+            log.error("insertOpenOrder error: ${httpResponse.statusCode} ${httpResponse.body}")
+            return OpenOrderResponse(message = httpResponse.body, status = -1)
+        }
+
         val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
         log.info("insertOpenOrder response: $response")
         try {
@@ -269,10 +291,9 @@ class OrdersService(
 
             return openOrderResponse
         } catch (e: Exception) {
-            val msg = "OpenOrderResponse mapping error: ${e.message}"
-            // TODO Auto-generated catch block
+            val msg = "To OpenOrderResponse mapping exception: ${e.message}"
             log.error(msg)
-            // TODO Auto-generated catch block
+            log.debug("insertOpenOrder response: $response")
             return OpenOrderResponse(message = msg, status = -1)
         }
     }
@@ -327,6 +348,10 @@ class OrdersService(
             log.info("GetOrder request: $id")
             httpResponse =
                 httpAdapter.postRequest(GET_OPEN_ORDER, String.format(ORDER_QUERY, id), RequestHeaders.postHeaders)
+            if (httpResponse.statusCode != 200) {
+                log.error("getOrder error: ${httpResponse.statusCode} ${httpResponse.body}")
+                return OpenOrderResponse(message = httpResponse.body, status = -1)
+            }
             val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
             log.info("getOrder response: $response")
             // Possible response: {"__type":"TradingPlatform.OpenOrder","OrderID":null,"QuoteID":null,"MarketID":null,"Market":null,"ExpiryDate":null,"TradeMode":null,"Stake":null,"OrderMode":null,"OrderType":null,"OrderPriceMode":null,"LimitOrderPrice":null,"StopOrderPrice":null,"OrderStatus":null,"IsForceOpen":false,"IDOID":null,"IDOOrderMode":null,"IDOTradeMode":null,"IDOIsGuaranteedStop":false,"IDOLimitOrderPrice":null,"IDOStopOrderPrice":null,"IDOTrailingPoint":null,"Currency":null,"TrailingPoint":null,"IsRollingMarket":false,"Status":-996,"Message":"Session Expired."}
@@ -334,13 +359,13 @@ class OrdersService(
                 val openOrderResponse: OpenOrderResponse = mapper.readValue(response)
                 return openOrderResponse
             } catch (e: Exception) {
-                log.error("OpenOrderResponse mapping error: $e")
-                // TODO Auto-generated catch block
-                return null
+                log.error("To OpenOrderResponse mapping exception: ${e.message}")
+                log.debug("getOrder response: $response")
+                return OpenOrderResponse(message = e.message, status = -1)
             }
         } catch (e: Exception) {
-            log.error("GetOrder error: ${httpResponse.statusCode} ${httpResponse.body}")
-            return null
+            log.error("GetOrder exception: ${e.message}")
+            return OpenOrderResponse(message = e.message, status = -1)
         }
     }
 
@@ -349,25 +374,28 @@ class OrdersService(
     }
 
     fun getHistory(): List<TransactionHistoryOrder>? {
-        var httpResponse: HttpAdapterResponse? = null
+        var httpResponse: HttpAdapterResponse
         try {
             log.info("GetHistory request")
             httpResponse =
                 httpAdapter.postRequest(GET_TRANSACTION_HISTORY, HISTORY_QUERY, RequestHeaders.postHeaders)
-            // log.info("GetHistory full response: $httpResponse")
+            if (httpResponse.statusCode != 200) {
+                log.error("getHistory error: ${httpResponse.statusCode} ${httpResponse.body}")
+                return listOf()
+            }
             val response = httpResponse.body.substring(10, httpResponse.body.length - 2)    //.replace('/','-')
-            log.info("GetHistory response: $response")
+            log.info("getHistory response: $response")
             try {
                 val transactionHistoryResponse: TransactionHistoryOrders = mapper.readValue(response)
                 return transactionHistoryResponse.records
             } catch (e: Exception) {
-                log.error("TransactionHistoryResponse mapping error: $e")
-                // TODO Auto-generated catch block
-                return null
+                log.error("To TransactionHistoryOrders mapping exception: ${e.message}")
+                log.debug("getHistory response: $response")
+                return listOf()
             }
         } catch (e: Exception) {
-            log.error("GetHistory error: ${httpResponse?.statusCode} ${httpResponse?.body}")
-            return null
+            log.error("getHistory exception: ${e.message}")
+            return listOf()
         }
     }
 
@@ -383,10 +411,9 @@ class OrdersService(
             ordersRepository.save(order)
             return tradeRequestResponse
         } catch (e: Exception) {
-            val msg = "TradeRequest mapping error: ${httpResponse.body}"
+            val msg = "To TradeRequestResponse mapping exception: ${e.message}"
             log.error(msg)
-            log.debug("TradeRequest json: $response")
-            // TODO Auto-generated catch block
+            log.debug("saveTradeRequest response: $response")
             return TradeRequestResponse(message = msg, status = -1)
         }
     }

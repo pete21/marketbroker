@@ -48,7 +48,7 @@ class ApacheHttpAdapter {
         log.info("postRequest: $targetUrl Body: $body")
         val response = execute(HttpPost(targetUrl), body, headers)          //.ifEmpty { "{}" }
 
-        val httpAdapterResponse = HttpAdapterResponse(response.code, EntityUtils.toString(response.entity))
+        val httpAdapterResponse = HttpAdapterResponse(response.code, EntityUtils.toString(response.getEntity()))
         response.close()
         return httpAdapterResponse
     }

@@ -88,3 +88,9 @@ out/
 ### VS Code ###
 .vscode/
 /docker/questdb-import/*.csv
+/docker/grafana/var-lib-grafana/alerting/
+/docker/grafana/var-lib-grafana/csv/
+/docker/grafana/var-lib-grafana/pdf/
+/docker/grafana/var-lib-grafana/png/
+/docker/grafana/var-lib-grafana/plugins/
+/docker/grafana/var-lib-grafana/grafana.db
