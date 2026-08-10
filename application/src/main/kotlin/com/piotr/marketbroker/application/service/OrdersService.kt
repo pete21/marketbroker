@@ -141,6 +141,7 @@ class OrdersService(
         }
 //        val tradeRequst = saveTradeRequest(httpResponse, order)
 //        return tradeRequst
+        log.info("insertClosePosition response body: ${httpResponse.body}")
         val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
         try {
             val tradeRequestResponse: TradeRequestResponse = mapper.readValue(response)
@@ -199,8 +200,8 @@ class OrdersService(
             log.error("requestTrade error: ${httpResponse.statusCode} ${httpResponse.body}")
             return TradeRequestResponse(message = httpResponse.body, status = -1)
         }
+        log.info("requestTrade response body: ${httpResponse.body}")
         val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
-        log.info("requestTrade response: $response")
         try {
             val tradeRequestResponse: TradeRequestResponse = mapper.readValue(response)
             return tradeRequestResponse
@@ -267,8 +268,8 @@ class OrdersService(
             return OpenOrderResponse(message = httpResponse.body, status = -1)
         }
 
+        log.info("insertOpenOrder response body: ${httpResponse.body}")
         val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
-        log.info("insertOpenOrder response: $response")
         try {
             val openOrderResponse: OpenOrderResponse = mapper.readValue(response)
             if (openOrderResponse.status!=0) return openOrderResponse
@@ -352,8 +353,8 @@ class OrdersService(
                 log.error("getOrder error: ${httpResponse.statusCode} ${httpResponse.body}")
                 return OpenOrderResponse(message = httpResponse.body, status = -1)
             }
+            log.info("getOrder response body: ${httpResponse.body}")
             val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
-            log.info("getOrder response: $response")
             // Possible response: {"__type":"TradingPlatform.OpenOrder","OrderID":null,"QuoteID":null,"MarketID":null,"Market":null,"ExpiryDate":null,"TradeMode":null,"Stake":null,"OrderMode":null,"OrderType":null,"OrderPriceMode":null,"LimitOrderPrice":null,"StopOrderPrice":null,"OrderStatus":null,"IsForceOpen":false,"IDOID":null,"IDOOrderMode":null,"IDOTradeMode":null,"IDOIsGuaranteedStop":false,"IDOLimitOrderPrice":null,"IDOStopOrderPrice":null,"IDOTrailingPoint":null,"Currency":null,"TrailingPoint":null,"IsRollingMarket":false,"Status":-996,"Message":"Session Expired."}
             try {
                 val openOrderResponse: OpenOrderResponse = mapper.readValue(response)
@@ -383,8 +384,8 @@ class OrdersService(
                 log.error("getHistory error: ${httpResponse.statusCode} ${httpResponse.body}")
                 return listOf()
             }
+            log.info("getHistory response body: ${httpResponse.body}")
             val response = httpResponse.body.substring(10, httpResponse.body.length - 2)    //.replace('/','-')
-            log.info("getHistory response: $response")
             try {
                 val transactionHistoryResponse: TransactionHistoryOrders = mapper.readValue(response)
                 return transactionHistoryResponse.records
@@ -400,6 +401,7 @@ class OrdersService(
     }
 
     private fun saveTradeRequest(httpResponse: HttpAdapterResponse, order: Order): TradeRequestResponse {
+        log.info("saveTradeRequest response body: ${httpResponse.body}")
         val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
         try {
             val tradeRequestResponse: TradeRequestResponse = mapper.readValue(response)

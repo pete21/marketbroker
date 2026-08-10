@@ -2,7 +2,11 @@
 
 #=======================================================================
 # Usage: ./populate_cache.sh <instrument> <start_date> <end_date>
-# Example: ./populate_cache.sh deuidxeur 2026-01-01 2026-06-30
+# Examples:
+# ./populate_cache2.sh DEU.IDX-EUR 2026-07-01 2026-08-01
+# ./populate_cache2.sh USATECH.IDX-USD 2026-07-01 2026-08-01
+# ./populate_cache2.sh USA500.IDX-USD 2026-07-01 2026-08-01
+# 
 #=======================================================================
 
 

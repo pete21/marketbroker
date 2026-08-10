@@ -62,13 +62,24 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install opentraveldata OpenTr
 RUN --mount=type=cache,target=/root/.cache/pip pip install elasticsearch kafka-python
 RUN --mount=type=cache,target=/root/.cache/pip pip install questdb psycopg[binary] psycopg2-binary confluent-kafka confluent-kafka[avro] fastavro
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install openai langchain stockstats pyfolio-reloaded quantstats wrds pyportfolioopt
+RUN --mount=type=cache,target=/root/.cache/pip pip install stockstats pyfolio-reloaded quantstats wrds pyportfolioopt
 RUN --mount=type=cache,target=/root/.cache/pip pip install bottleneck --upgrade
 
 RUN --mount=type=cache,target=/root/.cache/pip pip install boto3 missingno finplot statsmodels graphviz stldecompose smartmoneyconcepts hurst quantreo mplfinance backtesting oipd
-RUN --mount=type=cache,target=/root/.cache/pip pip install pandas-market-calendars IProgress empyrical-reloaded ipyparallel jupyter-ai langchain-ollama pandas-datareader
+RUN --mount=type=cache,target=/root/.cache/pip pip install pandas-market-calendars IProgress empyrical-reloaded ipyparallel jupyter-ai pandas-datareader
 
 RUN --mount=type=cache,target=/root/.cache/pip pip install einops PyWavelets sympy scipy pykalman alphalens-reloaded dvc dvc[s3] joblib nltk wordcloud antropy #pywavelet functools pytimetk
+
+RUN --mount=type=cache,target=/root/.cache/pip pip install \
+langchain \
+langchain-openai \
+langchain-community \
+langchain-core \
+langchain-text-splitters \
+langchain-ollama \
+openai \
+tiktoken \
+pydantic
 
 RUN mkdir /home/jovyan/.aws
 COPY credentials ./.aws/
@@ -80,8 +91,10 @@ COPY credentials ./.aws/
 ENV MLFLOW_TRACKING_URI=http://host.docker.internal:5000
 ENV MLFLOW_S3_ENDPOINT_URL=http://host.docker.internal:9900
 ENV JUPYTER_TOKEN=1234
-
+ENV GRANT_SUDO=yes
 #ENV LD_LIBRARY=/usr/lib/x86_64-linux-gnu/
+
+RUN echo "jovyan:password" | chpasswd
 
 EXPOSE 8888
 EXPOSE 2000-2010

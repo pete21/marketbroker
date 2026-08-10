@@ -36,7 +36,7 @@ curl -G http://localhost:9000/exec \
 echo "Migrated data to table ${table_base}_1S"
 
 
-# Truncate ${table_base}
+# Truncate ${table_base}_CSV
 curl -G http://localhost:9000/exec \
   --data-urlencode "query=TRUNCATE TABLE ${table_base}_CSV"
 echo "Truncated table ${table_base}_CSV"
