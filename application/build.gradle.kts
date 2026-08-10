@@ -8,6 +8,8 @@ plugins {
     id("org.graalvm.buildtools.native") version "0.10.1"
     kotlin("jvm")
     kotlin("plugin.spring") version "1.9.22"
+    kotlin("plugin.serialization") version "1.9.22"
+
     jacoco
 }
 
@@ -123,7 +125,8 @@ dependencies {
 // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-contract-wiremock
     implementation("org.springframework.cloud:spring-cloud-contract-wiremock:4.1.4")
 
-
+    // Source: https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-serialization-json
+    runtimeOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
 }
 /*
 tasks.processAot.configure {

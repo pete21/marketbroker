@@ -31,6 +31,8 @@ import java.time.ZoneOffset
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.round
+import kotlinx.serialization.json.*
+
 
 private const val INSERT_OPEN_ORDER = "InsertOpenOrder"
 private const val GET_OPEN_ORDER = "GetOpenOrder"
@@ -127,7 +129,8 @@ class OrdersService(
 
         val httpResponse: HttpAdapterResponse
         try {
-            val jsonString = mapper.writeValueAsString(insertClosePositionRequestDTO)
+            // val jsonString = mapper.writeValueAsString(insertClosePositionRequestDTO)
+            val jsonString = Json.encodeToString(insertClosePositionRequestDTO)
             log.info("insertClosePosition: $jsonString")
             httpResponse = httpAdapter.postRequest(INSERT_CLOSE_POSITION, jsonString, RequestHeaders.postHeaders)
         } catch (e: Exception) {
@@ -188,7 +191,8 @@ class OrdersService(
 
         var httpResponse: HttpAdapterResponse = HttpAdapterResponse(0, "")
         try {
-            val jsonString = mapper.writeValueAsString(requestTradeDTO)
+            // val jsonString = mapper.writeValueAsString(requestTradeDTO)
+            val jsonString = Json.encodeToString(requestTradeDTO)
             log.info("requestTrade: $jsonString")
             httpResponse = httpAdapter.postRequest(REQUEST_TRADE, jsonString, RequestHeaders.postHeaders)
         } catch (e: Exception) {
@@ -251,7 +255,8 @@ class OrdersService(
 
         var httpResponse: HttpAdapterResponse = HttpAdapterResponse(0, "")
         try {
-            val jsonString = mapper.writeValueAsString(insertOpenOrderRequestDTO)
+            // val jsonString = mapper.writeValueAsString(insertOpenOrderRequestDTO)
+            val jsonString = Json.encodeToString(insertOpenOrderRequestDTO)
             log.info("insertOpenOrder request: $jsonString")
             httpResponse = httpAdapter.postRequest(INSERT_OPEN_ORDER, jsonString, RequestHeaders.postHeaders)
             log.info("insertOpenOrder response: ${httpResponse.statusCode} ${httpResponse.body}")
@@ -481,6 +486,7 @@ internal class RequestTradeDTO (
                 trailingPoint, 0, true, userAgentValue, key)
 }
 
+@Serializable
 internal class InsertOpenOrderRequestDTO(
     private val tradeType: Int = 1,
     private val marketID: Int,
