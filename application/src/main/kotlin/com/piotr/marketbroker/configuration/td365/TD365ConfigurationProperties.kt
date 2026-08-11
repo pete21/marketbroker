@@ -25,7 +25,8 @@ data class TD365ConfigurationProperties(
     val demologoutlink: String,
     val platformlogoutlink: String,
     val sessionupdateinterval: Int = 120000,
-    val accesstokenupdateinterval: Int = 18000000,            //86400
+    val reauthenticateinterval: Int = 15000000,
+    val accesstokenrefreshinterval: Int = 270000,
     val username: String,
     val password: String,
     val brokertimeutcdelta: Int = 1

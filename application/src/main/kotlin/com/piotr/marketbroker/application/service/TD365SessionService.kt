@@ -103,7 +103,7 @@ class TD365SessionService(
         return liveLogin
     }
 
-    @Scheduled(fixedRateString = "\${td365.accesstokenupdateinterval}", initialDelayString = "\${td365.accesstokenupdateinterval}")
+    @Scheduled(fixedRateString = "\${td365.reauthenticateinterval}", initialDelayString = "\${td365.reauthenticateinterval}")
     @Async
     fun reauthenticate() {
         if (!liveLogin) {
@@ -117,6 +117,21 @@ class TD365SessionService(
         }
         loginHeaders.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwt!!.access_token)
 
+    }
+
+    @Scheduled(fixedRateString = "\${td365.accesstokenrefreshinterval}", initialDelayString = "\${td365.accesstokenrefreshinterval}")
+    @Async
+    fun refreshAccessToken() {
+        if (!liveLogin || jwt == null) {
+            log.info("Access token refresh not needed, not logged in")
+            return
+        }
+        log.info("Refreshing JWT access_token")
+        if (!refreshAccessTokenWithRefreshToken()) {
+            log.error("Access token refresh failed")
+            return
+        }
+        loginHeaders.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwt!!.access_token)
     }
 
 
@@ -357,6 +372,46 @@ class TD365SessionService(
         return true
     }
 
+    private fun refreshAccessTokenWithRefreshToken(): Boolean {
+        val currentJwt = jwt ?: return false
+
+        val tokenResponse = httpAdapter.postFormRequest(
+            td365ConfigurationProperties.oauthtokenurl,
+            mapOf(
+                "grant_type" to "refresh_token",
+                "client_id" to td365ConfigurationProperties.oauthclientid,
+                "refresh_token" to currentJwt.refresh_token
+            ),
+            oauthTokenHeaders
+        )
+        if (tokenResponse.statusCode != 200) {
+            log.error("OAuth token refresh failed: {}", tokenResponse)
+            return false
+        }
+
+        try {
+            log.debug("Refreshed Jwt: ${tokenResponse.body}")
+            val refreshedJwt: Jwt = mapper.readValue(tokenResponse.body)
+            jwt = if (refreshedJwt.refresh_token.isBlank()) {
+                Jwt(
+                    access_token = refreshedJwt.access_token,
+                    refresh_token = currentJwt.refresh_token,
+                    id_token = refreshedJwt.id_token,
+                    scope = refreshedJwt.scope,
+                    expires_in = refreshedJwt.expires_in,
+                    refresh_expires_in = refreshedJwt.refresh_expires_in,
+                    token_type = refreshedJwt.token_type
+                )
+            } else {
+                refreshedJwt
+            }
+        } catch (e: JsonProcessingException) {
+            log.error("Refreshed Jwt mapping failed: ${e.message}")
+            return false
+        }
+        return true
+    }
+
     private fun buildAuthorizeUrl(codeChallenge: String, state: String): String {
         val params = linkedMapOf(
             "response_type" to "code",
@@ -462,19 +517,22 @@ internal class Jwt (
     val access_token: String,
 
     @JsonProperty("refresh_token")
-    val refresh_token: String,
+    val refresh_token: String = "",
 
     @JsonProperty("id_token")
-    private val id_token: String,
+    val id_token: String = "",
 
     @JsonProperty("scope")
-    private val scope: String,
+    val scope: String = "",
 
     @JsonProperty("expires_in")
-    private val expires_in: Int,
+    val expires_in: Int = 0,
+
+    @JsonProperty("refresh_expires_in")
+    val refresh_expires_in: Int = 0,
 
     @JsonProperty("token_type")
-    private val token_type: String
+    val token_type: String = ""
 )
 
 internal class RedirectUrl (
