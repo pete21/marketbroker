@@ -103,8 +103,8 @@ class TD365SessionService(
         return liveLogin
     }
 
-    @Scheduled(fixedRateString = "\${td365.reauthenticateinterval}", initialDelayString = "\${td365.reauthenticateinterval}")
-    @Async
+    // @Scheduled(fixedRateString = "\${td365.reauthenticateinterval}", initialDelayString = "\${td365.reauthenticateinterval}")
+    // @Async
     fun reauthenticate() {
         if (!liveLogin) {
             log.info("Reauthentication not needed, not logged in")

@@ -74,7 +74,8 @@ class OrdersService(
                 order.quoteId,
                 order.price.toString(),
                 orderToClose.stake,
-                order.direction == -1,
+                // order.direction == -1,
+                orderToClose.direction == 1,
                 order.key
             )
         }
@@ -95,17 +96,17 @@ class OrdersService(
                 log.warn(msg)
                 return TradeRequestResponse(message = msg, status = -1)
             }
-            if (when (position.direction) {
-                    "Buy" -> order.direction == 1
-                    "Sell" -> order.direction == -1
-                    else -> true
-                }
-            ) {
-                val msg =
-                    "InsertClosePosition error: You are only allowed to close in opposite direction id=${order.positionId}"
-                log.warn(msg)
-                return TradeRequestResponse(message = msg, status = -1)
-            }
+            // if (when (position.direction) {
+            //         "Buy" -> order.direction == 1
+            //         "Sell" -> order.direction == -1
+            //         else -> true
+            //     }
+            // ) {
+            //     val msg =
+            //         "InsertClosePosition error: You must close in opposite direction to the position id=${order.positionId}"
+            //     log.warn(msg)
+            //     return TradeRequestResponse(message = msg, status = -1)
+            // }
 
             if (order.marketId != position.marketId || order.quoteId != position.quoteId) {
                 val msg =
@@ -120,7 +121,8 @@ class OrdersService(
                 order.quoteId,
                 order.price.toString(),
                 order.stake,
-                order.direction == -1,
+                // order.direction == -1,
+                position.direction == "Buy",
                 order.key
             )
         }
@@ -139,17 +141,30 @@ class OrdersService(
             log.error("insertClosePosition error: ${httpResponse.statusCode} ${httpResponse.body}")
             return TradeRequestResponse(message = httpResponse.body, status = -1)
         }
-//        val tradeRequst = saveTradeRequest(httpResponse, order)
-//        return tradeRequst
+
         log.info("insertClosePosition response body: ${httpResponse.body}")
-        val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
         try {
-            val tradeRequestResponse: TradeRequestResponse = mapper.readValue(response)
+            // val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
+            // val tradeRequestResponse: TradeRequestResponse = mapper.readValue(response)
+
+            val tradeRequestResponse = saveTradeRequest(httpResponse, order)
+
+            producer.produce(
+                TransactionEvent(
+                    o = tradeRequestResponse.orderId.toInt(),
+                    p = tradeRequestResponse.positionId,
+                    type = TransactionType.CLOSED,
+                    price = tradeRequestResponse.price,
+                    sl = tradeRequestResponse.stopOrderPrice.toFloat(),
+                    tp = tradeRequestResponse.limitOrderPrice.toFloat(),
+                    t = order.createdAt.toEpochSecond(ZoneOffset.UTC)
+                ),
+                TOPIC_TRANSACTIONS, null)
+
             return tradeRequestResponse
         } catch (e: Exception) {
             val msg = "To TradeRequestResponse mapping exception: ${e.message}"
             log.error(msg)
-            log.debug("insertClosePosition response: $response")
             return TradeRequestResponse(message = msg, status = -1)
         }
 
@@ -159,10 +174,20 @@ class OrdersService(
         val limit: Boolean = order.limitOrderPrice > 0
 //        val stop: Boolean = order.stopOrderPrice > 0
 
+        if (order.stopOrderPrice>0) {
+            if ((order.direction==1) && (order.stopOrderPrice>=order.price)) {
+                return TradeRequestResponse(message = "Stop order price is greater than or equal to price", status = -1)
+            }
+            if ((order.direction==-1) && (order.stopOrderPrice<=order.price)) {
+                return TradeRequestResponse(message = "Stop order price is less than or equal to price", status = -1)
+            }
+        }
+
         val onePercentSl = if (order.direction==1)
             max(order.price*0.99f, order.stopOrderPrice)
         else
             min(order.price*1.01f, if (order.stopOrderPrice>0) order.stopOrderPrice else 1000000f)
+        
         val stop = true
 
         val requestTradeDTO = RequestTradeDTO(
@@ -201,14 +226,27 @@ class OrdersService(
             return TradeRequestResponse(message = httpResponse.body, status = -1)
         }
         log.info("requestTrade response body: ${httpResponse.body}")
-        val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
         try {
+            val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
             val tradeRequestResponse: TradeRequestResponse = mapper.readValue(response)
+
+
+            producer.produce(
+                TransactionEvent(
+                    o = tradeRequestResponse.orderId.toInt(),
+                    p = tradeRequestResponse.positionId,
+                    type = TransactionType.FILLED,
+                    price = tradeRequestResponse.price,
+                    sl = tradeRequestResponse.stopOrderPrice.toFloat(),
+                    tp = tradeRequestResponse.limitOrderPrice.toFloat(),
+                    t = order.createdAt.toEpochSecond(ZoneOffset.UTC)
+                ),
+                TOPIC_TRANSACTIONS, null)
+
             return tradeRequestResponse
         } catch (e: Exception) {
             val msg = "To TradeRequestResponse mapping exception: ${e.message}"
             log.error(msg)
-            log.debug("requestTrade response: $response")
             return TradeRequestResponse(message = msg, status = -1)
         }
 //        producer.produce(                                           // Alternative way to throw market order filled event, currently implemented based on AccountDetailsEvent websocket event
@@ -269,13 +307,12 @@ class OrdersService(
         }
 
         log.info("insertOpenOrder response body: ${httpResponse.body}")
-        val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
         try {
+            val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
             val openOrderResponse: OpenOrderResponse = mapper.readValue(response)
             if (openOrderResponse.status!=0) return openOrderResponse
             order.orderId = openOrderResponse.orderId.toInt()
             order.openOrderResponse = openOrderResponse
-//            order.open_date = OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime()
             ordersRepository.save(order)
 
             producer.produce(
@@ -283,10 +320,10 @@ class OrdersService(
                     o = order.orderId,
                     p = order.positionId,
                     type = TransactionType.PENDING,
-                    price = order.open_price,
+                    price = order.price,
                     sl = order.stopOrderPrice,
                     tp = order.limitOrderPrice,
-                    t = order.open_date?.toEpochSecond(ZoneOffset.UTC)?:0L
+                    t = order.createdAt.toEpochSecond(ZoneOffset.UTC)
                 ),
                 TOPIC_TRANSACTIONS, null)
 
@@ -294,7 +331,6 @@ class OrdersService(
         } catch (e: Exception) {
             val msg = "To OpenOrderResponse mapping exception: ${e.message}"
             log.error(msg)
-            log.debug("insertOpenOrder response: $response")
             return OpenOrderResponse(message = msg, status = -1)
         }
     }
@@ -385,13 +421,16 @@ class OrdersService(
                 return listOf()
             }
             log.info("getHistory response body: ${httpResponse.body}")
-            val response = httpResponse.body.substring(10, httpResponse.body.length - 2)    //.replace('/','-')
+            if (httpResponse.body.length < 20) {
+                log.warn("getHistory response body empty")
+                return listOf()
+            }
             try {
+                val response: String = httpResponse.body.substring(10, httpResponse.body.length - 2)
                 val transactionHistoryResponse: TransactionHistoryOrders = mapper.readValue(response)
                 return transactionHistoryResponse.records
             } catch (e: Exception) {
                 log.error("To TransactionHistoryOrders mapping exception: ${e.message}")
-                log.debug("getHistory response: $response")
                 return listOf()
             }
         } catch (e: Exception) {
@@ -401,23 +440,16 @@ class OrdersService(
     }
 
     private fun saveTradeRequest(httpResponse: HttpAdapterResponse, order: Order): TradeRequestResponse {
-        log.info("saveTradeRequest response body: ${httpResponse.body}")
+        log.info("Saving trade request response")
         val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
-        try {
-            val tradeRequestResponse: TradeRequestResponse = mapper.readValue(response)
-            order.orderId = tradeRequestResponse.orderId.toInt()
-            order.tradeRequestResponse = tradeRequestResponse
-            order.open_price = tradeRequestResponse.price
-            order.open_date = OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime()
-            order.positionId = tradeRequestResponse.positionId
-            ordersRepository.save(order)
-            return tradeRequestResponse
-        } catch (e: Exception) {
-            val msg = "To TradeRequestResponse mapping exception: ${e.message}"
-            log.error(msg)
-            log.debug("saveTradeRequest response: $response")
-            return TradeRequestResponse(message = msg, status = -1)
-        }
+        val tradeRequestResponse: TradeRequestResponse = mapper.readValue(response)
+        order.orderId = tradeRequestResponse.orderId.toInt()
+        order.tradeRequestResponse = tradeRequestResponse
+        order.open_price = tradeRequestResponse.price
+        order.open_date = OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime()
+        order.positionId = tradeRequestResponse.positionId
+        ordersRepository.save(order)
+        return tradeRequestResponse
     }
 
 }
