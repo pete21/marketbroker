@@ -56,6 +56,7 @@ class OrdersService(
         .registerModule(JavaTimeModule())
         .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
 
     fun insertClosePosition(order: Order): TradeRequestResponse {
 
@@ -151,26 +152,26 @@ class OrdersService(
         log.info("insertClosePosition response body: ${httpResponse.body}")
         try {
             val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
+            log.info("insertClosePosition trimmed response: $response")
             val tradeRequestResponse: TradeRequestResponse = mapper.readValue(response)
 
-            // val tradeRequestResponse = saveTradeRequest(httpResponse, order)
-
             val orderToClose = ordersRepository.findByOrderId(orderId)
-            log.info("insertClosePosition: orderToClose=$orderToClose")
 
             if (orderToClose==null) {
                 val msg = "InsertClosePosition error: Order id=${orderId} could not be found, yet the request was successful"
                 log.warn(msg)
                 return TradeRequestResponse(message = msg, status = -1)
+            } else {
+                log.info("insertClosePosition: orderToClose found orderId=${orderToClose.orderId} positionId=${orderToClose.positionId}")
             }
+            val datetimenow = LocalDateTime.now()
             orderToClose.active = false
-            orderToClose.updatedAt = LocalDateTime.now()
+            orderToClose.updatedAt = datetimenow
             orderToClose.close_price = tradeRequestResponse.price
-            orderToClose.close_date = OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime()
-            orderToClose.updatedAt = LocalDateTime.now()
+            orderToClose.close_date = datetimenow
             ordersRepository.save(orderToClose)
 
-
+            log.info("insertClosePosition: producing TransactionEvent")
             producer.produce(
                 TransactionEvent(
                     o = tradeRequestResponse.orderId.toInt(),
