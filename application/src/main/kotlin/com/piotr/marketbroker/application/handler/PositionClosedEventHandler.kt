@@ -34,10 +34,11 @@ class PositionClosedEventHandler(
         val filteredTransactionHistory = transactionHistory?.filter { it.TransactionDate>lastGetHistory }
         log.info("History orders: ${filteredTransactionHistory}")
 
-        if (filteredTransactionHistory==null) {
+        if (filteredTransactionHistory==null || filteredTransactionHistory.isEmpty()) {
             log.error("No history orders since datetime: ${lastGetHistory}")
+            return
         }
-        lastGetHistory = filteredTransactionHistory?.maxOfOrNull { it.TransactionDate } ?: lastGetHistory
+        lastGetHistory = filteredTransactionHistory.maxOfOrNull { it.TransactionDate.minusSeconds(300) } ?: lastGetHistory
 
         val orders = ordersRepository.findOrdersByPositionIdIn(event.positions.map { it.positionId})          //orderId changes with execution/close
 
@@ -67,6 +68,7 @@ class PositionClosedEventHandler(
                 producer.produce(
                     TransactionEvent(
                         o = order.orderId,
+                        p = order.positionId,
                         type = TransactionType.CLOSED,
                         price = order.close_price,
                         t = order.close_date?.toEpochSecond(ZoneOffset.UTC)?:0L

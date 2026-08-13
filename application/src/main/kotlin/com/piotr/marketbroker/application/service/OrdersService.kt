@@ -131,6 +131,8 @@ class OrdersService(
             orderId = position.orderId
         }
 
+        log.info("insertClosePosition: orderId=$orderId")
+
         val httpResponse: HttpAdapterResponse
         try {
             val jsonString = mapper.writeValueAsString(insertClosePositionRequestDTO)
@@ -154,6 +156,8 @@ class OrdersService(
             // val tradeRequestResponse = saveTradeRequest(httpResponse, order)
 
             val orderToClose = ordersRepository.findByOrderId(orderId)
+            log.info("insertClosePosition: orderToClose=$orderToClose")
+
             if (orderToClose==null) {
                 val msg = "InsertClosePosition error: Order id=${orderId} could not be found, yet the request was successful"
                 log.warn(msg)
@@ -173,15 +177,13 @@ class OrdersService(
                     p = tradeRequestResponse.positionId,
                     type = TransactionType.CLOSED,
                     price = tradeRequestResponse.price,
-                    sl = tradeRequestResponse.stopOrderPrice.toFloat(),
-                    tp = tradeRequestResponse.limitOrderPrice.toFloat(),
-                    t = order.createdAt.toEpochSecond(ZoneOffset.UTC)
+                    t = orderToClose.close_date?.toEpochSecond(ZoneOffset.UTC)?:0L
                 ),
                 TOPIC_TRANSACTIONS, null)
 
             return tradeRequestResponse
         } catch (e: Exception) {
-            val msg = "To TradeRequestResponse mapping exception: ${e.message}"
+            val msg = "To TradeRequestResponse mapping exception: ${e.toString()}"
             log.error(msg)
             return TradeRequestResponse(message = msg, status = -1)
         }
@@ -337,7 +339,6 @@ class OrdersService(
             producer.produce(
                 TransactionEvent(
                     o = order.orderId,
-                    p = order.positionId,
                     type = TransactionType.PENDING,
                     price = order.price,
                     sl = order.stopOrderPrice,
