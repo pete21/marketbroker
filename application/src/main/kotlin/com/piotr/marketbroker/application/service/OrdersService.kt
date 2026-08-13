@@ -174,7 +174,7 @@ class OrdersService(
             log.info("insertClosePosition: producing TransactionEvent")
             producer.produce(
                 TransactionEvent(
-                    o = tradeRequestResponse.orderId.toInt(),
+                    o = orderToClose.orderId,
                     p = tradeRequestResponse.positionId,
                     type = TransactionType.CLOSED,
                     price = tradeRequestResponse.price,
@@ -255,7 +255,7 @@ class OrdersService(
 
             producer.produce(
                 TransactionEvent(
-                    o = tradeRequestResponse.orderId.toInt(),
+                    o = tradeRequestResponse.orderId.toIntOrNull()?:0,
                     p = tradeRequestResponse.positionId,
                     type = TransactionType.FILLED,
                     price = tradeRequestResponse.price,
