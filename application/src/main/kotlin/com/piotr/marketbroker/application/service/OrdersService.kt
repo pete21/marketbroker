@@ -60,8 +60,10 @@ class OrdersService(
     fun insertClosePosition(order: Order): TradeRequestResponse {
 
         var insertClosePositionRequestDTO = InsertClosePositionRequestDTO(0, 0, 0, "", 0f, false, key = order.key!!)
+        var orderId: Int = 0
 
         if (order.orderModeID==5) {
+            // return TradeRequestResponse(message = "InsertClosePosition error: Order mode 5 is not supported", status = -1)
             val orderToClose = ordersRepository.findByOrderId(order.positionId)
             if (orderToClose==null) {
                 val msg = "InsertClosePosition error: Order id=${order.positionId} does not exist"
@@ -78,6 +80,7 @@ class OrdersService(
                 orderToClose.direction == 1,
                 order.key
             )
+            orderId = orderToClose.orderId
         }
 
 
@@ -125,6 +128,7 @@ class OrdersService(
                 position.direction == "Buy",
                 order.key
             )
+            orderId = position.orderId
         }
 
         val httpResponse: HttpAdapterResponse
@@ -144,10 +148,24 @@ class OrdersService(
 
         log.info("insertClosePosition response body: ${httpResponse.body}")
         try {
-            // val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
-            // val tradeRequestResponse: TradeRequestResponse = mapper.readValue(response)
+            val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
+            val tradeRequestResponse: TradeRequestResponse = mapper.readValue(response)
 
-            val tradeRequestResponse = saveTradeRequest(httpResponse, order)
+            // val tradeRequestResponse = saveTradeRequest(httpResponse, order)
+
+            val orderToClose = ordersRepository.findByOrderId(orderId)
+            if (orderToClose==null) {
+                val msg = "InsertClosePosition error: Order id=${orderId} could not be found, yet the request was successful"
+                log.warn(msg)
+                return TradeRequestResponse(message = msg, status = -1)
+            }
+            orderToClose.active = false
+            orderToClose.updatedAt = LocalDateTime.now()
+            orderToClose.close_price = tradeRequestResponse.price
+            orderToClose.close_date = OffsetDateTime.now(ZoneOffset.UTC).toLocalDateTime()
+            orderToClose.updatedAt = LocalDateTime.now()
+            ordersRepository.save(orderToClose)
+
 
             producer.produce(
                 TransactionEvent(
@@ -227,9 +245,10 @@ class OrdersService(
         }
         log.info("requestTrade response body: ${httpResponse.body}")
         try {
-            val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
-            val tradeRequestResponse: TradeRequestResponse = mapper.readValue(response)
+            // val response = httpResponse.body.substring(5, httpResponse.body.length - 1)
+            // val tradeRequestResponse: TradeRequestResponse = mapper.readValue(response)
 
+            val tradeRequestResponse = saveTradeRequest(httpResponse, order)
 
             producer.produce(
                 TransactionEvent(
