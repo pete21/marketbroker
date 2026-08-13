@@ -24,7 +24,7 @@ class PositionClosedEventHandler(
     ) {
     private val log by logger()
 
-    var lastGetHistory = LocalDateTime.now().minusDays(3)
+    var lastGetHistory = LocalDateTime.now().minusDays(5)
 
     @Async
     @EventListener
@@ -38,21 +38,21 @@ class PositionClosedEventHandler(
             log.error("No history orders since datetime: ${lastGetHistory}")
             return
         }
-        lastGetHistory = filteredTransactionHistory.maxOfOrNull { it.TransactionDate.minusSeconds(300) } ?: lastGetHistory
+        // lastGetHistory = filteredTransactionHistory.maxOfOrNull { it.TransactionDate.minusSeconds(300) } ?: lastGetHistory   //This is to avoid getting history orders that are too old, but do not move this filter because there may be older orders still open
 
         val orders = ordersRepository.findOrdersByPositionIdIn(event.positions.map { it.positionId})          //orderId changes with execution/close
 
         orders.forEach { order ->
             log.info("Order: o=${order.orderId}, p=${order.positionId}, price=${order.price}, open_price=${order.open_price}, open_date=${order.open_date}, close_date=${order.close_date} created=${order.createdAt}, updated=${order.updatedAt}")
             if (!order.active) {
-                log.error("Order to be closed (id=${order.orderId}) is already closed")
+                log.warn("Order to be closed (id=${order.orderId}) is already closed. Closed at ${order.close_date} with Close order?")
                 return@forEach
             }
 
             val matchedHistoryOrders = filteredTransactionHistory?.filter { historyOrder ->
                 val timeFrom = historyOrder.OpenPeriod.minusSeconds(2).minusHours(td365ConfigurationProperties.brokertimeutcdelta.toLong())
                 val timeTo = historyOrder.OpenPeriod.plusSeconds(2).minusHours(td365ConfigurationProperties.brokertimeutcdelta.toLong())
-                log.info("History order: timeFrom=$timeFrom, timeTo=$timeTo, Order: open_date=${order.open_date}")
+                log.info("History record refId=${historyOrder.RefID}: Open between ($timeFrom, $timeTo)")
                 order.open_date!! >= timeFrom && order.open_date!! <= timeTo
                         && order.open_price == historyOrder.OpenPrice
                         && order.direction * order.stake == historyOrder.Amount
