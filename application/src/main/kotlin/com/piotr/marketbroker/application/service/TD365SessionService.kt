@@ -129,6 +129,9 @@ class TD365SessionService(
         log.info("Refreshing JWT access_token")
         if (!refreshAccessTokenWithRefreshToken()) {
             log.error("Access token refresh failed")
+            log.error("Retrying authentication...")
+            Thread.sleep(5000)
+            reauthenticate()
             return
         }
         loginHeaders.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwt!!.access_token)

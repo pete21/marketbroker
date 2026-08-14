@@ -275,29 +275,6 @@ SELECT timestamp, open, high, low, close FROM GAPS_6374_OHLC_1H where timestamp 
 
 SELECT timestamp, open, high, low, close FROM TICKSTREAM_6374_OHLC_1H where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_1H);
 
-SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close FROM
-(
-SELECT timestamp, open, high, low, close FROM DUKASCOPY_6374_OHLC_1H where timestamp>='2026-07-01'
-UNION
-(
-  SELECT timestamp, open, high, low, close FROM GAPS_6374_OHLC_1H where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_1H)
-)
-UNION
-SELECT timestamp, open, high, low, close FROM TICKSTREAM_6374_OHLC_1H where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_1H)
-) group by timestamp;
-
-
-  EXCEPT
-  SELECT timestamp, open, high, low, close FROM TICKSTREAM_6374_OHLC_1H where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_1H);
-
-
-SELECT timestamp, open, high, low, close FROM DUKASCOPY_6374_OHLC_1H where timestamp>='2026-07-01'
-UNION
-(
-  SELECT timestamp, open, high, low, close FROM GAPS_6374_OHLC_1H where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_1H)
-)
-UNION
-SELECT timestamp, open, high, low, close FROM TICKSTREAM_6374_OHLC_1H where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_1H);
 
 
 SELECT * from TICKSTREAM_6374 order by timestamp desc;
@@ -357,42 +334,7 @@ SELECT * from DUKASCOPY_872703_OHLC_5M where timestamp>'2026-06-26' ORDER by tim
 SELECT cast(timestamp AS TIMESTAMP) date, first((b+a)/2), max((b+a)/2), min((b+a)/2), last((b+a)/2) FROM DUKASCOPY_6374_OHLC where cast(timestamp AS TIMESTAMP) >= '2026-07-03' order by date limit 10;
 
 
-SELECT timestamp as date, open as Open, high as High, low as Low, close as Close FROM DUKASCOPY_6374_OHLC_1H where timestamp>='2026-06-30'
-UNION
-(SELECT timestamp as date, open as Open, high as High, low as Low, close as Close FROM GAPS_6374_OHLC_1H where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_1H)
-EXCEPT
-SELECT timestamp as date, open as Open, high as High, low as Low, close as Close FROM TICKSTREAM_6374_OHLC_1H where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_1H))
-UNION
-SELECT timestamp as date, open as Open, high as High, low as Low, close as Close FROM TICKSTREAM_6374_OHLC_1H where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_1H);
 
-
-SELECT timestamp as date, first(open) as Open, max(high) as High, min(low) as Low, last(close) as Close FROM
-(
-SELECT timestamp, open, high, low, close FROM DUKASCOPY_6374_OHLC_5M where timestamp>='2026-07-04'
-UNION
-(
-  SELECT timestamp, open, high, low, close FROM GAPS_6374_OHLC_5M where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_5M)
-  EXCEPT
-  SELECT timestamp, open, high, low, close FROM TICKSTREAM_6374_OHLC_5M where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_5M)
-)
-UNION
-SELECT timestamp, open, high, low, close FROM TICKSTREAM_6374_OHLC_5M where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_5M)
-) group by date;
-
-  SELECT timestamp, open, high, low, close as Close FROM TICKSTREAM_6374_OHLC_10S where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_1M) order by timestamp desc limit 1000;
-  SELECT * FROM TICKSTREAM_6374 where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_1M) order by timestamp desc limit 1000;
-
-
-SELECT * FROM
-(SELECT timestamp as date, open as Open, high as High, low as Low, close as Close FROM DUKASCOPY_6374_OHLC_5M where timestamp>dateadd('w', -1, now(), 'UTC')
-UNION
-SELECT timestamp as date, open as Open, high as High, low as Low, close as Close FROM TICKSTREAM_6374_OHLC_5M where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_5M)
-)
-WHERE date <'2026-06-25';
-
-SELECT timestamp, open, high, low, close FROM DUKASCOPY_6374_OHLC_1D where timestamp>dateadd('w', -4, now(), 'UTC')
-UNION
-SELECT timestamp, open, high, low, close FROM TICKSTREAM_6374_OHLC_1D where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_1D);
 
 -- Materialized views TICKSTREAM_6374
 
@@ -504,9 +446,7 @@ SELECT * FROM TICKSTREAM_6374 order by timestamp desc limit 100;
 
 SELECT * FROM TICKSTREAM_6374_OHLC_1M order by timestamp desc limit 100;
 
-(SELECT * FROM TICKSTREAM_6374_OHLC_1M)
-UNION 
-(SELECT * FROM DUKASCOPY_6374_OHLC_1M where timestamp>'2026-05-29');
+
 
 REFRESH MATERIALIZED VIEW TICKSTREAM_6374_OHLC_10S FULL;
 REFRESH MATERIALIZED VIEW TICKSTREAM_6374_OHLC_1M FULL;
@@ -589,118 +529,28 @@ CREATE TABLE 'GAPS_6374_OHLC_1M' (
 ) timestamp(timestamp) PARTITION BY DAY WAL
 DEDUP UPSERT KEYS(timestamp);
 
-DROP MATERIALIZED VIEW GAPS_6374_OHLC_2M;
-CREATE MATERIALIZED VIEW IF NOT EXISTS GAPS_6374_OHLC_2M
-WITH BASE GAPS_6374_OHLC_1M REFRESH IMMEDIATE AS
-(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
-FROM GAPS_6374_OHLC_1M
-SAMPLE BY 2m);
-
-DROP MATERIALIZED VIEW GAPS_6374_OHLC_3M;
-CREATE MATERIALIZED VIEW IF NOT EXISTS GAPS_6374_OHLC_3M
-WITH BASE GAPS_6374_OHLC_1M REFRESH IMMEDIATE AS
-(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
-FROM GAPS_6374_OHLC_1M
-SAMPLE BY 3m);
-
-DROP MATERIALIZED VIEW GAPS_6374_OHLC_4M;
-CREATE MATERIALIZED VIEW IF NOT EXISTS GAPS_6374_OHLC_4M
-WITH BASE GAPS_6374_OHLC_1M REFRESH IMMEDIATE AS
-(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
-FROM GAPS_6374_OHLC_1M
-SAMPLE BY 4m);
-
-DROP MATERIALIZED VIEW GAPS_6374_OHLC_5M;
-CREATE MATERIALIZED VIEW IF NOT EXISTS GAPS_6374_OHLC_5M
-WITH BASE GAPS_6374_OHLC_1M REFRESH IMMEDIATE AS
-(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
-FROM GAPS_6374_OHLC_1M
-SAMPLE BY 5m);
-
-DROP MATERIALIZED VIEW GAPS_6374_OHLC_10M;
-CREATE MATERIALIZED VIEW IF NOT EXISTS GAPS_6374_OHLC_10M
-WITH BASE GAPS_6374_OHLC_1M REFRESH IMMEDIATE AS
-(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
-FROM GAPS_6374_OHLC_1M
-SAMPLE BY 10m);
-
-DROP MATERIALIZED VIEW GAPS_6374_OHLC_15M;
-CREATE MATERIALIZED VIEW IF NOT EXISTS GAPS_6374_OHLC_15M
-WITH BASE GAPS_6374_OHLC_1M REFRESH IMMEDIATE AS
-(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
-FROM GAPS_6374_OHLC_1M
-SAMPLE BY 15m);
-
-DROP MATERIALIZED VIEW GAPS_6374_OHLC_20M;
-CREATE MATERIALIZED VIEW IF NOT EXISTS GAPS_6374_OHLC_20M
-WITH BASE GAPS_6374_OHLC_1M REFRESH IMMEDIATE AS
-(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
-FROM GAPS_6374_OHLC_1M
-SAMPLE BY 20m);
-
-DROP MATERIALIZED VIEW GAPS_6374_OHLC_30M;
-CREATE MATERIALIZED VIEW IF NOT EXISTS GAPS_6374_OHLC_30M
-WITH BASE GAPS_6374_OHLC_1M REFRESH IMMEDIATE AS
-(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
-FROM GAPS_6374_OHLC_1M
-SAMPLE BY 30m);
-
-DROP MATERIALIZED VIEW GAPS_6374_OHLC_1H;
-CREATE MATERIALIZED VIEW IF NOT EXISTS GAPS_6374_OHLC_1H
-WITH BASE GAPS_6374_OHLC_5M REFRESH IMMEDIATE AS
-(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
-FROM GAPS_6374_OHLC_5M
-SAMPLE BY 1h);
-
-DROP MATERIALIZED VIEW GAPS_6374_OHLC_2H;
-CREATE MATERIALIZED VIEW IF NOT EXISTS GAPS_6374_OHLC_2H
-WITH BASE GAPS_6374_OHLC_5M REFRESH EVERY 1m AS
-(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
-FROM GAPS_6374_OHLC_5M
-SAMPLE BY 2h);
-
-DROP MATERIALIZED VIEW GAPS_6374_OHLC_4H;
-CREATE MATERIALIZED VIEW IF NOT EXISTS GAPS_6374_OHLC_4H
-WITH BASE GAPS_6374_OHLC_5M REFRESH EVERY 1m AS
-(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
-FROM GAPS_6374_OHLC_5M
-SAMPLE BY 4h);
-
-DROP MATERIALIZED VIEW GAPS_6374_OHLC_1D;
-CREATE MATERIALIZED VIEW IF NOT EXISTS GAPS_6374_OHLC_1D
-WITH BASE GAPS_6374_OHLC_1H REFRESH EVERY 1m AS
-(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
-FROM GAPS_6374_OHLC_1H
-SAMPLE BY 1d);
-
-
-REFRESH MATERIALIZED VIEW GAPS_6374_OHLC_2M FULL;
-REFRESH MATERIALIZED VIEW GAPS_6374_OHLC_3M FULL;
-REFRESH MATERIALIZED VIEW GAPS_6374_OHLC_4M FULL;
-REFRESH MATERIALIZED VIEW GAPS_6374_OHLC_5M FULL;
-REFRESH MATERIALIZED VIEW GAPS_6374_OHLC_10M FULL;
-REFRESH MATERIALIZED VIEW GAPS_6374_OHLC_15M FULL;
-REFRESH MATERIALIZED VIEW GAPS_6374_OHLC_20M FULL;
-REFRESH MATERIALIZED VIEW GAPS_6374_OHLC_30M FULL;
-REFRESH MATERIALIZED VIEW GAPS_6374_OHLC_1H FULL;
-REFRESH MATERIALIZED VIEW GAPS_6374_OHLC_2H FULL;
-REFRESH MATERIALIZED VIEW GAPS_6374_OHLC_4H FULL;
-REFRESH MATERIALIZED VIEW GAPS_6374_OHLC_1D FULL;
 
 
 
-SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close FROM
-(
-SELECT timestamp, open, high, low, close FROM DUKASCOPY_6374_OHLC_1D where timestamp>=dateadd('w', -4, now(), 'UTC')
+SELECT timestamp as date, open as Open, high as High, low as Low, close as Close FROM DUKASCOPY_6374_OHLC_15M where timestamp>='2026-08-05'
 UNION
+select timestamp, first(open), max(high), min(low), last(close) from (
+SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, first(close) as close FROM
 (
-  SELECT timestamp, open, high, low, close FROM GAPS_6374_OHLC_1D where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_1D)
-  EXCEPT
-  SELECT timestamp, open, high, low, close as Close FROM TICKSTREAM_6374_OHLC_1D where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_1D)
-)
+SELECT timestamp, open, high, low, close FROM GAPS_6374_OHLC_1M where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_1M)
 UNION
-SELECT timestamp, open, high, low, close as Close FROM TICKSTREAM_6374_OHLC_1D where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_1D)
-) group by timestamp;
+SELECT timestamp, open, high, low, close FROM TICKSTREAM_6374_OHLC_1M where timestamp > (select max(timestamp) FROM DUKASCOPY_6374_OHLC_1M)
+) group by timestamp order by timestamp) sample by 15M;
 
-select * from GAPS_6374_OHLC_5M;
 
+```python
+QUERY_TEMPLATE = """SELECT timestamp as date, open as Open, high as High, low as Low, close as Close FROM %(table)s where timestamp>=%(start_date)s
+UNION
+select timestamp, first(open), max(high), min(low), last(close) from (
+SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, first(close) as close FROM
+(
+SELECT timestamp, open, high, low, close FROM %(gaps_table_1m)s where timestamp > (select max(timestamp) FROM  %(table_1m)s)
+UNION
+SELECT timestamp, open, high, low, close FROM %(tickstream_table_1m)s where timestamp > (select max(timestamp) FROM %(table_1m)s)
+) group by timestamp order by timestamp) sample by """
+```
