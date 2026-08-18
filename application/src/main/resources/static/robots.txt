@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://trade.tradefiapp.com/sitemap.xml
+Sitemap: https://trade.tradefiapp.com/static.xml

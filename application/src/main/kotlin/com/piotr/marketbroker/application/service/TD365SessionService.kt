@@ -79,7 +79,14 @@ class TD365SessionService(
     fun httpClientSessionUpdate() {
         log.info("UpdateClientSessionID")
         if (sessionState == 1) {
-            httpAdapter.postRequest("UpdateClientSessionID", "{}", redirectHeaders)
+            try {
+                httpAdapter.postRequest("UpdateClientSessionID", "", redirectHeaders)
+            } catch (e: Exception) {
+                log.error("UpdateClientSessionID failed: ${e.toString()}")
+                log.info("Retrying authentication...")
+                Thread.sleep(5000)
+                applicationEventPublisher.publishEvent(WebsocketDisconnectedEvent())
+            }
         }
     }
 
@@ -129,7 +136,7 @@ class TD365SessionService(
         log.info("Refreshing JWT access_token")
         if (!refreshAccessTokenWithRefreshToken()) {
             log.error("Access token refresh failed")
-            log.error("Retrying authentication...")
+            log.info("Retrying authentication...")
             Thread.sleep(5000)
             reauthenticate()
             return
@@ -156,7 +163,7 @@ class TD365SessionService(
                 launchUrl = getUrl(selectedAccountId)
             } catch (e: Exception) {
                 log.error("getUrl failed: ${e.message}")
-                log.error("Retrying authentication...")
+                log.info("Retrying authentication...")
                 Thread.sleep(5000)
                 reauthenticate()
                 applicationEventPublisher.publishEvent(WebsocketDisconnectedEvent())
@@ -169,7 +176,7 @@ class TD365SessionService(
                 setValues(pair)
             } catch (e: Exception) {
                 log.error("getRequestRedirects failed: ${e.message}")
-                log.error("Retrying authentication...")
+                log.info("Retrying authentication...")
                 Thread.sleep(5000)
                 reauthenticate()
                 applicationEventPublisher.publishEvent(WebsocketDisconnectedEvent())
