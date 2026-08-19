@@ -83,7 +83,7 @@ class TD365SessionService(
                 httpAdapter.postRequest("UpdateClientSessionID", "", redirectHeaders)
             } catch (e: Exception) {
                 log.error("UpdateClientSessionID failed: ${e.toString()}")
-                log.info("Retrying authentication...")
+                log.info("Reconnecting websocket...")
                 Thread.sleep(5000)
                 applicationEventPublisher.publishEvent(WebsocketDisconnectedEvent())
             }
