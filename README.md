@@ -1,11 +1,12 @@
-# marketbroker
+# CFD and Crypto broker integration sdk + management + observability platform
 
 
+## SDK
 
 ### Docker build
 
 ```bash
-docker build -f ./Dockerfile -t registry.tradefiapp.com:5443/marketbroker:0.3.0 .
+docker build -f ./Dockerfile -t url:5443/marketbroker:0.4.0 .
 ```
 
 
@@ -29,9 +30,11 @@ docker compose --profile sdk up -d marketbroker
 ```
 
 
-# kafka-connect
 
-## Connector
+
+## kafka-connect
+
+### Connector
 
 Run:
 
@@ -41,9 +44,9 @@ Run:
 
 
 
-# Grafana
+## Grafana
 
-## Data sources:
+### Data sources:
 
 https://grafana.com/grafana/plugins/questdb-questdb-datasource/?tab=installation
 
@@ -52,9 +55,23 @@ grafana-cli plugins install questdb-questdb-datasource
 ```
 
 
+
+
+## Observability and management
+
+
+### Grafana
+### Loki
+### Prometheus
+### kafka UI
+
+
+
+
 ## Dashboards:
 
 JVM SpringBoot3 dashboard (for Prometheus Operator) ID: 22108
+
 
 
 ## Materialized views:
@@ -66,8 +83,8 @@ https://questdb.com/blog/how-to-create-a-materialized-view/
 
 # STOMP Websocket server
 
-
-
+Test: https://localhost:8080/
+Select /topic/1
 
 
 
@@ -75,19 +92,13 @@ https://questdb.com/blog/how-to-create-a-materialized-view/
 
 # Login flow
 
-The old JSON POST to tradenation.com/signup/api/login is replaced with OAuth PKCE:
+OAuth PKCE implemented:
 
-- Authorize — GET auth.tradenation.com/oauth/authorize with PKCE (code_challenge, state, client_id, etc.)
+- Authorize — GET authurl/oauth/authorize with PKCE (code_challenge, state, client_id, etc.)
 - Keycloak login — parse the login form from the HTML and POST username / password to login-actions/authenticate
 - Authorization code — read code from the redirect chain to tradenation.com/login/callback
-- Token exchange — POST to auth.tradenation.com/oauth/token with grant_type=authorization_code and code_verifier
+- Token exchange — POST to authurl/oauth/token with grant_type=authorization_code and code_verifier
 
 ## Configuration
 
-td365.oauthauthorizeurl=https://auth.tradenation.com/oauth/authorize
-td365.oauthtokenurl=https://auth.tradenation.com/oauth/token
-td365.oauthclientid=n1uzY72W6TxZ1GaT0YUKVa1uCcw60pNo
-td365.oauthredirecturi=https://tradenation.com/login/callback
-td365.oauthaudience=https://api.tradenation.com
-td365.oauthuibrand=en-eu
-
+resources/*.properties

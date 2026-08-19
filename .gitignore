@@ -95,3 +95,4 @@ docker/grafana/var-lib-grafana/pdf/*
 docker/grafana/var-lib-grafana/png/*
 docker/grafana/var-lib-grafana/plugins/*
 docker/grafana/var-lib-grafana/grafana.db
+application/src/main/resources/td365config.properties
