@@ -25,9 +25,6 @@ class WebsocketService(
 //        ScheduledExecutorService ex = Executors.newSingleThreadScheduledExecutor();
 //        ex.schedule(() -> login(login, password, token), 1, TimeUnit.SECONDS);
         try {
-            if (sessionState) {
-                disconnect()
-            }
             Thread.sleep(500)
             websocketHandler.connect(websocketServer)
             Thread.sleep(500)
