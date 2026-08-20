@@ -433,7 +433,14 @@ services:
     networks:
       - marketbroker_net
     profiles: [prop-trade-bundle]
-
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
 
 networks:
   marketbroker_net:
