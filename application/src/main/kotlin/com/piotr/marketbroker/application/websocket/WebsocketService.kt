@@ -25,13 +25,13 @@ class WebsocketService(
 //        ScheduledExecutorService ex = Executors.newSingleThreadScheduledExecutor();
 //        ex.schedule(() -> login(login, password, token), 1, TimeUnit.SECONDS);
         try {
-            Thread.sleep(500)
+            Thread.sleep(400)
             websocketHandler.connect(websocketServer)
-            Thread.sleep(500)
+            Thread.sleep(400)
             login(login, token)
             Thread.sleep(1000)
             accountSummary()
-            Thread.sleep(100)
+            // Thread.sleep(100)
             sessionState = true
         } catch (e: InterruptedException) {
             // TODO Auto-generated catch block
