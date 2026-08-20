@@ -1,6 +1,7 @@
 package com.piotr.marketbroker.infrastructure.http
 
 import com.piotr.marketbroker.common.logger
+import com.piotr.marketbroker.infrastructure.http.CustomConnectionKeepAliveStrategy
 import org.apache.hc.client5.http.classic.methods.HttpDelete
 import org.apache.hc.client5.http.classic.methods.HttpGet
 import org.apache.hc.client5.http.classic.methods.HttpOptions
@@ -12,10 +13,12 @@ import org.apache.hc.client5.http.impl.classic.HttpClients
 import org.apache.hc.client5.http.cookie.BasicCookieStore
 import org.apache.hc.client5.http.cookie.CookieStore
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager
 import org.apache.hc.client5.http.protocol.HttpClientContext
 import org.apache.hc.core5.http.ContentType
 import org.apache.hc.core5.http.io.entity.EntityUtils
 import org.apache.hc.core5.http.io.entity.StringEntity
+import org.apache.hc.core5.util.TimeValue
 import org.springframework.stereotype.Component
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -28,6 +31,8 @@ class ApacheHttpAdapter {
     private val cookieStore: CookieStore = BasicCookieStore()
     private var client: CloseableHttpClient? = null
     private var httpClientContext: HttpClientContext = HttpClientContext.create()
+    private var connManager: PoolingHttpClientConnectionManager = PoolingHttpClientConnectionManager()
+
     var defaultHeaders: RequestHeaders? = null
     var baseUrl: String = ""
 
@@ -36,6 +41,10 @@ class ApacheHttpAdapter {
         client = HttpClients                            //HttpClients.createDefault()
             .custom()
             .setDefaultCookieStore(cookieStore)
+            .setConnectionManager(connManager)
+            .evictExpiredConnections()
+            // .setKeepAliveStrategy(CustomConnectionKeepAliveStrategy())
+            .evictIdleConnections(TimeValue.ofSeconds(5))
 //        .setDefaultHeaders(mutableListOf(BasicHeader(HttpHeaders.CONTENT_LENGTH, "0")))
 //        .setDefaultHeaders(mutableListOf(BasicHeader(
 //            HttpHeaders.USER_AGENT,"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")))

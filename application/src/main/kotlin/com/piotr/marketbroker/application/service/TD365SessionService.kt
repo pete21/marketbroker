@@ -27,6 +27,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
+import org.apache.hc.core5.http.NoHttpResponseException
 import java.net.URLDecoder
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -81,7 +82,13 @@ class TD365SessionService(
         if (sessionState == 1) {
             try {
                 httpAdapter.postRequest("UpdateClientSessionID", "", redirectHeaders)
-            } catch (e: Exception) {
+            } catch (e: NoHttpResponseException) {
+                log.error("NoHttpResponseException: ${e.toString()}")
+                log.info("Retrying UpdateClientSessionID...")
+                Thread.sleep(6000)
+                httpClientSessionUpdate()
+            }
+            catch (e: Exception) {
                 log.error("UpdateClientSessionID failed: ${e.toString()}")
                 // log.info("Reconnecting websocket...")
                 // Thread.sleep(5000)
