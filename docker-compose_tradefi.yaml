@@ -384,6 +384,7 @@ services:
         reservations:
           cpus: '0.25'
           memory: 128M
+    restart: always
 
   mongodb:
     image: mongo:8.0.16-noble
@@ -449,6 +450,7 @@ services:
         reservations:
           cpus: '0.25'
           memory: 128M
+    restart: always
 
 networks:
   marketbroker_net:
