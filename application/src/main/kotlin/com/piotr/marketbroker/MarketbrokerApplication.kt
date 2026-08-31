@@ -3,6 +3,7 @@ package com.piotr.marketbroker
 import com.piotr.marketbroker.configuration.td365.TD365ConfigurationProperties
 import com.piotr.marketbroker.common.logger
 import com.piotr.marketbroker.configuration.kafkaconnect.KafkaConnectConfigurationProperties
+import com.piotr.marketbroker.configuration.questdb.QuestDbConfigurationProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup
@@ -14,7 +15,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 
 @EnableScheduling
 @SpringBootApplication
-@EnableConfigurationProperties(TD365ConfigurationProperties::class, KafkaConnectConfigurationProperties::class)
+@EnableConfigurationProperties(TD365ConfigurationProperties::class, KafkaConnectConfigurationProperties::class, QuestDbConfigurationProperties::class)
 class MarketbrokerApplication {
 
     private val log by logger()

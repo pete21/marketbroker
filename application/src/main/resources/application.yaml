@@ -165,6 +165,10 @@ com.piotr:
     questdbHost: 192.168.0.250:9000
   questdb:
     url: http://192.168.0.250:9000
+    pgHost: 192.168.0.250
+    pgPort: 8812
+    pgUser: ro_user
+    pgPassword: ro_password
   loki:
     host: 192.168.0.250:3100
 

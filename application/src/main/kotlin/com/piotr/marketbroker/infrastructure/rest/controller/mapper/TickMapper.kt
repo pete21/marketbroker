@@ -8,8 +8,8 @@ object TickMapper {
         quoteId = tick.quoteId,
         bid = tick.bid,
         ask = tick.ask,
-        time = tick.time.toBigDecimal(),
-        millis = tick.millis.toBigDecimal(),
+        time = tick.time,
+        millis = tick.millis,
     )
 
 }

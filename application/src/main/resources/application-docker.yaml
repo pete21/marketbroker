@@ -9,6 +9,10 @@ com.piotr:
     questdbHost: questdb:9000
   questdb:
     url: http://questdb:9000
+    pgHost: questdb
+    pgPort: 8812
+    pgUser: ro_user
+    pgPassword: ro_password
   loki:
     host: loki:3100
 management:

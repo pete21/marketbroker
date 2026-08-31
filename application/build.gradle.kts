@@ -94,6 +94,9 @@ dependencies {
 // https://mvnrepository.com/artifact/com.mysql/mysql-connector-j
     implementation("com.mysql:mysql-connector-j:9.1.0")
 
+    // https://mvnrepository.com/artifact/org.postgresql/postgresql
+    implementation("org.postgresql:postgresql:42.7.13")
+
 
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools
 //    runtimeOnly("org.springframework.boot:spring-boot-devtools:3.2.3")
@@ -183,7 +186,7 @@ openApiGenerate {
     configFile.set("$projectDir/src/main/resources/config.json")
 
     globalProperties.set(mapOf(
-        Pair("apis", "Account,Demo,Instruments,Kafka,Live,Orders,Positions,Subscriptions"), //no value or comma-separated api names
+        Pair("apis", "Account,Demo,Instruments,Kafka,Live,Orders,Positions,Subscriptions,Data"), //no value or comma-separated api names
         Pair("models", ""), //no value or comma-separated api names
     ))
 }

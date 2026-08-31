@@ -435,6 +435,44 @@ paths:
               $ref: '#/components/schemas/SubscriptionsRequestDTO'
       tags:
         - subscriptions
+  /data/history:
+    get:
+      summary: Get history
+      parameters:
+        - name: ticker
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: period
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: start
+          in: query
+          schema:
+            type: string
+            format: date-time
+            example: '2017-07-21T17:32:28Z'
+        - name: end
+          in: query
+          schema:
+            type: string
+            format: date-time
+            example: '2017-07-21T17:32:28Z'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoryResponseDTO'
+      operationId: get-history
+      description: Get history
+      tags:
+        - data
+
 components:
   schemas:
     User:
@@ -888,11 +926,47 @@ components:
           type: number
           format: float
         time:
-          type: number
+          type: integer
           format: int32
         millis:
-          type: number
+          type: integer
           format: int32
+    OHLC:
+      title: OHLC
+      type: object
+      properties:
+        o:
+          type: number
+          format: float
+        h:
+          type: number
+          format: float
+        l:
+          type: number
+          format: float
+        c:
+          type: number
+          format: float
+        v:
+          type: number
+          format: float
+        t:
+          type: integer
+          format: int32
+      required:
+        - o
+        - h
+        - l
+        - c
+        - t
+    HistoryResponseDTO:
+      title: HistoryResponseDTO
+      type: object
+      properties:
+        ohlc:
+          type: array
+          items:
+            $ref: '#/components/schemas/OHLC'
     OpenOrderCopyDTO:
       title: OpenOrderCopyDTO
       type: object
@@ -985,3 +1059,4 @@ tags:
   - name: subscriptions
   - name: users
   - name: orderscopy
+  - name: data
