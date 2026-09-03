@@ -159,6 +159,9 @@ services:
       - QDB_WRITERS=stdout,http.min
       - QDB_CAIRO_SQL_COPY_ROOT=/var/lib/questdb/questdb_import
       - QDB_TELEMETRY_ENABLED=false
+      - QDB_PG_READONLY_USER_ENABLED=true
+      - QDB_PG_READONLY_USER=ro_user
+      - QDB_PG_READONLY_PASSWORD=ro_password
     volumes:
 #      - ./docker/questdb-data:/root/.questdb
       - ./docker/questdb-import:/var/lib/questdb/questdb_import
