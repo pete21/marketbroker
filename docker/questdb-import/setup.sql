@@ -1,0 +1,391 @@
+select * from TICKSTREAM_6374 order by timestamp desc limit 100;
+select * from TICKSTREAM_16917 order by timestamp desc limit 100;
+select * from TICKSTREAM_872703 order by timestamp desc limit 100;
+
+
+
+CREATE TABLE 'GAPS_6374_OHLC_1M' ( 
+	timestamp TIMESTAMP,
+	open FLOAT,
+	high FLOAT,
+	low FLOAT,
+	close FLOAT,
+  vol FLOAT
+) timestamp(timestamp) PARTITION BY DAY WAL
+DEDUP UPSERT KEYS(timestamp);
+
+CREATE TABLE 'GAPS_16917_OHLC_1M' ( 
+	timestamp TIMESTAMP,
+	open FLOAT,
+	high FLOAT,
+	low FLOAT,
+	close FLOAT,
+  vol FLOAT
+) timestamp(timestamp) PARTITION BY DAY WAL
+DEDUP UPSERT KEYS(timestamp);
+
+CREATE TABLE 'GAPS_872703_OHLC_1M' ( 
+	timestamp TIMESTAMP,
+	open FLOAT,
+	high FLOAT,
+	low FLOAT,
+	close FLOAT,
+  vol FLOAT
+) timestamp(timestamp) PARTITION BY DAY WAL
+DEDUP UPSERT KEYS(timestamp);
+
+
+
+-- DAX40
+
+DROP MATERIALIZED VIEW TICKSTREAM_6374_OHLC_1M;
+CREATE MATERIALIZED VIEW IF NOT EXISTS TICKSTREAM_6374_OHLC_1M
+WITH BASE TICKSTREAM_6374 REFRESH IMMEDIATE AS
+(SELECT timestamp, first((b+a)/2) as open, max((b+a)/2) as high, min((b+a)/2) as low, last((b+a)/2) as close
+FROM TICKSTREAM_6374
+SAMPLE BY 1m);
+
+
+CREATE TABLE IF NOT EXISTS DUKASCOPY_6374_OHLC(timestamp long,b float,a float,q symbol CAPACITY 2);
+
+CREATE TABLE IF NOT EXISTS DUKASCOPY_6374_OHLC_1S(timestamp TIMESTAMP,open float,high float,low float,close float) TIMESTAMP(timestamp) PARTITION BY DAY WAL DEDUP UPSERT KEYS(timestamp);
+
+CREATE TABLE IF NOT EXISTS DUKASCOPY_6374_OHLC_CSV(timestamp TIMESTAMP,open float,high float,low float,close float,tick_count short);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_10S
+WITH BASE DUKASCOPY_6374_OHLC_1S REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_6374_OHLC_1S
+SAMPLE BY 10s);
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_1M
+WITH BASE DUKASCOPY_6374_OHLC_1S REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_6374_OHLC_1S
+SAMPLE BY 1m);
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_2M
+WITH BASE DUKASCOPY_6374_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_6374_OHLC_1M
+SAMPLE BY 2m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_3M
+WITH BASE DUKASCOPY_6374_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_6374_OHLC_1M
+SAMPLE BY 3m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_4M
+WITH BASE DUKASCOPY_6374_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_6374_OHLC_1M
+SAMPLE BY 4m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_5M
+WITH BASE DUKASCOPY_6374_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_6374_OHLC_1M
+SAMPLE BY 5m);
+
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_10M
+WITH BASE DUKASCOPY_6374_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_6374_OHLC_1M
+SAMPLE BY 10m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_15M
+WITH BASE DUKASCOPY_6374_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_6374_OHLC_1M
+SAMPLE BY 15m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_20M
+WITH BASE DUKASCOPY_6374_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_6374_OHLC_1M
+SAMPLE BY 20m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_30M
+WITH BASE DUKASCOPY_6374_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_6374_OHLC_1M
+SAMPLE BY 30m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_1H
+WITH BASE DUKASCOPY_6374_OHLC_5M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_6374_OHLC_5M
+SAMPLE BY 1h);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_2H
+WITH BASE DUKASCOPY_6374_OHLC_5M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_6374_OHLC_5M
+SAMPLE BY 2h);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_4H
+WITH BASE DUKASCOPY_6374_OHLC_5M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_6374_OHLC_5M
+SAMPLE BY 4h);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_6374_OHLC_1D
+WITH BASE DUKASCOPY_6374_OHLC_5M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_6374_OHLC_5M
+SAMPLE BY 1d);
+
+
+
+
+-- NQ100
+
+DROP MATERIALIZED VIEW TICKSTREAM_16917_OHLC_1M;
+CREATE MATERIALIZED VIEW IF NOT EXISTS TICKSTREAM_16917_OHLC_1M
+WITH BASE TICKSTREAM_16917 REFRESH IMMEDIATE AS
+(SELECT timestamp, first((b+a)/2) as open, max((b+a)/2) as high, min((b+a)/2) as low, last((b+a)/2) as close
+FROM TICKSTREAM_16917
+SAMPLE BY 1m);
+
+
+CREATE TABLE IF NOT EXISTS DUKASCOPY_16917_OHLC(timestamp long,b float,a float,q symbol CAPACITY 2);
+
+CREATE TABLE IF NOT EXISTS DUKASCOPY_16917_OHLC_1S(timestamp TIMESTAMP,open float,high float,low float,close float) TIMESTAMP(timestamp) PARTITION BY DAY WAL DEDUP UPSERT KEYS(timestamp);
+
+CREATE TABLE IF NOT EXISTS DUKASCOPY_16917_OHLC_CSV(timestamp TIMESTAMP,open float,high float,low float,close float,tick_count short);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_16917_OHLC_10S
+WITH BASE DUKASCOPY_16917_OHLC_1S REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_16917_OHLC_1S
+SAMPLE BY 10s);
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_16917_OHLC_1M
+WITH BASE DUKASCOPY_16917_OHLC_1S REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_16917_OHLC_1S
+SAMPLE BY 1m);
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_16917_OHLC_2M
+WITH BASE DUKASCOPY_16917_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_16917_OHLC_1M
+SAMPLE BY 2m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_16917_OHLC_3M
+WITH BASE DUKASCOPY_16917_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_16917_OHLC_1M
+SAMPLE BY 3m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_16917_OHLC_4M
+WITH BASE DUKASCOPY_16917_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_16917_OHLC_1M
+SAMPLE BY 4m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_16917_OHLC_5M
+WITH BASE DUKASCOPY_16917_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_16917_OHLC_1M
+SAMPLE BY 5m);
+
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_16917_OHLC_10M
+WITH BASE DUKASCOPY_16917_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_16917_OHLC_1M
+SAMPLE BY 10m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_16917_OHLC_15M
+WITH BASE DUKASCOPY_16917_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_16917_OHLC_1M
+SAMPLE BY 15m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_16917_OHLC_20M
+WITH BASE DUKASCOPY_16917_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_16917_OHLC_1M
+SAMPLE BY 20m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_16917_OHLC_30M
+WITH BASE DUKASCOPY_16917_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_16917_OHLC_1M
+SAMPLE BY 30m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_16917_OHLC_1H
+WITH BASE DUKASCOPY_16917_OHLC_5M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_16917_OHLC_5M
+SAMPLE BY 1h);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_16917_OHLC_2H
+WITH BASE DUKASCOPY_16917_OHLC_5M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_16917_OHLC_5M
+SAMPLE BY 2h);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_16917_OHLC_4H
+WITH BASE DUKASCOPY_16917_OHLC_5M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_16917_OHLC_5M
+SAMPLE BY 4h);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_16917_OHLC_1D
+WITH BASE DUKASCOPY_16917_OHLC_5M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_16917_OHLC_5M
+SAMPLE BY 1d);
+
+
+
+-- SP500
+
+
+DROP MATERIALIZED VIEW TICKSTREAM_872703_OHLC_1M;
+CREATE MATERIALIZED VIEW IF NOT EXISTS TICKSTREAM_872703_OHLC_1M
+WITH BASE TICKSTREAM_872703 REFRESH IMMEDIATE AS
+(SELECT timestamp, first((b+a)/2) as open, max((b+a)/2) as high, min((b+a)/2) as low, last((b+a)/2) as close
+FROM TICKSTREAM_872703
+SAMPLE BY 1m);
+
+
+CREATE TABLE IF NOT EXISTS DUKASCOPY_872703_OHLC(timestamp long,b float,a float,q symbol CAPACITY 2);
+
+CREATE TABLE IF NOT EXISTS DUKASCOPY_872703_OHLC_1S(timestamp TIMESTAMP,open float,high float,low float,close float) TIMESTAMP(timestamp) PARTITION BY DAY WAL DEDUP UPSERT KEYS(timestamp);
+
+CREATE TABLE IF NOT EXISTS DUKASCOPY_872703_OHLC_CSV(timestamp TIMESTAMP,open float,high float,low float,close float,tick_count short);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_872703_OHLC_10S
+WITH BASE DUKASCOPY_872703_OHLC_1S REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_872703_OHLC_1S
+SAMPLE BY 10s);
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_872703_OHLC_1M
+WITH BASE DUKASCOPY_872703_OHLC_1S REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_872703_OHLC_1S
+SAMPLE BY 1m);
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_872703_OHLC_2M
+WITH BASE DUKASCOPY_872703_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_872703_OHLC_1M
+SAMPLE BY 2m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_872703_OHLC_3M
+WITH BASE DUKASCOPY_872703_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_872703_OHLC_1M
+SAMPLE BY 3m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_872703_OHLC_4M
+WITH BASE DUKASCOPY_872703_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_872703_OHLC_1M
+SAMPLE BY 4m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_872703_OHLC_5M
+WITH BASE DUKASCOPY_872703_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_872703_OHLC_1M
+SAMPLE BY 5m);
+
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_872703_OHLC_10M
+WITH BASE DUKASCOPY_872703_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_872703_OHLC_1M
+SAMPLE BY 10m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_872703_OHLC_15M
+WITH BASE DUKASCOPY_872703_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_872703_OHLC_1M
+SAMPLE BY 15m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_872703_OHLC_20M
+WITH BASE DUKASCOPY_872703_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_872703_OHLC_1M
+SAMPLE BY 20m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_872703_OHLC_30M
+WITH BASE DUKASCOPY_872703_OHLC_1M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_872703_OHLC_1M
+SAMPLE BY 30m);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_872703_OHLC_1H
+WITH BASE DUKASCOPY_872703_OHLC_5M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_872703_OHLC_5M
+SAMPLE BY 1h);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_872703_OHLC_2H
+WITH BASE DUKASCOPY_872703_OHLC_5M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_872703_OHLC_5M
+SAMPLE BY 2h);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_872703_OHLC_4H
+WITH BASE DUKASCOPY_872703_OHLC_5M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_872703_OHLC_5M
+SAMPLE BY 4h);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS DUKASCOPY_872703_OHLC_1D
+WITH BASE DUKASCOPY_872703_OHLC_5M REFRESH EVERY 1h AS
+(SELECT timestamp, first(open) as open, max(high) as high, min(low) as low, last(close) as close
+FROM DUKASCOPY_872703_OHLC_5M
+SAMPLE BY 1d);
+
+
+
+
+
+
+
+
+
