@@ -20,6 +20,10 @@ class SubscriptionsService(
         return quoteIds.map { s -> marketQuotesRepository.findByQuoteID(s)?.toString()?:s.toString() }
     }
 
+    fun getSubscriptionIds(): List<Int> {
+        return subscriptionsRepository.findByStatusTrue().map { it.quoteId }
+    }
+
     fun postSubscriptions(quoteId: Int, status: Boolean): Boolean {
         log.info("postSubscriptions request: $quoteId $status")
         val subscription = subscriptionsRepository.findById(quoteId)
@@ -34,8 +38,8 @@ class SubscriptionsService(
 
     fun renewSubscriptions() {
         log.info("renewSubscriptions request")
-        val subscriptions = subscriptionsRepository.findByStatusTrue()
-        subscriptions.forEach { websocketService.subscribe(it.quoteId, it.status) }
+        val subscriptions = getSubscriptionIds()
+        subscriptions.forEach { websocketService.subscribe(it, true) }
     }
 
 }

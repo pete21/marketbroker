@@ -70,7 +70,8 @@ class TD365SessionService(
     private var scheduledSessionStart: Boolean = false
 
     private var reconnect_attempts: Int = 0
-
+    private var activeSubscriptions: List<Int> = listOf()
+    
     fun getTD365ConfigurationProperties(): String {
         log.info(td365ConfigurationProperties.toString())
         return td365ConfigurationProperties.toString()
@@ -102,6 +103,8 @@ class TD365SessionService(
     @Scheduled(cron = "30 5 23 * * 1-5", zone = "Europe/Berlin")
     fun stopSession() {
         if (sessionState == 1) {
+            activeSubscriptions = subscriptionsService.getSubscriptionIds()
+
             sessionStop()
             Thread.sleep(5000)
             if (liveLogout(scheduled_request = true)) {
@@ -117,10 +120,16 @@ class TD365SessionService(
     @Scheduled(cron = "30 55 23 * * 0-4", zone = "Europe/Berlin")
     fun startSession() {
         if (scheduledSessionStart) {
+
+
             if (liveLogin()) {
                 Thread.sleep(5000)
                 if (liveSessionStart(selectedAccountId)) {
                     log.info("Scheduled Session start successful")
+                    Thread.sleep(5000)
+
+                    activeSubscriptions.forEach { subscriptionsService.postSubscriptions(it, true) }
+                    log.info("Subscriptions renewed: ${activeSubscriptions.joinToString(", ")}")
                 } else {
                     log.error("Scheduled Session start failed")
                 }
