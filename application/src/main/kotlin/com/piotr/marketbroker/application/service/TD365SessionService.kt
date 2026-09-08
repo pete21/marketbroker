@@ -67,6 +67,7 @@ class TD365SessionService(
     private var jwt : Jwt? = null
     private var liveAccounts: LiveAccounts? = null
     private var selectedAccountId: Int = 0
+    private var scheduledSessionStart: Boolean = false
 
     private var reconnect_attempts: Int = 0
 
@@ -97,6 +98,39 @@ class TD365SessionService(
         }
     }
 
+
+    @Scheduled(cron = "5 23 * * 1-5", zone = "Europe/Berlin")
+    fun stopSession() {
+        if (sessionState == 1) {
+            sessionStop()
+            Thread.sleep(5000)
+            if (liveLogout(scheduled_request = true)) {
+                log.info("Scheduled Session stop successful")
+            } else {
+                log.error("Scheduled Session stop error")
+            }
+        } else {
+            log.warn("Scheduled Session stop skipped, session is not started")
+        }
+    }
+
+    @Scheduled(cron = "55 23 * * 0-4", zone = "Europe/Berlin")
+    fun startSession() {
+        if (scheduledSessionStart) {
+            if (liveLogin()) {
+                Thread.sleep(5000)
+                if (liveSessionStart(selectedAccountId)) {
+                    log.info("Scheduled Session start successful")
+                } else {
+                    log.error("Scheduled Session start failed")
+                }
+            } else {
+                log.error("Scheduled Login failed")
+            }
+        } else {
+            log.warn("Scheduled Session start skipped, no session to start")
+        }
+    }
 
     fun liveLogin(): Boolean {
         if (sessionState==1) {
@@ -310,7 +344,8 @@ class TD365SessionService(
         }
     }
 
-    fun liveLogout() : Boolean {                                  // https://platform.tradenation.com/logout.aspx
+    fun liveLogout(scheduled_request: Boolean = false) : Boolean {                                  // https://platform.tradenation.com/logout.aspx
+        scheduledSessionStart = scheduled_request
         return if (sessionState==0 && liveLogin) {
             loginHeaders.removeHeader(HttpHeaders.AUTHORIZATION)
             httpAdapter.getRequest(td365ConfigurationProperties.platformlogoutlink, loginHeaders)

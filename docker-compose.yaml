@@ -37,7 +37,7 @@ services:
       - "127.0.0.1:18081:18081"
       - "127.0.0.1:18082:18082"
       - "0.0.0.0:9092:9092"
-      - "127.0.0.1:9644:9644"
+      # - "0.0.0.0:9644:9644"
     command:
       - redpanda
       - start
@@ -47,14 +47,14 @@ services:
       # from inside the same Docker network.
       # Use the external addresses to connect to the Redpanda brokers'
       # from outside the Docker network.
-      - --advertise-kafka-addr internal://kafka0:19092,external://192.168.0.250:9092
-      - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:18082
+      - --advertise-kafka-addr internal://kafka0:19092,external://localhost:9092                    # 192.168.0.250:9092
+      # - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:18082
       # Address the broker advertises to clients that connect to the HTTP Proxy.
-      - --advertise-pandaproxy-addr internal://kafka0:8082,external://192.168.0.250:18082
+      # - --advertise-pandaproxy-addr internal://kafka0:8082,external://192.168.0.250:18082
       - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:18081
       # Redpanda brokers use the RPC API to communicate with each other internally.
-      - --rpc-addr kafka0:33145
-      - --advertise-rpc-addr kafka0:33145
+      # - --rpc-addr kafka0:33145                           # for multi-node cluster
+      # - --advertise-rpc-addr kafka0:33145                 # for multi-node cluster
       # Mode dev-container uses well-known configuration properties for development in containers.
       - --mode dev-container
       # Tells Seastar (the framework Redpanda uses under the hood) to use 1 core on the system.
@@ -85,7 +85,7 @@ services:
         kafka:
           brokers: ["kafka0:19092"]
         schemaRegistry:
-          enabled: false
+          enabled: true
           urls: ["http://kafka0:8081"]
         redpanda:
           adminApi:
@@ -290,7 +290,7 @@ services:
     #    expose:
     #      - 9090
     ports:
-      - "0.0.0.0:9091:9090"
+      - "0.0.0.0:9090:9090"
     networks:
       - marketbroker_net
     profiles: [infra,sdk]
@@ -369,43 +369,43 @@ services:
 #          start_period: 20s
 
 
-  jupyter-lab:
-    image: ml_11:v1.10_cuda-12.9_ubuntu-24.04
-    build:
-      dockerfile: ./docker/ml/Dockerfile4
-      context: .
-    container_name: jupyter-lab
-    volumes:
-#      - ./notebooks:/opt/notebooks
-      - ./notebooks:/home/jovyan/notebooks
-      - ./ml_examples:/home/jovyan/examples
+#   jupyter-lab:
+#     image: ml_11:v1.10_cuda-12.9_ubuntu-24.04
+#     build:
+#       dockerfile: ./docker/ml/Dockerfile4
+#       context: .
+#     container_name: jupyter-lab
+#     volumes:
+# #      - ./notebooks:/opt/notebooks
+#       - ./notebooks:/home/jovyan/notebooks
+#       - ./ml_examples:/home/jovyan/examples
 
-    ports:
-      - "8888:8888"
-#    command: sh -c "pip install questdb psycopg[binary] psycopg2-binary kafka-python confluent-kafka \"confluent-kafka[avro]\" fastavro requests \
-#      prophet \
-#      plotly \
-#      && start-notebook.sh --NotebookApp.password= --NotebookApp.token="
-    #    toolz cytoolz \
-    #    hyperopt \
-    #    fitter \
-    #    xgboost \
-    #    seaborn \
-    #    bayesian-optimization \
-    #    pandas_summary \
-    #    setuptools \
-    #    gputil \
-    #    rl_zoo3 \
-    #    stable-baselines3[extra] \
-    #    cmake openmpi \
-    #    git+https://github.com/AI4Finance-Foundation/FinRL.git \
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    environment:
-      - RESTARTABLE=yes
-    networks:
-      - marketbroker_net
-    profiles: [lab]
+#     ports:
+#       - "8888:8888"
+# #    command: sh -c "pip install questdb psycopg[binary] psycopg2-binary kafka-python confluent-kafka \"confluent-kafka[avro]\" fastavro requests \
+# #      prophet \
+# #      plotly \
+# #      && start-notebook.sh --NotebookApp.password= --NotebookApp.token="
+#     #    toolz cytoolz \
+#     #    hyperopt \
+#     #    fitter \
+#     #    xgboost \
+#     #    seaborn \
+#     #    bayesian-optimization \
+#     #    pandas_summary \
+#     #    setuptools \
+#     #    gputil \
+#     #    rl_zoo3 \
+#     #    stable-baselines3[extra] \
+#     #    cmake openmpi \
+#     #    git+https://github.com/AI4Finance-Foundation/FinRL.git \
+#     extra_hosts:
+#       - "host.docker.internal:host-gateway"
+#     environment:
+#       - RESTARTABLE=yes
+#     networks:
+#       - marketbroker_net
+#     profiles: [lab]
 
 
 networks:
