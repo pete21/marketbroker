@@ -86,10 +86,19 @@ services:
             urls: ["http://kafka0:9644"]
           # authentication:
           #   impersonateUser: true
-            authentication:         # If impersonateUser is false, configure static credentials here:
-              basic:
-                username: "redpanda_user"
+            # authentication:         # If impersonateUser is false, configure static credentials here:
+            #   basic:
+            #     username: "redpanda_user"
+            #     password: "password"
+        login:
+          enabled: true
+          jwtSecret: "secure_secret_that_is_at_least_32_characters"
+          basic:
+            enabled: true
+            users:
+              - username: "console_user"
                 password: "password"
+
     ports:
       - "${EXPOSE_IP}:8081:8080"
     depends_on:
