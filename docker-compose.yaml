@@ -84,6 +84,12 @@ services:
           adminApi:
             enabled: true
             urls: ["http://kafka0:9644"]
+          # authentication:
+          #   impersonateUser: true
+            authentication:         # If impersonateUser is false, configure static credentials here:
+              basic:
+                username: "redpanda_user"
+                password: "password"
     ports:
       - "${EXPOSE_IP}:8081:8080"
     depends_on:
