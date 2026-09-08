@@ -64,7 +64,7 @@ services:
       - kafka0:/var/lib/redpanda/data
     networks:
       - marketbroker_net
-    profiles: [backend]
+    profiles: [backend,solana]
     healthcheck:
       test: ["CMD", "rpk", "cluster", "info"]     # "-X", "user=superuser", "-X", "pass=secretpassword"
       interval: 30s
@@ -121,7 +121,7 @@ services:
       - ./init-scripts/00-databases.sql:/docker-entrypoint-initdb.d/01-databases.sql
     networks:
       - marketbroker_net
-    profiles: [backend]
+    profiles: [backend,solana]
     restart: on-failure
     healthcheck:
 #      test: ["CMD-SHELL", "mysql -h localhost -u root -p$$MYSQL_ROOT_PASSWORD" ]
