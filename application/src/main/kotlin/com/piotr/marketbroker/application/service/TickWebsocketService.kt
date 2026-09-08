@@ -42,7 +42,7 @@ class TickWebsocketService(
             if (s!=null) {
                 template.convertAndSend(
                     "/topic/${s}",
-                    TickMessageObject(s, it.bid, it.ask),
+                    TickMessageObject(s, it.bid, it.ask, it.longtime),
 //                mutableMapOf<String, Any>("s" to it.quoteId)
                 )
             } else {
@@ -50,7 +50,7 @@ class TickWebsocketService(
             }
             template.convertAndSend(
                 "/topic/ticks",
-                TickMessageObject(s, it.bid, it.ask),
+                TickMessageObject(s, it.bid, it.ask, it.longtime),
 //                mutableMapOf<String, Any>("s" to it.quoteId)
             )
         }
