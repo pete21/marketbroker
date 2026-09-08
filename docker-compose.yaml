@@ -10,13 +10,6 @@ services:
       - "${EXPOSE_IP}:8090:8090"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-    depends_on:
-      - kafka0
-      - questdb
-      - kafka-connect
-      - mysql8
-      - loki
-      - grafana
 #    volumes:
 #      - $HOME/.m2:/root/.m2
     networks:
