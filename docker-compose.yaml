@@ -6,8 +6,8 @@ services:
     container_name: marketbroker
     hostname: marketbroker
     ports:
-      - "0.0.0.0:8080:8080"
-      - "0.0.0.0:8090:8090"
+      - "${EXPOSE_IP}:8080:8080"
+      - "${EXPOSE_IP}:8090:8090"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
@@ -21,7 +21,7 @@ services:
 #      - $HOME/.m2:/root/.m2
     networks:
       - marketbroker_net
-    profiles: [sdk]
+    profiles: [broker]
 #    healthcheck:
 #      test: [ "CMD", "curl", "-f", "http://localhost:8090/health" ]
 #      interval: 30s
@@ -36,22 +36,22 @@ services:
     ports:
       - "127.0.0.1:18081:18081"
       - "127.0.0.1:18082:18082"
-      - "0.0.0.0:9092:9092"
-      # - "0.0.0.0:9644:9644"
+      - "${EXPOSE_IP}:9092:9092"
+      # - "${EXPOSE_IP}:9644:9644"
     command:
       - redpanda
       - start
-      - --kafka-addr internal://0.0.0.0:19092,external://0.0.0.0:9092
+      - --kafka-addr internal://${EXPOSE_IP}:19092,external://${EXPOSE_IP}:9092
       # Address the broker advertises to clients that connect to the Kafka API.
       # Use the internal addresses to connect to the Redpanda brokers'
       # from inside the same Docker network.
       # Use the external addresses to connect to the Redpanda brokers'
       # from outside the Docker network.
       - --advertise-kafka-addr internal://kafka0:19092,external://localhost:9092                    # 192.168.0.250:9092
-      # - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:18082
+      # - --pandaproxy-addr internal://${EXPOSE_IP}:8082,external://${EXPOSE_IP}:18082
       # Address the broker advertises to clients that connect to the HTTP Proxy.
       # - --advertise-pandaproxy-addr internal://kafka0:8082,external://192.168.0.250:18082
-      - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:18081
+      - --schema-registry-addr internal://${EXPOSE_IP}:8081,external://${EXPOSE_IP}:18081
       # Redpanda brokers use the RPC API to communicate with each other internally.
       # - --rpc-addr kafka0:33145                           # for multi-node cluster
       # - --advertise-rpc-addr kafka0:33145                 # for multi-node cluster
@@ -64,7 +64,7 @@ services:
       - kafka0:/var/lib/redpanda/data
     networks:
       - marketbroker_net
-    profiles: [infra,sdk]
+    profiles: [backend]
     healthcheck:
       test: ["CMD", "rpk", "cluster", "info"]     # "-X", "user=superuser", "-X", "pass=secretpassword"
       interval: 30s
@@ -92,12 +92,12 @@ services:
             enabled: true
             urls: ["http://kafka0:9644"]
     ports:
-      - "0.0.0.0:8081:8080"
+      - "${EXPOSE_IP}:8081:8080"
     depends_on:
       - kafka0
     networks:
       - marketbroker_net
-    profiles: [infra,sdk]
+    profiles: [backend]
 
   mysql8:
     image: mysql:8.0.40-debian
@@ -114,14 +114,14 @@ services:
     cap_add:
       - SYS_NICE  # CAP_SYS_NICE
     ports:
-      - "0.0.0.0:3306:3306"
+      - "${EXPOSE_IP}:3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
       - ./init-scripts/00-databases.sh:/docker-entrypoint-initdb.d/00-databases.sh
       - ./init-scripts/00-databases.sql:/docker-entrypoint-initdb.d/01-databases.sql
     networks:
       - marketbroker_net
-    profiles: [infra,sdk,mlflow_db_only]
+    profiles: [backend]
     restart: on-failure
     healthcheck:
 #      test: ["CMD-SHELL", "mysql -h localhost -u root -p$$MYSQL_ROOT_PASSWORD" ]
@@ -144,18 +144,18 @@ services:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_USER=${MYSQL_USER}
     ports:
-      - "0.0.0.0:8082:80"
+      - "${EXPOSE_IP}:8082:80"
     networks:
       - marketbroker_net
-    profiles: [infra,sdk,mlflow_db_only]
+    profiles: [backend]
 
   questdb:
     image: questdb/questdb:9.2.0
     container_name: questdb
     hostname: questdb
     ports:
-      - "0.0.0.0:8812:8812"
-      - "0.0.0.0:9000:9000"
+      - "${EXPOSE_IP}:8812:8812"
+      - "${EXPOSE_IP}:9000:9000"
       - "127.0.0.1:9009:9009"
       - "127.0.0.1:9003:9003"
 #    extra_hosts:
@@ -175,7 +175,7 @@ services:
       - questdb-data:/var/lib/questdb
     networks:
       - marketbroker_net
-    profiles: [infra,lab,sdk,questdb]
+    profiles: [backend]
 
   kafka-connect:
 #    image: ueisele/apache-kafka-connect-standalone:3.7.0
@@ -186,7 +186,7 @@ services:
       - kafka0
       - questdb
     ports:
-      - "0.0.0.0:8083:8083"
+      - "${EXPOSE_IP}:8083:8083"
 #    extra_hosts:
 #      - "host.docker.internal:host-gateway"
 #    user: "1001"
@@ -221,7 +221,7 @@ services:
       CONNECT_PLUGIN_PATH: /etc/kafka-connect/jars
     networks:
       - marketbroker_net
-    profiles: [infra,sdk]
+    profiles: [backend]
 
 #    command:
 #      - bash
@@ -264,14 +264,14 @@ services:
       - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor metricsSummary
 
     ports:
-      - "0.0.0.0:3000:3000"
+      - "${EXPOSE_IP}:3000:3000"
     # See: https://grafana.com/docs/grafana/latest/setup-grafana/configure-docker/
     volumes:
       - ./docker/grafana/var_lib_grafana:/var/lib/grafana/
       - ./docker/grafana/etc_grafana:/etc/grafana/
     networks:
       - marketbroker_net
-    profiles: [infra,sdk]
+    profiles: [backend]
 
   prometheus:
     image: prom/prometheus:v3.7.3
@@ -290,10 +290,10 @@ services:
     #    expose:
     #      - 9090
     ports:
-      - "0.0.0.0:9090:9090"
+      - "${EXPOSE_IP}:9090:9090"
     networks:
       - marketbroker_net
-    profiles: [infra,sdk]
+    profiles: [backend]
 
 
   loki:
@@ -303,12 +303,12 @@ services:
     command:
       -config.file=/etc/loki/loki-config.yml
     ports:
-      - "0.0.0.0:3100:3100"
+      - "${EXPOSE_IP}:3100:3100"
     volumes:
       - ./docker/loki-config.yml:/etc/loki/loki-config.yml
     networks:
       - marketbroker_net
-    profiles: [infra,sdk]
+    profiles: [backend]
 
 
   tempo:
@@ -328,7 +328,7 @@ services:
       - "127.0.0.1:9411:9411"   # zipkin
     networks:
       - marketbroker_net
-    profiles: [infra,sdk]
+    profiles: [backend]
     depends_on:
       - memcached
 
@@ -343,12 +343,12 @@ services:
       - MEMCACHED_THREADS=2 # Number of threads to use
     networks:
       - marketbroker_net
-    profiles: [infra,sdk]
+    profiles: [backend]
 
 #  mitmproxy:
 #      image: mitmproxy/mitmproxy:12.2.1
 #      ports:
-#          - 0.0.0.0:1080:8080
+#          - ${EXPOSE_IP}:1080:8080
 #          # - 1081:8081
 #      volumes:
 #          - ./docker/mitmproxy/config:/home/mitmproxy/config
@@ -406,6 +406,61 @@ services:
 #     networks:
 #       - marketbroker_net
 #     profiles: [lab]
+
+
+  nginx-tradefi:
+    container_name: nginx-tradefi
+    image: "nginx:1.28.1-alpine3.23"
+    ports:
+      - "443:443"
+      - "80:80"
+      - "8000-8009:8000-8009"
+    volumes:
+      - ./docker/nginx:/etc/nginx
+      - ./docker/nginx/sites-enabled/:/etc/nginx/sites-enabled/
+      - ./docker/nginx/sites-available/:/etc/nginx/sites-available/
+#      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - marketbroker_net
+    profiles: [proxy]
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    restart: always
+
+
+  solana-event-listener:
+#    build:
+#      dockerfile: ./Dockerfile
+    image: registry.tradefiapp.com:5443/solana-event-listener:v1
+    container_name: solana-event-listener
+    hostname: solana-event-listener
+    #    ports:
+    #      - "5000:5000"
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka0:19092
+      - MYSQL_HOST=mysql8
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=solana_db
+      - MYSQL_USER=solana_user
+      - MYSQL_PASSWORD=password
+      - SOLANA_RPC=https://api.devnet.solana.com
+      - SOLANA_WEBSOCKET=wss://api.devnet.solana.com
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    networks:
+      - marketbroker_net
+    profiles: [solana]
+    depends_on:
+      kafka0:
+        condition: service_healthy
+      mysql8:
+        condition: service_healthy
 
 
 networks:

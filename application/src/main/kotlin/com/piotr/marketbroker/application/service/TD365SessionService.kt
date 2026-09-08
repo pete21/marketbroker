@@ -99,7 +99,7 @@ class TD365SessionService(
     }
 
 
-    @Scheduled(cron = "5 23 * * 1-5", zone = "Europe/Berlin")
+    @Scheduled(cron = "30 5 23 * * 1-5", zone = "Europe/Berlin")
     fun stopSession() {
         if (sessionState == 1) {
             sessionStop()
@@ -114,7 +114,7 @@ class TD365SessionService(
         }
     }
 
-    @Scheduled(cron = "55 23 * * 0-4", zone = "Europe/Berlin")
+    @Scheduled(cron = "30 55 23 * * 0-4", zone = "Europe/Berlin")
     fun startSession() {
         if (scheduledSessionStart) {
             if (liveLogin()) {

@@ -1,32 +1,6 @@
 services:
 
-  solana-event-listener:
-#    build:
-#      dockerfile: ./Dockerfile
-    image: registry.tradefiapp.com:5443/solana-event-listener:v1
-    container_name: solana-event-listener
-    hostname: solana-event-listener
-    #    ports:
-    #      - "5000:5000"
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka0:19092
-      - MYSQL_HOST=mysql8
-      - MYSQL_PORT=3306
-      - MYSQL_DATABASE=solana_db
-      - MYSQL_USER=solana_user
-      - MYSQL_PASSWORD=password
-      - SOLANA_RPC=https://api.devnet.solana.com
-      - SOLANA_WEBSOCKET=wss://api.devnet.solana.com
-      - PYTHONUNBUFFERED=1
-    restart: unless-stopped
-    networks:
-      - marketbroker_net
-    profiles: [prop-trade-bundle]
-    depends_on:
-      kafka0:
-        condition: service_healthy
-      mysql8:
-        condition: service_healthy
+
 
   # tradefi-app:
   #   container_name: tradefi-app
@@ -90,31 +64,6 @@ services:
   #   depends_on:
   #     - mongodb
 
-
-  nginx-tradefi:
-    container_name: nginx-tradefi
-    image: "nginx:1.28.1-alpine3.23"
-    ports:
-      - "443:443"
-      - "80:80"
-      - "8000-8009:8000-8009"
-    volumes:
-      - ./docker/nginx:/etc/nginx
-      - ./docker/nginx/sites-enabled/:/etc/nginx/sites-enabled/
-      - ./docker/nginx/sites-available/:/etc/nginx/sites-available/
-#      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-    networks:
-      - marketbroker_net
-    profiles: [prop-trade-bundle]
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
-        reservations:
-          cpus: '0.25'
-          memory: 128M
-    restart: always
 
 
 # volumes:
