@@ -281,7 +281,7 @@ services:
       - ./docker/grafana/etc_grafana:/etc/grafana/
     networks:
       - marketbroker_net
-    profiles: [backend]
+    profiles: [sdk,backend]
 
   prometheus:
     image: prom/prometheus:v3.7.3
