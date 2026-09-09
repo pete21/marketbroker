@@ -14,13 +14,22 @@ services:
 #      - $HOME/.m2:/root/.m2
     networks:
       - marketbroker_net
-    profiles: [broker]
+    profiles: [sdk]
 #    healthcheck:
 #      test: [ "CMD", "curl", "-f", "http://localhost:8090/health" ]
 #      interval: 30s
 #      timeout: 10s
 #      retries: 3
 #      start_period: 30s
+    depends_on:
+      - kafka0
+      - mysql8
+      - questdb
+      - kafka-connect
+      - grafana
+      - prometheus
+      - loki
+      - tempo
 
   kafka0:
     image: docker.redpanda.com/redpandadata/redpanda:v25.3.1
@@ -57,7 +66,7 @@ services:
       - kafka0:/var/lib/redpanda/data
     networks:
       - marketbroker_net
-    profiles: [backend,solana]
+    profiles: [sdk,backend,solana]
     healthcheck:
       test: ["CMD", "rpk", "cluster", "info"]     # "-X", "user=superuser", "-X", "pass=secretpassword"
       interval: 30s
@@ -98,7 +107,7 @@ services:
       - kafka0
     networks:
       - marketbroker_net
-    profiles: [backend]
+    profiles: [sdk,backend]
 
   mysql8:
     image: mysql:8.0.40-debian
@@ -122,7 +131,7 @@ services:
       - ./init-scripts/00-databases.sql:/docker-entrypoint-initdb.d/01-databases.sql
     networks:
       - marketbroker_net
-    profiles: [backend,solana]
+    profiles: [sdk,backend,solana]
     restart: on-failure
     healthcheck:
 #      test: ["CMD-SHELL", "mysql -h localhost -u root -p$$MYSQL_ROOT_PASSWORD" ]
@@ -148,7 +157,7 @@ services:
       - "${EXPOSE_IP}:8082:80"
     networks:
       - marketbroker_net
-    profiles: [backend]
+    profiles: [sdk,backend]
 
   questdb:
     image: questdb/questdb:9.2.0
@@ -176,7 +185,7 @@ services:
       - questdb-data:/var/lib/questdb
     networks:
       - marketbroker_net
-    profiles: [backend]
+    profiles: [sdk,backend]
 
   kafka-connect:
 #    image: ueisele/apache-kafka-connect-standalone:3.7.0
@@ -222,7 +231,7 @@ services:
       CONNECT_PLUGIN_PATH: /etc/kafka-connect/jars
     networks:
       - marketbroker_net
-    profiles: [backend]
+    profiles: [sdk,backend]
 
 #    command:
 #      - bash
@@ -294,7 +303,7 @@ services:
       - "${EXPOSE_IP}:9090:9090"
     networks:
       - marketbroker_net
-    profiles: [backend]
+    profiles: [sdk,backend]
 
 
   loki:
@@ -309,7 +318,7 @@ services:
       - ./docker/loki-config.yml:/etc/loki/loki-config.yml
     networks:
       - marketbroker_net
-    profiles: [backend]
+    profiles: [sdk,backend]
 
 
   tempo:
@@ -329,7 +338,7 @@ services:
       - "127.0.0.1:9411:9411"   # zipkin
     networks:
       - marketbroker_net
-    profiles: [backend]
+    profiles: [sdk,backend]
     depends_on:
       - memcached
 
@@ -344,7 +353,7 @@ services:
       - MEMCACHED_THREADS=2 # Number of threads to use
     networks:
       - marketbroker_net
-    profiles: [backend]
+    profiles: [sdk,backend]
 
 #  mitmproxy:
 #      image: mitmproxy/mitmproxy:12.2.1
