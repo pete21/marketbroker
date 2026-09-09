@@ -355,3 +355,45 @@ UNION
 SELECT timestamp, open, high, low, close FROM %(tickstream_table_1m)s where timestamp > (select max(timestamp) FROM %(table_1m)s)
 ) group by timestamp order by timestamp) sample by """
 ```
+
+
+
+## TABLE COPY
+
+```sql
+COPY DUKASCOPY_16917_OHLC_1S TO 'DUKASCOPY_16917_OHLC_1S.parquet'
+WITH
+FORMAT PARQUET
+PARTITION_BY NONE;
+
+COPY DUKASCOPY_6374_OHLC_1S TO 'DUKASCOPY_6374_OHLC_1S.parquet'
+WITH
+FORMAT PARQUET
+PARTITION_BY NONE;
+
+COPY DUKASCOPY_872703_OHLC_1S TO 'DUKASCOPY_872703_OHLC_1S.parquet'
+WITH
+FORMAT PARQUET
+PARTITION_BY NONE;
+```
+
+
+## RESTORE FROM TABLE
+
+```sql
+INSERT INTO DUKASCOPY_6374_OHLC_1S
+SELECT timestamp, open, high, low, close
+FROM read_parquet('DUKASCOPY_6374_OHLC_1S.parquet');
+SELECT * FROM DUKASCOPY_6374_OHLC_1S order by timestamp desc limit 100;
+
+INSERT INTO DUKASCOPY_16917_OHLC_1S
+SELECT timestamp, open, high, low, close
+FROM read_parquet('DUKASCOPY_16917_OHLC_1S.parquet');
+SELECT * FROM DUKASCOPY_16917_OHLC_1S order by timestamp desc limit 100;
+
+INSERT INTO DUKASCOPY_872703_OHLC_1S
+SELECT timestamp, open, high, low, close
+FROM read_parquet('DUKASCOPY_872703_OHLC_1S.parquet');
+SELECT * FROM DUKASCOPY_872703_OHLC_1S order by timestamp desc limit 100;
+```
+
