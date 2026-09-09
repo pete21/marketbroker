@@ -130,9 +130,10 @@ class WebsocketHandler(val applicationEventPublisher: ApplicationEventPublisher)
     }
 
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
-        log.info("Websocket ConnectionClosed")
+        log.info("Websocket ConnectionClosed. Id: ${session.id}. Reason: ${status.reason}")
+        disconnect()
         applicationEventPublisher.publishEvent(WebsocketDisconnectedEvent())
-        websocketSession = 0
+        // websocketSession = 0
     }
 
 }

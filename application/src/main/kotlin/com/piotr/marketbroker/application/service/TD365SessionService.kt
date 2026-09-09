@@ -78,7 +78,7 @@ class TD365SessionService(
     }
 
     @Scheduled(fixedRateString = "\${td365.sessionupdateinterval}")
-    @Async
+    // @Async
     fun httpClientSessionUpdate() {
         log.info("UpdateClientSessionID")
         if (sessionState == 1) {
@@ -102,6 +102,7 @@ class TD365SessionService(
 
     @Scheduled(cron = "30 5 23 * * 1-5", zone = "Europe/Berlin")
     fun stopSession() {
+        log.info("Running scheduled session stop")
         if (sessionState == 1) {
             activeSubscriptions = subscriptionsService.getSubscriptionIds()
 
@@ -119,9 +120,8 @@ class TD365SessionService(
 
     @Scheduled(cron = "30 55 23 * * 0-4", zone = "Europe/Berlin")
     fun startSession() {
+        log.info("Running scheduled session start")
         if (scheduledSessionStart) {
-
-
             if (liveLogin()) {
                 Thread.sleep(5000)
                 if (liveSessionStart(selectedAccountId)) {
@@ -177,7 +177,7 @@ class TD365SessionService(
     }
 
     @Scheduled(fixedRateString = "\${td365.accesstokenrefreshinterval}", initialDelayString = "\${td365.accesstokenrefreshinterval}")
-    @Async
+    // @Async
     fun refreshAccessToken() {
         if (!liveLogin || jwt == null) {
             log.info("Access token refresh not needed, not logged in")
@@ -195,7 +195,7 @@ class TD365SessionService(
     }
 
 
-    @Async
+    // @Async
     @EventListener
     fun handleDisconnect(event: WebsocketDisconnectedEvent) {
         log.info("Handling WebsocketDisconnectedEvent")
