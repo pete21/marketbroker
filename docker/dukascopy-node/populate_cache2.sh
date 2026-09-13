@@ -77,7 +77,7 @@ while (( $(date -d "${start}" +%s) < $(date -d "${end}" +%s) )); do
 
     # Download the data
     if [ ! -s ./cache2/${instrument}-${formatted_start_file}h_ticks.json ]; then
-        wget --retry-on-http-error=500,503,504 --waitretry=2 -t 2 --header="Accept-Encoding: gzip, deflate, br" https://jetta.dukascopy.com/v1/ticks/${instrument}/${formatted_start} -O ./cache2/${instrument}-${formatted_start_file}h_ticks.json -U "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        wget --retry-on-http-error=500,503,504 --waitretry=2 -t 2 --header="Accept-Encoding: gzip, deflate, br" --compression=auto https://jetta.dukascopy.com/v1/ticks/${instrument}/${formatted_start} -O ./cache2/${instrument}-${formatted_start_file}h_ticks.json -U "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         sleep 1
     else
         echo "File exists: ./cache2/${instrument}-${formatted_start_file}h_ticks.json"
