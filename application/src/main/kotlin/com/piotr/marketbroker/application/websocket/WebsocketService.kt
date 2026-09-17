@@ -35,7 +35,7 @@ class WebsocketService(
             sessionState = true
         } catch (e: InterruptedException) {
             // TODO Auto-generated catch block
-            log.error("Websocket connect failed: ${e.message}")
+            log.error("WebsocketService: Websocket connect failed: ${e.message}")
             return false
         }
         return true

@@ -43,7 +43,7 @@ class WebsocketHandler(val applicationEventPublisher: ApplicationEventPublisher)
         this.websocketServer = websocketServer
         log.info("Websocket connect request")
         try {
-            clientSession?.close()
+            // clientSession?.close()
 
             clientSession = standardWebSocketClient
                 .execute(
@@ -57,7 +57,7 @@ class WebsocketHandler(val applicationEventPublisher: ApplicationEventPublisher)
 
             return true
         } catch (e: Exception) {
-            log.error("Websocket connect failed!")
+            log.error("WebsocketHandler: Websocket connect failed: ${e.message}")
         }
         return false
     }

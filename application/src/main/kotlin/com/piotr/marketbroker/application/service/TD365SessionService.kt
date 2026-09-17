@@ -243,7 +243,11 @@ class TD365SessionService(
 
             checkNotNull(account.ct_login_id) { "ct_login_id is null, check if account is active and can be logged in" }
             if (!websocketService.connect(account.ct_login_id!!, token, websocketServer)) {
-                sessionState = 0
+                reconnect_attempts = reconnect_attempts + 1
+                log.info("Websocket reconnect attempt")
+                Thread.sleep(2000)
+                websocketService.disconnect()
+                applicationEventPublisher.publishEvent(WebsocketDisconnectedEvent())
             } else {
                 reconnect_attempts = 0
                 subscriptionsService.renewSubscriptions()
